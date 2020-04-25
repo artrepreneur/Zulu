@@ -1907,7 +1907,7 @@ def init_multi_cmb():
 def init_side_menu():
     balance_btn = SideMenuBtn('Balances', 'Balances', 'pixmap_balance_btn', 'View Your Balances')
     send_btn = SideMenuBtn('Send', 'Send', 'pixmap_send_btn', 'Send PKT Cash')
-    receive_btn = SideMenuBtn('Receive', 'Receive', 'pixmap_receive_btn', 'Recieve PKT Cash')
+    receive_btn = SideMenuBtn('Receive', 'Receive', 'pixmap_receive_btn', 'Receive PKT Cash')
     transaction_btn = SideMenuBtn('Transaction', 'Transaction', 'pixmap_transaction_btn', 'View Transaction History')
     grid = QtWidgets.QGridLayout(window.frame_3)
     grid.addWidget(balance_btn, 0, 0)
