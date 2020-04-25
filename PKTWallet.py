@@ -7,10 +7,8 @@ import os, sys, subprocess, json, threading, time, random, signal, traceback, re
 import platform, transactions, estimate, ingest, signMultiSigTrans, sendMultiSigTrans, sendCombMultiSigTrans, fold, createWallet, getSeed
 import balances, addresses, balanceAddresses, rpcworker, privkey, pubkey, password, wlltinf, send, time, datetime, genMultiSig, createMultiSigTrans, sendCombMultiSigTrans
 #import combineSigned
-#from custombtn import BasicBtn, ListBtn
 from pixMp import *
 from genAddress import *
-#from resource import resource_path
 from config import MIN_CONF, MAX_CONF
 from cryptic import encrypt_seed, decrypt_seed
 import qrcode
@@ -24,7 +22,6 @@ AUTO_RESTART_WALLET = False
 fee = ".00000001"
 
 def resource_path(relative_path):
-    #dir = QDir.currentPath()
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath('.'), relative_path)
@@ -1486,10 +1483,10 @@ def menubar_released(self):
         window.stackedWidget.setCurrentIndex(i)
 
     elif clicked_item == 'actionWebsite':
-        print('tbd')
-        #url = QUrl('https://github.com/pkt-cash')
-        #if not QDesktopServices.openUrl(url):
-        #    QMessageBox.warning(self, 'Open Url', 'Could not open url')
+        #print('tbd')
+        url = QUrl('https://github.com/artrepreneur/PKT-Cash-Wallet')
+        if not QDesktopServices.openUrl(url):
+            QMessageBox.warning(self, 'Open Url', 'Could not open url')
 
     elif clicked_item == 'actionSeed':
         passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter your wallet passphrase to access your seed:',QtWidgets.QLineEdit.Password)
