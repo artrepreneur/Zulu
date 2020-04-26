@@ -260,8 +260,13 @@ def side_menu_clicked(btn):
         font.setFamily("Helvetica")
         font.setPointSize(15)
         item_0.setFont(0, font)
-        window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Loading..."))
-        get_transactions()
+        if pktd_synching(): #or pktwallet_synching()
+            sync_msg("Transactions aren\'t available until wallet has completely sync\'d")
+            window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Wallet Syncing..."))
+
+        else:
+            window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Loading..."))
+            get_transactions()
 
     window.stackedWidget.setCurrentIndex(i)
 
@@ -1741,9 +1746,11 @@ def pktd_dead():
 def inv_pktd():
     global pktd_pid, pktd_cmd_result
     print('Invoking PKTD ...')
+    #pktd_cmd = "bin/pktd -u  "+uname+" -P " +pwd+ " --txindex --addrindex"
+    #pktd_cmd_result, err = subprocess.Popen(resource_path(pktd_cmd), shell=True, stdout=subprocess.PIPE)
     pktd_cmd_result = subprocess.Popen([resource_path('bin/pktd'), '-u', uname, '-P', pwd, '--txindex', '--addrindex'], shell=False, stdout=subprocess.PIPE)
     pktd_pid = pktd_cmd_result.pid + 1
-
+    print(pktd_cmd_result)
     return pktd_cmd_result
 
 def pktd_worker(pktd_cmd_result, progress_callback):
@@ -1758,6 +1765,7 @@ def inv_pktwllt():
     global pktwallet_pid, pktwallet_cmd_result
     pktwallet_cmd_result = subprocess.Popen([resource_path('bin/pktwallet'), '-u', uname, '-P', pwd], shell=False, stdout=subprocess.PIPE)
     pktwallet_pid = pktwallet_cmd_result.pid + 1
+    print(pktwallet_cmd_result)
     pktwllt_stdout = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
     status = ''
 
@@ -1782,6 +1790,7 @@ def start_daemon(uname, pwd):
     pktd_pid = 0
     pktwallet_pid = 0
     wallet_file_exists = wallet_file.exists()
+    print('wallet file exists', wallet_file_exists)
 
     if wallet_file_exists:
         try:
@@ -1803,7 +1812,7 @@ def start_daemon(uname, pwd):
             window.stackedWidget.setCurrentIndex(i)
 
         except:
-            print('Failed to invoke daemon.')
+            print('Failed to invoke pktd daemon.')
             exit_handler()
             QCoreApplication.quit()
 
