@@ -4,13 +4,12 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from functools import partial
 import os, sys, subprocess, json, threading, time, random, signal, traceback, re
-import platform, transactions, estimate, ingest, signMultiSigTrans, sendMultiSigTrans, sendCombMultiSigTrans, fold, createWallet, getSeed
+import platform, transactions, estimate, ingest, signMultiSigTrans, sendMultiSigTrans, sendCombMultiSigTrans, fold, createWallet, getSeed #, resync
 import balances, addresses, balanceAddresses, rpcworker, privkey, pubkey, password, wlltinf, send, time, datetime, genMultiSig, createMultiSigTrans, sendCombMultiSigTrans
 #import combineSigned
 from pixMp import *
 from genAddress import *
 from config import MIN_CONF, MAX_CONF
-from cryptic import encrypt_seed, decrypt_seed
 import qrcode
 from pyzbar.pyzbar import decode
 from PIL import Image
@@ -50,7 +49,7 @@ def pktd_synching():
 def sync_msg(msg):
     sync_msg_box = QtWidgets.QMessageBox()
     sync_msg_box.setText(msg)
-    sync_msg_box.setWindowTitle('Synch In Progress')
+    sync_msg_box.setWindowTitle('Sync Info')
     sync_msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes)
     sync_ok_btn = sync_msg_box.button(QtWidgets.QMessageBox.Yes)
     sync_ok_btn.setText("Ok")
@@ -548,6 +547,7 @@ def menubar_listeners():
     window.actionFrom_QR_Code.triggered.connect(menubar_released)
     window.actionFold_Address.triggered.connect(menubar_released)
     window.actionWebsite.triggered.connect(menubar_released)
+    #actionManual_Resync.triggered.connect(menubar_released)
     app.aboutToQuit.connect(exit_handler)
 
 # Handler for menu item click
@@ -1488,10 +1488,13 @@ def menubar_released(self):
         window.stackedWidget.setCurrentIndex(i)
 
     elif clicked_item == 'actionWebsite':
-        #print('tbd')
         url = QUrl('https://github.com/artrepreneur/PKT-Cash-Wallet')
         if not QDesktopServices.openUrl(url):
             QMessageBox.warning(self, 'Open Url', 'Could not open url')
+    
+    #elif clicked_item == 'actionManual_Resync':
+    #    sync_msg("Wallet Resync Starting. This could take a while.")
+    #    resync.execute(uname, pwd, passphrase, window, worker_state_active)
 
     elif clicked_item == 'actionSeed':
         passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter your wallet passphrase to access your seed:',QtWidgets.QLineEdit.Password)
