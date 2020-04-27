@@ -3,7 +3,7 @@ pyzbar==0.1.8
 async-timeout==3.0.0
 Cython==0.25.2
 cytoolz==0.9.0.1
-ecdsa==0.13.2
+ecdsa==0.13.3
 fake-useragent==0.1.11
 ipaddress==1.0.18
 jsonref==0.2
