@@ -38,4 +38,15 @@ Use pip to install the dependencies from requirements.txt.
 pip install -r requirements.txt
 ```
 
+### Running PKT Cash Wallet
+
+To run PKT Cash wallet, just invoke the python script as follows. 
+
+```
+python PKTWallet.py
+```
+
+That's it. If you have a legacy command line wallet already running it will use the existing wallet database already present on your system. If you don't have a command line wallet you will be prompted to create a new wallet. Always, make sure to store your wallet seed in a safe place. 
+
+
 
