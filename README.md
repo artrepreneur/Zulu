@@ -17,3 +17,25 @@ The wallet includes the following features.
 9. Fold wallet addresses - for large UTXO sets.
 10. View full transaction history.
 
+# Installation
+Clone the repository.
+
+```
+git clone https://github.com/artrepreneur/PKT-Cash-Wallet
+```
+
+Please use Python 3. Create an [Anaconda](https://www.anaconda.com/products/individual) environment.
+
+Install zbar
+
+```
+brew install zbar
+```
+
+Use pip to install the dependencies from requirements.txt. 
+
+```
+pip install -r requirements.txt
+```
+
+
