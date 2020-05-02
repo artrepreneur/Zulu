@@ -1,7 +1,7 @@
 # PKT Cash Wallet
 PKT Cash wallet is a QT wallet for the PKT Cash blockchain mainnet. This wallet adds a graphical user interface (GUI) to the command line daemon [pktwallet](https://github.com/pkt-cash/pktd/tree/master/pktwallet). PKT Cash Wallet runs as a standalone application for macOS currently, and eventually will have support for Unix. 
 
-This is a full node wallet and not SPV at this time. It comes bundled with binaries for a full node daemon [pktd](https://github.com/pkt-cash/pktd), [pktwallet](https://github.com/pkt-cash/pktd/tree/master/pktwallet), and the remote procedure call (RPC) client [btcctl](https://github.com/pkt-cash/pktd/tree/master/cmd/btcctl). These binaries are stored in the bin folder of this repo. It is also possible to compile these binaries from their respective repositories. These binaries should be placed in the bin folder or the wallet will cease to work.     
+This is a full node wallet and not SPV at this time. It comes bundled with binaries for a full node daemon [pktd](https://github.com/pkt-cash/pktd/tree/develop), [pktwallet](https://github.com/pkt-cash/pktd/tree/develop/pktwallet), and the remote procedure call (RPC) client [btcctl](https://github.com/pkt-cash/pktd/tree/develop/cmd/btcctl). These binaries are stored in the bin folder of this repo. It is also possible to compile these binaries from their respective repositories. If you decide to compile on your own, use the development branch of the [pkt-cash](https://github.com/pkt-cash/pktd/tree/develop) repo. These binaries should be placed in the bin folder or the wallet will cease to work.     
 
 ## Wallet Features
 The wallet includes the following features. 
