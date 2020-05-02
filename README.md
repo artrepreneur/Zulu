@@ -26,6 +26,12 @@ git clone https://github.com/artrepreneur/PKT-Cash-Wallet
 
 Please use Python 3. Create an [Anaconda](https://www.anaconda.com/products/individual) environment.
 
+Install PyQt5
+
+```
+pip install PyQt5
+```
+
 Install `zbar`. The zbar DLLs are included with the Windows Python wheels. However, you will need to install the `zbar` shared library on other operation systems
 
 Mac OS X:
