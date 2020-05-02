@@ -45,15 +45,18 @@ def create(uname, pwd, raw_trans, passphrase, window):
             if not err:
                 json_trans = json.loads(result)
                 decode_result = (json_trans)['vout']
-                #print('decoded trans:', decode_result)
+                print('decoded trans:', decode_result)
 
                 # Get sender.
                 txid = (json_trans)['vin'][0]["txid"]
                 vout = (json_trans)['vin'][0]["vout"]
+                print('txid', txid, 'vout', vout)
                 sender_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" getrawtransaction " + txid
+                print(sender_cmd)
                 sndr_result, sndr_err = (subprocess.Popen(resource_path(sender_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
                 sndr_result = sndr_result.decode('utf-8')
-                sndr_err = sndr_err.decode('utf-8') 
+                sndr_err = sndr_err.decode('utf-8')
+                print('sender res', sndr_result, sndr_err) 
 
                 if not sndr_err:
                     decode_cmd_2 = "bin/btcctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + sndr_result
@@ -67,7 +70,7 @@ def create(uname, pwd, raw_trans, passphrase, window):
                         for item in decode_result_2:
                             if item["n"] == vout:
                                 sender_addr = item["address"]
-                                #print("Sender:", sender_addr)
+                                print("Sender:", sender_addr)
 
                         # Get some details for confirmation            
                         details = ''
@@ -101,16 +104,16 @@ def create(uname, pwd, raw_trans, passphrase, window):
                                         redeem_script = data["redeemScript"]
                                         success = True
                                         break
-
+                            
 
                                 sign_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet signrawtransaction " + str(raw_trans) + " '[{\"txid\":\""+str(txid)+"\",\"n\":\""+str(vout)+"\",\"scriptpubkey\":\""+str(scriptpubkey)+"\",\"redeemscript\":\""+str(redeem_script)+"\"}]'"
-                                #print(sign_cmd)
+                                print(sign_cmd)
 
                                 sign_result, err_3 = (subprocess.Popen(resource_path(sign_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
                                 sign_result = sign_result.decode('utf-8')
                                 err_3 = err_3.decode('utf-8')
                                 signed_trans = str(json.loads(sign_result)['hex'])
-                                #print(signed_trans)
+                                print(signed_trans)
 
                                 # Relock wallet.
                                 lock = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet walletlock"
@@ -125,15 +128,17 @@ def create(uname, pwd, raw_trans, passphrase, window):
                                     return signed_trans    
 
                             except:
-                                #print("no mdata.json file.")
+                                print("no mdata.json file.")
                                 return "Error: Could not sign transaction." 
 
                         elif ret == QtWidgets.QMessageBox.Cancel:
                             return
                     else:
-                        raise Exception('Signing failure') 
+                        raise Exception("Signing failure") 
                 else:
-                    raise Exception('Signing failure')                 
+                    print("Signing failure", sndr_err)
+                    window.signed_text.setText("Signing failure:" + sndr_err)
+                    raise Exception("Signing failure")            
     
     except:
         window.label_66.setText("Signing failed.")
