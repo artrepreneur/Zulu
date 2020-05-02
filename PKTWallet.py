@@ -286,9 +286,11 @@ def get_transactions():
 def show_balance():
     window.balance_amount.clear()
     worker_state_active['GET_BALANCE'] = False
-    total_balance = balances.get_balance(uname, pwd)
-    window.balance_amount.setText(_translate("MainWindow", total_balance))
-    worker_state_active['GET_BALANCE'] = True
+    #total_balance = balances.get_balance(uname, pwd)
+    #window.balance_amount.setText(_translate("MainWindow", total_balance))
+    #worker_state_active['GET_BALANCE'] = True
+    total_balance = balances.get_balance_thd(uname, pwd, window, worker_state_active, threadpool)
+    
 
 def set_fee_est():
     global fee
@@ -471,7 +473,7 @@ def exit_handler():
 
     if os_sys == 'Linux' or os_sys == 'Darwin':
         try:
-            subprocess.call(['pkill', '-9', 'pktwallet'], shell=False)
+            subprocess.call(['pkill', '-9', 'wallet'], shell=False)
             subprocess.call(['pkill', '-9', 'pktd'], shell=False)
         except:
             print('Failed to clean up.')
@@ -479,7 +481,7 @@ def exit_handler():
 
     elif os_sys == 'Windows':
         try:
-            os.system("taskkill /f /im  pkt_wallet.exe")
+            os.system("taskkill /f /im  wallet.exe")
             os.system("taskkill /f /im  pktd.exe")
         except:
             print('Failed to clean up.')
@@ -1765,7 +1767,7 @@ def pktd_worker(pktd_cmd_result, progress_callback):
 def inv_pktwllt():
     print('Invoking PKT Wallet ...')
     global pktwallet_pid, pktwallet_cmd_result
-    pktwallet_cmd_result = subprocess.Popen([resource_path('bin/pktwallet'), '-u', uname, '-P', pwd], shell=False, stdout=subprocess.PIPE)
+    pktwallet_cmd_result = subprocess.Popen([resource_path('bin/wallet'), '-u', uname, '-P', pwd], shell=False, stdout=subprocess.PIPE)
     pktwallet_pid = pktwallet_cmd_result.pid + 1
     pktwllt_stdout = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
     status = ''
@@ -2015,8 +2017,6 @@ if __name__ == "__main__":
     # show balance
     if not CREATE_NEW_WALLET:
         print('Getting Balance ...')
-        #if pktd_synching() or pktwllt_synching():
-         #   sync_msg("Wallet currently sync\'ing. Some features may not work until sync is complete.")
         show_balance()
         # Add address buttons
         print('Getting Address Balances ...')
@@ -2031,5 +2031,9 @@ if __name__ == "__main__":
     menubar_listeners()
 
     window.show()
+    
+    if pktd_synching() or pktwllt_synching():
+        sync_msg("Wallet currently sync\'ing. Some features may not work until sync is complete.")
+
     #window.raise_() #added for pyinstaller only, else menubar fails
     app.exec()
