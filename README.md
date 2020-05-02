@@ -45,6 +45,12 @@ Use pip to install the dependencies from requirements.txt.
 pip install -r requirements.txt
 ```
 
+Finally, change the permissions of the executables.
+
+```
+chmod 755 bin/*
+```
+
 ## Running PKT Cash Wallet
 
 To run PKT Cash wallet, just invoke the python script as follows. 
