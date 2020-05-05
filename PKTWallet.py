@@ -18,7 +18,8 @@ from pathlib import Path
 
 VERSION_NUM = "1.0.0"
 AUTO_RESTART_WALLET = False
-fee = ".00000001"
+CREATE_NEW_WALLET = False
+FEE = ".00000001"
 
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
@@ -250,9 +251,10 @@ def side_menu_clicked(btn):
         window.label_26.clear()
 
     elif btn.objectName().strip() == 'Transaction':
-        i = window.stackedWidget.indexOf(window.transactions_page)
-        #window.transaction_hist_tree.clear()
         global iteration
+
+        i = window.stackedWidget.indexOf(window.transactions_page)
+        #window.transaction_hist_tree.clear()        
         iteration = 0
         item_0 = QtWidgets.QTreeWidgetItem(window.transaction_hist_tree)
         font = QFont()
@@ -261,11 +263,11 @@ def side_menu_clicked(btn):
         item_0.setFont(0, font)
         if pktd_synching() or pktwllt_synching():
             sync_msg("Transactions aren\'t available until wallet has completely sync\'d")
-            window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Wallet Syncing..."))
+            #window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Wallet Syncing..."))
 
         else:
             window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Loading..."))
-            get_transactions()
+        get_transactions()
 
     window.stackedWidget.setCurrentIndex(i)
 
@@ -284,6 +286,9 @@ def get_transactions():
         print('Unable to get transactioss')
 
 def show_balance():
+    if pktd_synching() or pktwllt_synching():
+        sync_msg("Wallet currently sync\'ing. Some features may not work until sync is complete.")
+
     window.balance_amount.clear()
     worker_state_active['GET_BALANCE'] = False
     #total_balance = balances.get_balance(uname, pwd)
@@ -293,8 +298,8 @@ def show_balance():
     
 
 def set_fee_est():
-    global fee
-    estimate.fee(uname, pwd, window, fee, worker_state_active, threadpool)
+    global FEE
+    estimate.fee(uname, pwd, window, FEE, worker_state_active, threadpool)
 
 # Append addresses to list
 def add_addresses(type):
@@ -554,7 +559,7 @@ def menubar_listeners():
 
 # Handler for menu item click
 def btn_released(self):
-    global fee
+    global FEE
 
     clicked_widget = window.sender()
     #print('pressed button:', clicked_widget.objectName())
@@ -956,7 +961,7 @@ def btn_released(self):
         window.label_65.clear()
         pay_dict2 = {}
         address = str(window.comboBox_2.currentText())
-        fee = window.lineEdit_3.text()
+        FEE = window.lineEdit_3.text()
         is_valid = True
         for i in rcp_list_dict2:
             pay_to = rcp_list_dict2[i].lineEdit_6.text().strip()
@@ -993,7 +998,7 @@ def btn_released(self):
             passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
 
             if ok:
-                result = createMultiSigTrans.create(uname, pwd, amt, address, pay_dict2, fee, passphrase, window)
+                result = createMultiSigTrans.create(uname, pwd, amt, address, pay_dict2, FEE, passphrase, window)
                 err_result = str(result).split(':')[0]
                 if err_result == "Error":
                     msg_box_18 = QtWidgets.QMessageBox()
@@ -1143,7 +1148,7 @@ def btn_released(self):
         snd_yes_btn = msg_box_3.button(QtWidgets.QMessageBox.Yes)
         snd_no_btn = msg_box_3.button(QtWidgets.QMessageBox.No)
         raw_trans = (str(window.signed_text.toPlainText())).strip()
-        result = sendMultiSigTrans.create(uname, pwd, fee, raw_trans, window)
+        result = sendMultiSigTrans.create(uname, pwd, FEE, raw_trans, window)
         err_result = str(result["result"]).split(':')[0]
 
         if err_result == "Error":
@@ -1321,35 +1326,35 @@ def btn_released(self):
 
     elif clicked_widget.objectName() == 'combine_send_btn':
         window.label_69.clear()
-        #try:
-        multi_comb_trans = window.combine_trans_txt.toPlainText()
-        result = sendCombMultiSigTrans.create(uname, pwd, fee, multi_comb_trans, window)
-        err_result = str(result["result"]).split(':')[0]
+        try:
+            multi_comb_trans = window.combine_trans_txt.toPlainText()
+            result = sendCombMultiSigTrans.create(uname, pwd, FEE, multi_comb_trans, window)
+            err_result = str(result["result"]).split(':')[0]
 
-        if err_result == "Error":
+            if err_result == "Error":
+                msg_box_22 = QtWidgets.QMessageBox()
+                msg_box_22.setText(result["result"])
+                msg_box_22.exec()
+
+            elif err_result == "Cancel":
+                return
+
+            else:
+                i = window.stackedWidget.indexOf(window.sent_page)
+                window.stackedWidget.setCurrentIndex(i)
+                window.lineEdit_7.setText(result["result"])
+                window.textEdit_4.setText(result["details"])
+        except:
             msg_box_22 = QtWidgets.QMessageBox()
-            msg_box_22.setText(result["result"])
+            msg_box_22.setText("Transaction send failed. Check that all necessary signatures have been combined.")
             msg_box_22.exec()
-
-        elif err_result == "Cancel":
-            return
-
-        else:
-            i = window.stackedWidget.indexOf(window.sent_page)
-            window.stackedWidget.setCurrentIndex(i)
-            window.lineEdit_7.setText(result["result"])
-            window.textEdit_4.setText(result["details"])
-        #except:
-        #    msg_box_22 = QtWidgets.QMessageBox()
-        #    msg_box_22.setText("Transaction send failed. Check that all necessary signatures have been combined.")
-        #    msg_box_22.exec()
-        #    window.label_69.setText("Transaction send failed. Check that all necessary signatures have been combined.")
+            window.label_69.setText("Transaction send failed. Check that all necessary signatures have been combined.")
 
     elif clicked_widget.objectName() == 'load_trns_btn':
         get_transactions()
 
 def menubar_released(self):
-    global fee
+    global FEE
     clicked_item = window.sender().objectName()
     #print('pressed menubar item', clicked_item)
     if clicked_item == 'actionAddress_2':
@@ -1377,7 +1382,6 @@ def menubar_released(self):
         i = window.stackedWidget.indexOf(window.multisig_send_page)
         window.stackedWidget.setCurrentIndex(i)
 
-
     elif clicked_item == 'actionPassword':
         window.lineEdit_10.clear()
         window.lineEdit_4.clear()
@@ -1386,10 +1390,8 @@ def menubar_released(self):
         window.stackedWidget.setCurrentIndex(i)
 
     elif clicked_item == 'actionSave':
-        wallet_file = ''
-        if os_sys == 'Darwin':
-            wallet_file = str(QDir.homePath() + '/Library/Application Support/Pktwallet/pkt/wallet.db')
-
+        wallet_file = str(wallet_db)
+        print('wf',wallet_file)
         save_dir = QDir.homePath()
         name = "wallet.db"
         dlg = QtWidgets.QFileDialog()
@@ -1403,9 +1405,7 @@ def menubar_released(self):
 
 
     elif clicked_item == 'actionDelete':
-        wallet_file = ''
-        if os_sys == 'Darwin':
-            wallet_file = QDir.homePath() + '/Library/Application Support/Pktwallet/pkt/wallet.db'
+        wallet_file = wallet_db
         msg_box_5 = QtWidgets.QMessageBox()
         text = 'Are you sure you wish to delete this wallet?\n'# + wallet_file
         msg_box_5.setText(text)
@@ -1690,12 +1690,6 @@ def import_qr():
 
     return
 
-def get_wallet_file():
-    wallet_file = ''
-    if os_sys == 'Darwin':
-        wallet_file = str(QDir.homePath() + '/Library/Application Support/Pktwallet/pkt/wallet.db')
-    return wallet_file
-
 def restart(proc):
 
     rst_msg_box = QtWidgets.QMessageBox()
@@ -1788,8 +1782,7 @@ def pktwllt_worker(pktwallet_cmd_result, progress_callback):
 
 def start_daemon(uname, pwd):
     global pktd_pid, pktwallet_pid
-
-    wallet_file = Path(get_wallet_file())
+    wallet_file = Path(wallet_db)
     pktd_pid = 0
     pktwallet_pid = 0
     wallet_file_exists = wallet_file.exists()
@@ -1819,6 +1812,14 @@ def start_daemon(uname, pwd):
             exit_handler()
             QCoreApplication.quit()
 
+def get_wallet_db():
+    wallet_db = ''
+    get_db_cmd = "bin/getwalletdb"
+    get_db_result = (subprocess.Popen(resource_path(get_db_cmd), shell=True, stdout=subprocess.PIPE).communicate()[0]).decode("utf-8")
+    if get_db_result:
+        wallet_db = get_db_result.strip('\n')+'/wallet.db'
+        print('Found wallet.db here:', wallet_db)
+    return wallet_db    
 
 def clear_send_rcp():
     global rcp_list_dict, pay_dict
@@ -1945,6 +1946,13 @@ def deactivate():
     window.frame_2.hide()
     window.lineEdit_6.hide()
 
+def init_size():
+    window.setMinimumSize(1100, 580)
+    window.stackedWidget.setCurrentIndex(0)
+    window.balance_tree.header().setMinimumHeight(40)
+    window.transaction_hist_tree.header().setMinimumHeight(40)
+    window.receive_hist_tree2.header().setMinimumHeight(40)
+
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, obj=None, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -1953,9 +1961,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 # ----- MAIN -----
 if __name__ == "__main__":
 
-    CREATE_NEW_WALLET = False
     _translate = QCoreApplication.translate
     iteration = 0
+    wallet_db = get_wallet_db()
 
     worker_state_active = {
         'GET_ADDRESS':False,
@@ -1983,17 +1991,10 @@ if __name__ == "__main__":
     # Set up app
     app = QtWidgets.QApplication(sys.argv)
     icons = set_pixmaps()
-    window = MainWindow() #For converted
+    window = MainWindow()
 
     # Size the app
-    window.setMinimumSize(1100, 580)
-    window.stackedWidget.setCurrentIndex(0)
-    window.balance_tree.header().setMinimumHeight(40)
-    window.transaction_hist_tree.header().setMinimumHeight(40)
-    window.receive_hist_tree2.header().setMinimumHeight(40)
-
-    # Temporarily deactivated for later version, or future deprecation
-    deactivate()
+    init_size()
 
     # Add multisig pubkeys lines
     init_multisig()
@@ -2006,6 +2007,9 @@ if __name__ == "__main__":
 
     # Add side menu buttons
     init_side_menu()
+
+    # Temporarily deactivated for later version, or future deprecation
+    deactivate()
 
     # Set up threadpool
     threadpool = QThreadPool()
@@ -2029,11 +2033,7 @@ if __name__ == "__main__":
     # Listeners
     button_listeners()
     menubar_listeners()
-
     window.show()
     
-    if pktd_synching() or pktwllt_synching():
-        sync_msg("Wallet currently sync\'ing. Some features may not work until sync is complete.")
-
     #window.raise_() #added for pyinstaller only, else menubar fails
     app.exec()
