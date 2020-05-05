@@ -5,8 +5,9 @@ block_cipher = None
 
 a = Analysis(['PKTWallet.py'],
              pathex=['/Library/WebServer/Documents/MachineLearning/trading/PKT-CASH/PKTWallet'],
-             binaries=[],
-             datas=[],
+             #binaries=[],
+             binaries=[('/usr/local/Cellar/zbar/0.10_10/bin/zbarimg', '.'),('/usr/local/Cellar/zbar/0.10_10/lib/libzbar.dylib', '.'),('/usr/local/Cellar/zbar/0.10_10/lib/libzbar.0.dylib', '.'), ('/Library/WebServer/Documents/MachineLearning/anaconda3/lib/libjpeg.9.dylib','.')],
+             datas=[('/Library/WebServer/Documents/MachineLearning/trading/PKT-CASH/PKTWallet/QRCodes', 'QRCodes')],
              hiddenimports=['pkg_resources.py2_warn'],
              hookspath=[],
              runtime_hooks=[],
@@ -31,8 +32,9 @@ a.datas += [('img/glyphicons_325_wallet_blk@2x.png', 'img/glyphicons_325_wallet_
          ('MultisigData/mdata.json', 'MultisigData/mdata.json', 'DATA'),
          ('bin/pktd', 'bin/pktd', 'DATA'),
          ('bin/btcctl', 'bin/btcctl', 'DATA'),
-         ('bin/pktwallet', 'bin/pktwallet', 'DATA'),
+         ('bin/wallet', 'bin/wallet', 'DATA'),
          ('img/glyphicons_325_wallet_blk_alt@2x.png', 'img/glyphicons_325_wallet_blk_alt@2x.png', 'DATA')]
+
 
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
