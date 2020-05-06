@@ -1391,7 +1391,6 @@ def menubar_released(self):
 
     elif clicked_item == 'actionSave':
         wallet_file = str(wallet_db)
-        print('wf',wallet_file)
         save_dir = QDir.homePath()
         name = "wallet.db"
         dlg = QtWidgets.QFileDialog()
@@ -1406,65 +1405,67 @@ def menubar_released(self):
 
     elif clicked_item == 'actionDelete':
         wallet_file = wallet_db
-        msg_box_5 = QtWidgets.QMessageBox()
-        text = 'Are you sure you wish to delete this wallet?\n'# + wallet_file
-        msg_box_5.setText(text)
-        msg_box_5.setWindowTitle("Delete Wallet")
-        del_yes = QtWidgets.QMessageBox.Yes
-        del_no = QtWidgets.QMessageBox.No
-        msg_box_5.setStandardButtons(del_yes | del_no)
-        msg_box_5.setDefaultButton(del_yes)
-        ret = msg_box_5.exec()
-        del_msg_box = QtWidgets.QMessageBox()
-        del_msg_box.setWindowTitle("Wallet Delete Status")
-        success = False
 
-        if (ret == QtWidgets.QMessageBox.Yes):
-            print("Deleting wallet.")
-            success = True
-            try:
-                os.remove(wallet_file)
-                msg = "Wallet Deleted. \n\nDo you wish to set up a new wallet?"
-                cont_yes = QtWidgets.QMessageBox.Yes
-                cont_no = QtWidgets.QMessageBox.No
-                del_msg_box.setStandardButtons(cont_yes | cont_no)
-                del_msg_box.setDefaultButton(cont_yes)
-            except:
+        if wallet_file != '':
+            msg_box_5 = QtWidgets.QMessageBox()
+            text = 'Are you sure you wish to delete this wallet?\n'# + wallet_file
+            msg_box_5.setText(text)
+            msg_box_5.setWindowTitle("Delete Wallet")
+            del_yes = QtWidgets.QMessageBox.Yes
+            del_no = QtWidgets.QMessageBox.No
+            msg_box_5.setStandardButtons(del_yes | del_no)
+            msg_box_5.setDefaultButton(del_yes)
+            ret = msg_box_5.exec()
+            del_msg_box = QtWidgets.QMessageBox()
+            del_msg_box.setWindowTitle("Wallet Delete Status")
+            success = False
+
+            if (ret == QtWidgets.QMessageBox.Yes):
+                print("Deleting wallet.")
+                success = True
+                try:
+                    os.remove(wallet_file)
+                    msg = "Wallet Deleted. \n\nDo you wish to set up a new wallet?"
+                    cont_yes = QtWidgets.QMessageBox.Yes
+                    cont_no = QtWidgets.QMessageBox.No
+                    del_msg_box.setStandardButtons(cont_yes | cont_no)
+                    del_msg_box.setDefaultButton(cont_yes)
+                except:
+                    msg = "Wallet not deleted."
+                    print(msg)
+
+            elif (ret == QtWidgets.QMessageBox.No):
                 msg = "Wallet not deleted."
                 print(msg)
 
-        elif (ret == QtWidgets.QMessageBox.No):
-            msg = "Wallet not deleted."
-            print(msg)
+            del_msg_box.setText(msg)
+            cont = del_msg_box.exec()
 
-        del_msg_box.setText(msg)
-        cont = del_msg_box.exec()
+            if cont == QtWidgets.QMessageBox.Yes and success:
+                # Kill wallet
+                global AUTO_RESTART_WALLET
+                if os_sys == 'Linux' or os_sys == 'Darwin':
+                    try:
+                        subprocess.call(['pkill', '-9', 'wallet'], shell=False)
+                        AUTO_RESTART_WALLET = True
+                    except:
+                        QCoreApplication.quit()
 
-        if cont == QtWidgets.QMessageBox.Yes and success:
-            # Kill wallet
-            global AUTO_RESTART_WALLET
-            if os_sys == 'Linux' or os_sys == 'Darwin':
-                try:
-                    subprocess.call(['pkill', '-9', 'pktwallet'], shell=False)
-                    AUTO_RESTART_WALLET = True
-                except:
-                    QCoreApplication.quit()
+                elif os_sys == 'Windows':
+                    try:
+                        os.system("taskkill /f /im  wallet.exe")
+                        AUTO_RESTART_WALLET = True
+                    except:
+                        QCoreApplication.exit(0)
 
-            elif os_sys == 'Windows':
-                try:
-                    os.system("taskkill /f /im  pkt_wallet.exe")
-                    AUTO_RESTART_WALLET = True
-                except:
-                    QCoreApplication.exit(0)
+                window.menu_frame.hide()
+                window.menubar.setEnabled(False)
+                i = window.stackedWidget.indexOf(window.new_wallet_page)
+                window.stackedWidget.setCurrentIndex(i)
 
-            window.menu_frame.hide()
-            window.menubar.setEnabled(False)
-            i = window.stackedWidget.indexOf(window.new_wallet_page)
-            window.stackedWidget.setCurrentIndex(i)
-
-        elif cont == QtWidgets.QMessageBox.No and success:
-            exit_handler()
-            QCoreApplication.quit() if (os_sys == 'Linux' or os_sys == 'Darwin') else QCoreApplication.exit(0)
+            elif cont == QtWidgets.QMessageBox.No and success:
+                exit_handler()
+                QCoreApplication.quit() if (os_sys == 'Linux' or os_sys == 'Darwin') else QCoreApplication.exit(0)
 
     elif clicked_item == 'actionPay_to_Many':
         window.label_6.clear()
@@ -1775,6 +1776,7 @@ def inv_pktwllt():
 
 def pktwllt_worker(pktwallet_cmd_result, progress_callback):
     print('Running PKT Wallet Worker ...')
+    
     # Watch the wallet to ensure it stays open.
     while pktwallet_cmd_result.poll() is None or int(pktwallet_cmd_result.poll()) > 0:
         time.sleep(5)
@@ -1782,13 +1784,11 @@ def pktwllt_worker(pktwallet_cmd_result, progress_callback):
 
 def start_daemon(uname, pwd):
     global pktd_pid, pktwallet_pid
-    wallet_file = Path(wallet_db)
     pktd_pid = 0
     pktwallet_pid = 0
-    wallet_file_exists = wallet_file.exists()
-    print('wallet file exists:', wallet_file_exists)
 
-    if wallet_file_exists:
+
+    if wallet_db != '':
         try:
             start_pktd_thread()
             start_wallet_thread()
@@ -1816,9 +1816,11 @@ def get_wallet_db():
     wallet_db = ''
     get_db_cmd = "bin/getwalletdb"
     get_db_result = (subprocess.Popen(resource_path(get_db_cmd), shell=True, stdout=subprocess.PIPE).communicate()[0]).decode("utf-8")
-    if get_db_result:
+    if get_db_result.strip() != "Path not found":    
         wallet_db = get_db_result.strip('\n')+'/wallet.db'
         print('Found wallet.db here:', wallet_db)
+    else:
+        wallet_db = ''    
     return wallet_db    
 
 def clear_send_rcp():
@@ -2019,9 +2021,11 @@ if __name__ == "__main__":
     start_daemon(uname, pwd)
 
     # show balance
+    print('create new wallet', CREATE_NEW_WALLET)
     if not CREATE_NEW_WALLET:
         print('Getting Balance ...')
         show_balance()
+
         # Add address buttons
         print('Getting Address Balances ...')
         add_addresses(['balances'])
