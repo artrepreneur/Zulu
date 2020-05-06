@@ -1,5 +1,4 @@
 import subprocess, os, sys, json
-#import pexpect
 import time
 #from resource import resource_path
 
@@ -11,7 +10,7 @@ def resource_path(relative_path):
 
 def seed_execute(uname, pwd, pp, old_pass_line, seed_entry):
     try:
-        cmd_result, err = subprocess.Popen(resource_path("bin/pktwallet -u "+uname+" -P "+pwd+" --create"), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(("{\"passphrase\":\""+pp+"\",\"seed\":\""+ seed_entry +"\",\"seedpassphrase\":\""+old_pass_line+"\"}").encode('utf-8'))
+        cmd_result, err = subprocess.Popen(resource_path("bin/wallet -u "+uname+" -P "+pwd+" --create"), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(("{\"passphrase\":\""+pp+"\",\"seed\":\""+ seed_entry +"\",\"seedpassphrase\":\""+old_pass_line+"\"}").encode('utf-8'))
         err = err.decode('utf-8')
         #print('cmd_result', cmd_result)
 
@@ -29,7 +28,7 @@ def seed_execute(uname, pwd, pp, old_pass_line, seed_entry):
 
 def execute(uname, pwd, pp):
     try:
-        cmd_result, err = subprocess.Popen(resource_path("bin/pktwallet -u "+uname+" -P "+pwd+" --create"), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(("{\"passphrase\":\""+pp+"\"}").encode('utf-8'))
+        cmd_result, err = subprocess.Popen(resource_path("bin/wallet -u "+uname+" -P "+pwd+" --create"), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(("{\"passphrase\":\""+pp+"\"}").encode('utf-8'))
         err = err.decode('utf-8')
         print(cmd_result, err)
 
