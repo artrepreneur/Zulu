@@ -6,4 +6,4 @@ os:
 before_install:
 
 script:
-  - make_osx.sh
+  - bash ./make_osx.sh
