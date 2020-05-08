@@ -287,15 +287,14 @@ def get_transactions():
 
 def show_balance():
     if pktd_synching() or pktwllt_synching():
-        sync_msg("Wallet currently sync\'ing. Some features may not work until sync is complete.")
+        sync_msg("Wallet currently syncing. Some features may not work until sync is complete.")
 
     window.balance_amount.clear()
     worker_state_active['GET_BALANCE'] = False
+    total_balance = balances.get_balance_thd(uname, pwd, window, worker_state_active, threadpool)
     #total_balance = balances.get_balance(uname, pwd)
     #window.balance_amount.setText(_translate("MainWindow", total_balance))
     #worker_state_active['GET_BALANCE'] = True
-    total_balance = balances.get_balance_thd(uname, pwd, window, worker_state_active, threadpool)
-    
 
 def set_fee_est():
     global FEE
@@ -554,7 +553,7 @@ def menubar_listeners():
     window.actionFrom_QR_Code.triggered.connect(menubar_released)
     window.actionFold_Address.triggered.connect(menubar_released)
     window.actionWebsite.triggered.connect(menubar_released)
-    #actionManual_Resync.triggered.connect(menubar_released)
+    window.actionManual_Resync.triggered.connect(menubar_released)
     app.aboutToQuit.connect(exit_handler)
 
 # Handler for menu item click
@@ -1495,9 +1494,9 @@ def menubar_released(self):
         if not QDesktopServices.openUrl(url):
             QMessageBox.warning(self, 'Open Url', 'Could not open url')
     
-    #elif clicked_item == 'actionManual_Resync':
-    #    sync_msg("Wallet Resync Starting. This could take a while.")
-    #    resync.execute(uname, pwd, passphrase, window, worker_state_active)
+    elif clicked_item == 'actionManual_Resync':
+        sync_msg("Wallet Resync Starting. This could take a while.")
+        resync.execute(uname, pwd, passphrase, window, worker_state_active)
 
     elif clicked_item == 'actionSeed':
         passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter your wallet passphrase to access your seed:',QtWidgets.QLineEdit.Password)
@@ -1776,9 +1775,10 @@ def inv_pktwllt():
 
 def pktwllt_worker(pktwallet_cmd_result, progress_callback):
     print('Running PKT Wallet Worker ...')
-    
+
     # Watch the wallet to ensure it stays open.
     while pktwallet_cmd_result.poll() is None or int(pktwallet_cmd_result.poll()) > 0:
+        print(str((pktwallet_cmd_result.stdout.readline()).decode('utf-8')))
         time.sleep(5)
     return
 
@@ -1818,7 +1818,7 @@ def get_wallet_db():
     get_db_result = (subprocess.Popen(resource_path(get_db_cmd), shell=True, stdout=subprocess.PIPE).communicate()[0]).decode("utf-8")
     if get_db_result.strip() != "Path not found":    
         wallet_db = get_db_result.strip('\n')+'/wallet.db'
-        print('Found wallet.db here:', wallet_db)
+        print('Wallet location:', wallet_db)
     else:
         wallet_db = ''    
     return wallet_db    
@@ -1980,7 +1980,8 @@ if __name__ == "__main__":
         'IMP_PRIV_KEY': False,
         'GET_MULTI_ADDR': False,
         'FOLD_WALLET': False,
-        'GET_SEED': False
+        'GET_SEED': False,
+        'RESYNC': False
     }
 
     # Randomized Auth
