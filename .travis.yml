@@ -1,0 +1,9 @@
+language: python
+
+os:
+  - osx
+
+before_install:
+
+script:
+  - make_osx.sh

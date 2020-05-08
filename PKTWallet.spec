@@ -4,10 +4,14 @@ import sys
 block_cipher = None
 
 a = Analysis(['PKTWallet.py'],
-             pathex=['/Library/WebServer/Documents/MachineLearning/trading/PKT-CASH/PKTWallet'],
-             #binaries=[],
-             binaries=[('/usr/local/Cellar/zbar/0.10_10/bin/zbarimg', '.'),('/usr/local/Cellar/zbar/0.10_10/lib/libzbar.dylib', '.'),('/usr/local/Cellar/zbar/0.10_10/lib/libzbar.0.dylib', '.'), ('/Library/WebServer/Documents/MachineLearning/anaconda3/lib/libjpeg.9.dylib','.')],
-             datas=[('/Library/WebServer/Documents/MachineLearning/trading/PKT-CASH/PKTWallet/QRCodes', 'QRCodes')],
+             # pathex=['/Library/WebServer/Documents/MachineLearning/trading/PKT-CASH/PKTWallet'],
+             binaries=[
+               ('build/deps/libzbar.dylib', '.'),
+               ('build/deps/jpeg/9d/lib/libjpeg.9.dylib','.')
+             ],
+             datas=[
+               ('QRCodes', 'QRCodes')
+             ],
              hiddenimports=['pkg_resources.py2_warn'],
              hookspath=[],
              runtime_hooks=[],
