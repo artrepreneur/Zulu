@@ -1,0 +1,9 @@
+language: generic
+
+os:
+  - osx
+
+before_install:
+
+script:
+  - bash ./make_osx.sh
