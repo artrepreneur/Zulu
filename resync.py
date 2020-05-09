@@ -26,31 +26,23 @@ def resync(uname, pwd, progress_callback):
     except subprocess.CalledProcessError as e:
         print('Failed to retrieve key.', e.output)
 
-def execute(u, p, a, pp, win, state, pool):
-    global window, uname, pwd, worker_state_active, address, passphrase
+def execute(u, p, win, state, pool):
+    global window, uname, pwd, worker_state_active, address
     window = win
     uname  = u
     pwd = p
     worker_state_active = state
     threadpool = pool
-    address = a
-    passphrase = pp
+   
+    if not worker_state_active['RESYNC']:
+        worker_state_active['RESYNC'] = True
+        worker = rpcworker.Worker(resync, uname, pwd)
+        worker.signals.result.connect(print_result)
+        worker.signals.finished.connect(thread_complete)
+        worker.signals.progress.connect(progress_fn)
 
-    if address[0] == 'P':
-        window.lineEdit_8.setText('Could not retrieve private key for multisig address.')
-        return
-    else:
-        window.lineEdit_8.setText('Retrieving key...')
-        # Pass the function to execute
-        if not worker_state_active['RESYNC']:
-            worker_state_active['RESYNC'] = True
-            worker = rpcworker.Worker(resync, uname, pwd)
-            worker.signals.result.connect(print_result)
-            worker.signals.finished.connect(thread_complete)
-            worker.signals.progress.connect(progress_fn)
-
-            # Execute
-            threadpool.start(worker)
+        # Execute
+        threadpool.start(worker)
 
 def print_result(result):
         print("Resync in progress...")

@@ -4,7 +4,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from functools import partial
 import os, sys, subprocess, json, threading, time, random, signal, traceback, re
-import platform, transactions, estimate, ingest, signMultiSigTrans, sendMultiSigTrans, sendCombMultiSigTrans, fold, createWallet, getSeed #, resync
+import platform, transactions, estimate, ingest, signMultiSigTrans, sendMultiSigTrans, sendCombMultiSigTrans, fold, createWallet, getSeed, resync
 import balances, addresses, balanceAddresses, rpcworker, privkey, pubkey, password, wlltinf, send, time, datetime, genMultiSig, createMultiSigTrans, sendCombMultiSigTrans
 #import combineSigned
 from pixMp import *
@@ -1496,7 +1496,7 @@ def menubar_released(self):
     
     elif clicked_item == 'actionManual_Resync':
         sync_msg("Wallet Resync Starting. This could take a while.")
-        resync.execute(uname, pwd, passphrase, window, worker_state_active)
+        resync.execute(uname, pwd, window, worker_state_active, threadpool)
 
     elif clicked_item == 'actionSeed':
         passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter your wallet passphrase to access your seed:',QtWidgets.QLineEdit.Password)
