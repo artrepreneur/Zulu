@@ -6,15 +6,9 @@
 # Parameterize
 PYTHON_VERSION=3.7.6
 
-export GCC_STRIP_BINARIES="1"
+. "$PKT_OSX_PATH/base.sh"
 
-#CONTRIB_OSX="$(dirname "$(realpath "$0")")"
-#CONTRIB="$CONTRIB_OSX/.."
-OSX="$(dirname "$(realpath "$0")")"
-
-. "$OSX/base.sh"
-
-cd "$OSX/../.." || fail "failed cd"
+cd "$PKT_OSX_PATH/../.." || fail "failed cd"
 ROOT_FOLDER="$(pwd)"
 BUILDDIR=${ROOT_FOLDER}/build
 
