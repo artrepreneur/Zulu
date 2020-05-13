@@ -645,7 +645,7 @@ def btn_released(self):
         if wllt_pass == wllt_pass_conf:
             msg = ''
             if len(wllt_pass) < 8:
-                msg = "Make sure your password is at lest 8 letters"
+                msg = "Make sure your password is at least 8 letters"
             elif re.search('[0-9]',wllt_pass) is None:
                 msg = "Make sure your password has a number in it"
             elif re.search('[A-Z]',wllt_pass) is None:
