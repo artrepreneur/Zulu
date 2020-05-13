@@ -233,9 +233,6 @@ def side_menu_clicked(btn):
         #window.balance_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Loading..."))
         show_balance()
         add_addresses(['balances'])
-        if pktwllt_synching() == "True":
-            msg = 'Wallet is currently synching to chain. Some balances may be inaccurate until chain sync\'s fully.'
-            sync_msg(msg)
 
     elif btn.objectName().strip() == 'Send':
         window.label_6.clear()
@@ -254,17 +251,15 @@ def side_menu_clicked(btn):
         global iteration
 
         i = window.stackedWidget.indexOf(window.transactions_page)
-        #window.transaction_hist_tree.clear()        
         iteration = 0
         item_0 = QtWidgets.QTreeWidgetItem(window.transaction_hist_tree)
         font = QFont()
         font.setFamily("Helvetica")
         font.setPointSize(15)
         item_0.setFont(0, font)
-        if pktd_synching() or pktwllt_synching():
+        if pktd_synching(): # or pktwllt_synching()
             sync_msg("Transactions aren\'t available until wallet has completely sync\'d")
             #window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Wallet Syncing..."))
-
         else:
             window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Loading..."))
         get_transactions()
@@ -286,8 +281,10 @@ def get_transactions():
         print('Unable to get transactioss')
 
 def show_balance():
-    if pktd_synching() or pktwllt_synching():
+    if pktd_synching(): 
         sync_msg("Wallet currently syncing. Some features may not work until sync is complete.")
+    elif pktwllt_synching():
+        sync_msg('Wallet is currently synching to chain. Some balances may be inaccurate until chain sync\'s fully.')
 
     window.balance_amount.clear()
     worker_state_active['GET_BALANCE'] = False
@@ -333,9 +330,8 @@ def add_custom_styles():
     window.label_19.setPixmap(QPixmap(resource_path("img/PKT.iconset/icon_1024x1024@2x.png")))
 
     pm = QPixmap(resource_path('img/app_icon.png'))
-    pm.scaled(64,64)
     window.name_icon.setIcon(QIcon(pm))
-    window.name_icon.setIconSize(QSize(64,64))
+    window.name_icon.setIconSize(QSize(200,180))
     window.name_icon.setStyleSheet("QPushButton#name_icon {color: rgb(252, 252, 252); font: 57 22pt 'Futura'; text-align: left;}")
 
     # Frame customizations
@@ -370,7 +366,6 @@ def add_custom_styles():
 
     window.multi_add_btn.setStyleSheet("QPushButton {border-radius: 5px; border: 1px solid rgb(2, 45, 147); font: 57 14pt 'Futura';} QPushButton:pressed {border-radius: 5px; border: 1px solid #FF6600; font: 57 14pt 'Futura'; background-color: #022D93; color: #FF6600;}")
     window.multi_add_btn.setMinimumSize(50, 40)
-
 
     window.multi_create_btn.setStyleSheet("QPushButton {border-radius: 5px; border: 1px solid rgb(2, 45, 147); font: 57 14pt 'Futura';} QPushButton:pressed {border-radius: 5px; border: 1px solid #FF6600; font: 57 14pt 'Futura'; background-color: #022D93; color: #FF6600;}")
     window.multi_create_btn.setMinimumSize(50, 40)
@@ -730,11 +725,6 @@ def btn_released(self):
         window.balance_tree.clear()
         i = window.stackedWidget.indexOf(window.balance_page)
         window.stackedWidget.setCurrentIndex(i)
-
-        if pktwllt_synching() == "True":
-            msg = 'Wallet is currently synching to chain. Some balances may be inaccurate until chain sync\'s fully.'
-            sync_msg(msg)
-
         show_balance()
         add_addresses(['balances'])
         add_addresses(['addresses'])

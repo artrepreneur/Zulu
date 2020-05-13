@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.1
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -68,6 +66,7 @@ class Ui_MainWindow(object):
         self.name_icon.setStyleSheet("color: rgb(252, 252, 252);\n"
 "font: 57 22pt \"Futura\";\n"
 "")
+        self.name_icon.setText("")
         self.name_icon.setCheckable(False)
         self.name_icon.setAutoDefault(False)
         self.name_icon.setDefault(False)
@@ -438,7 +437,7 @@ class Ui_MainWindow(object):
         self.rcp_list.setAutoScrollMargin(5)
         self.rcp_list.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.rcp_list.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerItem)
-        self.rcp_list.setItemAlignment(QtCore.Qt.AlignTop)
+        #self.rcp_list.setItemAlignment(QtCore.Qt.AlignTop)
         self.rcp_list.setObjectName("rcp_list")
         self.gridLayout_95.addWidget(self.rcp_list, 0, 0, 1, 1)
         self.gridLayout_57.addWidget(self.frame_78, 5, 0, 1, 1)
@@ -3237,7 +3236,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "PKT Wallet"))
-        self.name_icon.setText(_translate("MainWindow", "PKT CA$H"))
         self.frame_22.setToolTip(_translate("MainWindow", "View your addresses and balances here. "))
         self.balance_header_label.setText(_translate("MainWindow", "PKT Cash Balance"))
         self.balance_amount.setText(_translate("MainWindow", "000000000.0000000"))
@@ -3540,3 +3538,4 @@ class Ui_MainWindow(object):
         self.actionNew_Wallet.setText(_translate("MainWindow", "New Wallet"))
         self.actionManual_Resync.setText(_translate("MainWindow", "Manual Resync"))
         self.actionResync.setText(_translate("MainWindow", "Resync"))
+
