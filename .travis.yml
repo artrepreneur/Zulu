@@ -13,6 +13,7 @@ deploy:
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   keep_history: true
+  edge: true
   file:
     - "dist/PKTWallet.dmg"
   on:
