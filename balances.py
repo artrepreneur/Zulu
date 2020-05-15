@@ -1,3 +1,7 @@
+# Copyright (c) 2020 Vishnu J. Seesahai
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE file.
+
 import subprocess
 import os, sys, rpcworker
 from PyQt5.QtCore import *
@@ -43,8 +47,9 @@ def get_balance_thd(u, p, win, state, pool):
 
     # Pass the function to execute
     if not worker_state_active['GET_BALANCE']:
+        window.balance_amount.setText(_translate("MainWindow", "Calculating..."))
         worker_state_active['GET_BALANCE'] = True
-        worker = rpcworker.Worker(get_balance, uname, pwd) # Any other args, kwargs are passed to the run function
+        worker = rpcworker.Worker(get_balance, uname, pwd)
         worker.signals.result.connect(print_result)
         worker.signals.finished.connect(thread_complete)
         worker.signals.progress.connect(progress_fn)

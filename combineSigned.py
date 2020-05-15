@@ -1,3 +1,7 @@
+# Copyright (c) 2020 Vishnu J. Seesahai
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE file.
+
 from electrum.util import bh2u
 from electrum.bitcoin import base_decode
 from electrum.transaction import Transaction

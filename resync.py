@@ -1,3 +1,7 @@
+# Copyright (c) 2020 Vishnu J. Seesahai
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE file.
+
 import subprocess, os, sys, json, threading, signal, traceback, rpcworker
 from PyQt5.QtCore import *
 from PyQt5 import QtWidgets
@@ -14,6 +18,8 @@ def resync(uname, pwd, progress_callback):
 
     try:
         cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet resync"
+        print(cmd)
+        exit()
         result, err = (subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
         result = result.decode('utf-8')
         err = err.decode('utf-8')

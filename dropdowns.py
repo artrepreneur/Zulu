@@ -1,3 +1,7 @@
+# Copyright (c) 2020 Vishnu J. Seesahai
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE file.
+
 def refresh_all(window, list, type):
     if len(list) == 0:
         list = ['No Addresses Available']

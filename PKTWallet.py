@@ -1,3 +1,7 @@
+# Copyright (c) 2020 Vishnu J. Seesahai
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE file.
+
 from PyQt5 import QtWidgets, uic
 from MainWindow import Ui_MainWindow
 from PyQt5.QtCore import *
@@ -327,7 +331,8 @@ def change_pass(old_pass, new_pass):
 # Additional customizations
 def add_custom_styles():
 
-    window.label_19.setPixmap(QPixmap(resource_path("img/PKT.iconset/icon_1024x1024@2x.png")))
+    window.label_19.setPixmap(QPixmap(resource_path("img/app_icon2.png")))
+    #"img/PKT.iconset/icon_1024x1024@2x.png"
 
     pm = QPixmap(resource_path('img/app_icon.png'))
     window.name_icon.setIcon(QIcon(pm))

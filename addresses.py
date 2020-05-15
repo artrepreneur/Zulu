@@ -1,8 +1,11 @@
+# Copyright (c) 2020 Vishnu J. Seesahai
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE file.
+
 import subprocess, os, sys, json, threading, signal, traceback, rpcworker
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5 import QtWidgets
-#from resource import resource_path
 from rpcworker import progress_fn, thread_complete
 from dropdowns import refresh_all
 #from pixMp import *

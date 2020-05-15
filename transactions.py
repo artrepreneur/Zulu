@@ -1,3 +1,7 @@
+# Copyright (c) 2020 Vishnu J. Seesahai
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE file.
+
 import subprocess, os, sys, json, threading, signal, traceback, rpcworker
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -21,7 +25,9 @@ def get_history(uname, pwd, progress_callback):
 
     try:
         result, err = subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet', 'listtransactions', str(count), str(state)], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-        result = json.loads(result)
+        print('result:', result)
+        if result:
+            result = json.loads(result)
         err = err.decode('utf-8')
         if err:
             print('Error:', err)
@@ -66,11 +72,10 @@ def row_count(iterator):
     return count
 
 def print_result(result):
-    #print('result', result)
+    print('result', result)
     if result:
         iterator = QtWidgets.QTreeWidgetItemIterator(window.transaction_hist_tree)
         count = row_count(iterator)
-
 
         for i, item in enumerate(result):
                 index = (count) + i
