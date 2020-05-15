@@ -4,7 +4,6 @@ import sys
 block_cipher = None
 
 a = Analysis(['PKTWallet.py'],
-             # pathex=['/Library/WebServer/Documents/MachineLearning/trading/PKT-CASH/PKTWallet'],
              binaries=[
                ('build/deps/libzbar.dylib', '.'),
                ('build/deps/jpeg/9d/lib/libjpeg.9.dylib','.')
