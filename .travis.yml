@@ -7,3 +7,16 @@ before_install:
 
 script:
   - bash ./make_osx.sh
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  file:
+    - "dist/PKTWallet.dmg"
+  on:
+    branch: master
+    tags: true
+    
+    
