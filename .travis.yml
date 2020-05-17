@@ -1,14 +1,15 @@
 language: generic
 os:
 - osx
-before_install: 
+before_install:
+  - composer config --global github-oauth.github.com "$GITHUB_TOKEN"
+install:
+  - composer install --dev --prefer-dist
 script:
 - bash ./make_osx.sh
 deploy:
   provider: releases
   skip_cleanup: true
-  api_key:
-    secure: WWsCn4w3GzSB8OhNuhn3I9ggfeoEE830Mk+mJifurLaR+7B/yi/EPrA3xvbOG9QLDOpKz66zt6X/JcnpZx8zcN0Y/aDAMG0vGLSDNJq7qes0B0lMN+xNY+ChKmCXBThOtjT52WOIDVlkuiGXF7j0X55lnjpoDSiXM8kk2dPX2ZsLNtji5kFVedFu7qmjCltB6xN3RgU75qO701NxebrhBMgXIeukVngNW/xQaTu5vKy8RH3oHBCMuoitbbw79nlLC5Yor10CZNujjlSOYuPCfch7PFY+E7PI+ADQe9J2QytOrWGLndpaX5mHz3vg6LlRWArOvMC0W4fEu7zvOo49NGebidi58t3hL8/b+HnbwU9NnxE1RQFwfDIuPeJiwmHXuE9DmCv+m0xiovgewGc38lMsJceYlmAbYzqwsNtWj6CHjv9WfsjLKsKEBy9aTgagtp/956lQb8uZcPZhu0eTSiSDWSQCH294hFzQSsh1htNfiQgdca2wRjkmptnFPSh2BZxEzKRicNlVDnSmhmIVB49vUvDJHdfb2G2+nZNxkgZNnNkzv2L0SUCNb1R+3jz+0dLtreMRgpCszdeNfrFbggASK9RasiKCrkpQ4eum7+i3H7j17O3rmS99lZLkoPYel3xOKoELeZ7vTHRT5FYJBzYlMNAQG8z20AV1XrcaNTI=
   edge: true
   file:
   - dist/PKTWallet.dmg
