@@ -8,6 +8,7 @@ deploy:
   provider: releases
   skip_cleanup: true
   api_key: $GITHUB_TOKEN
+  overwrite: true
   file_glob: true
   file:
   - "pktwallet-*"
