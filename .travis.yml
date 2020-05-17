@@ -10,7 +10,7 @@ deploy:
   api_key: $GITHUB_TOKEN
   edge: true
   file:
-  - "PKTWallet-*"
+  - "pktwallet-*"
   on:
     branch: master
     tags: true
