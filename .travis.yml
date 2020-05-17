@@ -12,7 +12,7 @@ deploy:
   overwrite: true
   file_glob: true
   file:
-  - "pktwallet-*"
+  - "dist/pktwallet-*"
   on:
     branch: master
     tags: true
