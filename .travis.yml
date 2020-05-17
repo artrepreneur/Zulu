@@ -1,13 +1,9 @@
 language: generic
-
 os:
-  - osx
-
-before_install:
-
+- osx
+before_install: 
 script:
-  - bash ./make_osx.sh
-
+- bash ./make_osx.sh
 deploy:
   provider: releases
   skip_cleanup: true
@@ -15,9 +11,10 @@ deploy:
     secure: WWsCn4w3GzSB8OhNuhn3I9ggfeoEE830Mk+mJifurLaR+7B/yi/EPrA3xvbOG9QLDOpKz66zt6X/JcnpZx8zcN0Y/aDAMG0vGLSDNJq7qes0B0lMN+xNY+ChKmCXBThOtjT52WOIDVlkuiGXF7j0X55lnjpoDSiXM8kk2dPX2ZsLNtji5kFVedFu7qmjCltB6xN3RgU75qO701NxebrhBMgXIeukVngNW/xQaTu5vKy8RH3oHBCMuoitbbw79nlLC5Yor10CZNujjlSOYuPCfch7PFY+E7PI+ADQe9J2QytOrWGLndpaX5mHz3vg6LlRWArOvMC0W4fEu7zvOo49NGebidi58t3hL8/b+HnbwU9NnxE1RQFwfDIuPeJiwmHXuE9DmCv+m0xiovgewGc38lMsJceYlmAbYzqwsNtWj6CHjv9WfsjLKsKEBy9aTgagtp/956lQb8uZcPZhu0eTSiSDWSQCH294hFzQSsh1htNfiQgdca2wRjkmptnFPSh2BZxEzKRicNlVDnSmhmIVB49vUvDJHdfb2G2+nZNxkgZNnNkzv2L0SUCNb1R+3jz+0dLtreMRgpCszdeNfrFbggASK9RasiKCrkpQ4eum7+i3H7j17O3rmS99lZLkoPYel3xOKoELeZ7vTHRT5FYJBzYlMNAQG8z20AV1XrcaNTI=
   edge: true
   file:
-    - "dist/PKTWallet.dmg"
+  - dist/PKTWallet.dmg
   on:
     branch: master
     tags: true
-    
-    
+env:
+  global:
+    secure: DdjmnyjXJ1BtpOcJrAqCAEcOA9tYhx7boC1u08F0ruRUzkorEFZ/EEN9WBRVt0YwO7DG4PO/R1fBZ9+F/Mk76uRJhZslb0dmDKFpD3xapXfmeV62vCZnEuoP4LKVVGfgxle++ttFjkrcfjuvP4E+fotzC4Gaj0o50yHuYNXi9YzvvPHf67Xt7Qn9JeyKkqPCnqxVdz7IQcrWIxija72rfpsVH4AxpeQcIBpRwQQ6Bmx8ZPIaniI2+qJvYRSSueLpvn/b/BzLlWPC6QOp4/2AybxCFwraVheAwMKUfTXmXyzBmZ4wKRGFxfR32EWUybAh94NmDdTWyyFpuZHbxVizBdmSYolTqs5tHV9GSvbx7fgh9KPRuvKYG29rwsp4mcxAkbCQBPcmhh87s2/0QAgidt9Rq02Bwnq3b9qawMJL8Sq5Y6PWp8693JCaRz80LKj/I/YXj7RCBT4E1kJ8r2vaBe0Q3h+TUtz0hvsoZf4bdbsIoVk8MiYqyVRtiyCqNEMK2SL73lh8IhuvGsXcgIwc2OrtpMpdpIPcO5DE1wbsTOR+rfUEshTcn3OYcRU5YNHv2fprEfpAGDsuZpsjbV6ditws+3eUX9tDdZIJtyKUem6ZKVOqX7JDQrXB2nAxNGm1Md3YP/DMfXTbXibzEgVbkgbbX1MJsVVkpYcntQNsEJA=
