@@ -71,12 +71,12 @@ By default, .dmg's are available in [releases](https://github.com/artrepreneur/P
 sudo ./make_osx.sh
 ```
 
-Your .dmg, and a PKTWallet executable `PKTWallet.app`, are both available in the `.\dist` directory. You can simply run the application from there as:
+Your .dmg, and a PKTWallet executable `PKTWallet.app`, are both available in the `./dist` directory. To run it, copy it to the applications folder and run it as a normal app. 
 
 ```
-./PKTWallet.app
+cp -rf ./dist/PKTWallet.app /Applications
 ```
 
-Or you can move the PKTWallet.app to your applications folder and run it from there. You can also run the .dmg which will install the PKTWallet.app where it needs to go. Mac's will require you to go to `System Preferences > Security & Privacy` and allow the application to run. 
+You can also run the .dmg which will install the PKTWallet.app where it needs to go. Mac's will require you to go to `System Preferences > Security & Privacy` and allow the application to run. 
 
 
