@@ -63,3 +63,20 @@ python PKTWallet.py
 ```
 
 That's it. If you have a legacy command line wallet already running it will use the existing wallet database already present on your system. If you don't have a command line wallet you will be prompted to create a new wallet. Always, make sure to store your wallet seed in a safe place. 
+
+## Build A DMG
+By default, .dmg's are available in [releases](https://github.com/artrepreneur/PKT-Cash-Wallet/releases), but for completeness, and security, you can build your own .dmg using the bundled make script. On mac's you can do the following.
+
+```
+sudo ./make_osx.sh
+```
+
+Your .dmg, and a PKTWallet executable `PKTWallet.app`, are both available in the `.\dist` directory. You can simply run the application from there as:
+
+```
+./PKTWallet.app
+```
+
+Or you can move the PKTWallet.app to your applications folder and run it from there. You can also run the .dmg which will install the PKTWallet.app where it needs to go. Mac's will require you to go to `System Preferences > Security & Privacy` and allow the application to run. 
+
+
