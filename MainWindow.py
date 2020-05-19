@@ -433,7 +433,7 @@ class Ui_MainWindow(object):
         self.rcp_list.setAutoScrollMargin(5)
         self.rcp_list.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.rcp_list.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerItem)
-        self.rcp_list.setItemAlignment(QtCore.Qt.AlignTop)
+        #self.rcp_list.setItemAlignment(QtCore.Qt.AlignTop)
         self.rcp_list.setObjectName("rcp_list")
         self.gridLayout_95.addWidget(self.rcp_list, 0, 0, 1, 1)
         self.gridLayout_57.addWidget(self.frame_78, 5, 0, 1, 1)
