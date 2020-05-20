@@ -48,7 +48,9 @@ Use pip to install the dependencies from requirements.txt.
 pip install -r requirements.txt
 ```
 
-Linux (required): 
+Linux (required):
+
+
 Swap the binaries for pktd, pktwallet and btcctl in the bin directory for linux binaries. You can build them from the repo's mentioned above or use these [releases.](https://github.com/pkt-cash/pktd/releases) This is required for linux to work but is optional on mac's. 
 
 Finally, change the permissions of the binaries.
