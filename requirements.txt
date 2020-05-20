@@ -2,6 +2,6 @@ qrcode==6.1
 pyzbar==0.1.8
 opencv-python
 Pillow>=6.2.2
-PyQt5==5.13.1
+PyQt5
 qrtools==0.0.2
 

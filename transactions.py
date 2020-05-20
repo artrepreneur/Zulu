@@ -25,7 +25,7 @@ def get_history(uname, pwd, progress_callback):
 
     try:
         result, err = subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet', 'listtransactions', str(count), str(state)], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-        print('result:', result)
+        #print('result:', result)
         if result:
             result = json.loads(result)
         err = err.decode('utf-8')
@@ -72,7 +72,7 @@ def row_count(iterator):
     return count
 
 def print_result(result):
-    print('result', result)
+    #print('result', result)
     if result:
         iterator = QtWidgets.QTreeWidgetItemIterator(window.transaction_hist_tree)
         count = row_count(iterator)

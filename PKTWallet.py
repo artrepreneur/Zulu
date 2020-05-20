@@ -1782,7 +1782,6 @@ def start_daemon(uname, pwd):
     pktd_pid = 0
     pktwallet_pid = 0
 
-
     if wallet_db != '':
         try:
             start_pktd_thread()
@@ -1934,6 +1933,7 @@ def deactivate():
     window.label_41.hide()
     window.multi_add_btn.hide()
     window.add_btn.hide()
+    window.actionPay_to_Many.setVisible(False)
     window.actionEncrypt_Decrypt_Message.setVisible(False)
     window.actionCombine_Multisig_Transactions.setVisible(False)
 
@@ -1961,7 +1961,7 @@ if __name__ == "__main__":
     _translate = QCoreApplication.translate
     iteration = 0
     wallet_db = get_wallet_db()
-
+    
     worker_state_active = {
         'GET_ADDRESS':False,
         'GET_BALANCE': False,
@@ -1990,6 +1990,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     icons = set_pixmaps()
     window = MainWindow()
+    window.raise_() #added for pyinstaller only, else menubar fails
 
     # Size the app
     init_size()
@@ -2017,7 +2018,8 @@ if __name__ == "__main__":
     start_daemon(uname, pwd)
 
     # show balance
-    print('create new wallet', CREATE_NEW_WALLET)
+    #print('create new wallet', CREATE_NEW_WALLET)
+    
     if not CREATE_NEW_WALLET:
         print('Getting Balance ...')
         show_balance()
@@ -2035,5 +2037,4 @@ if __name__ == "__main__":
     menubar_listeners()
     window.show()
     
-    #window.raise_() #added for pyinstaller only, else menubar fails
     app.exec()
