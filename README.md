@@ -20,7 +20,7 @@ The wallet includes the following features.
 9. Fold wallet addresses - for large UTXO sets.
 10. View full transaction history.
 
-# Installation
+## Installation
 Clone the repository.
 
 ```
@@ -31,12 +31,12 @@ Please use Python 3. Create an [Anaconda](https://www.anaconda.com/products/indi
 
 Install `zbar`. The zbar DLLs are included with the Windows Python wheels. However, you will need to install the `zbar` shared library on other operation systems
 
-Mac OS X:
+##### Mac OS X:
 
 ```
 brew install zbar
 ```
-Linux:
+##### Linux:
 
 ```
 sudo apt-get install libzbar0
@@ -48,7 +48,7 @@ Use pip to install the dependencies from requirements.txt.
 pip install -r requirements.txt
 ```
 
-Linux (required):
+##### Linux (required):
 
 
 Swap the binaries for pktd, pktwallet and btcctl in the bin directory for linux binaries. You can build them from the repo's mentioned above or use these [releases.](https://github.com/pkt-cash/pktd/releases) This is required for linux to work but is optional on mac's. 
