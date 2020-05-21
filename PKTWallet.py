@@ -1749,8 +1749,7 @@ def inv_pktd():
 def pktd_worker(pktd_cmd_result, progress_callback):
     print('Running PKTD Worker ...')
     while pktd_cmd_result.poll() is None or int(pktd_cmd_result.poll()) > 0:
-        time.sleep(10)
-
+        print(str((pktd_cmd_result.stdout.readline()).decode('utf-8')))
     return
 
 def inv_pktwllt():
@@ -1774,7 +1773,6 @@ def pktwllt_worker(pktwallet_cmd_result, progress_callback):
     # Watch the wallet to ensure it stays open.
     while pktwallet_cmd_result.poll() is None or int(pktwallet_cmd_result.poll()) > 0:
         print(str((pktwallet_cmd_result.stdout.readline()).decode('utf-8')))
-        time.sleep(5)
     return
 
 def start_daemon(uname, pwd):
@@ -1911,8 +1909,7 @@ def init_multi_cmb():
     item_nm = "trans_item_1"
     vars()[item_nm] = TransLine("1", item_line_w)
     window.add_trans_list.setItemWidget(item_line_w, vars()[item_nm])
-    '''
-
+'''
 def init_side_menu():
     balance_btn = SideMenuBtn('Balances', 'Balances', 'pixmap_balance_btn', 'View Your Balances')
     send_btn = SideMenuBtn('Send', 'Send', 'pixmap_send_btn', 'Send PKT Cash')
