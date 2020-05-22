@@ -1748,13 +1748,13 @@ def inv_pktd():
     print('Invoking PKTD ...')
     pktd_cmd = "bin/pktd -u "+uname+" -P " +pwd+ " --txindex --addrindex"
     pktd_cmd_result = subprocess.Popen(resource_path(pktd_cmd), shell=True, stdout=subprocess.PIPE)
-    #pktd_cmd_result = subprocess.Popen([resource_path('bin/pktd'), '-u', uname, '-P', pwd, '--txindex', '--addrindex'], shell=False, stdout=subprocess.PIPE)
     pktd_pid = pktd_cmd_result.pid + 1
     return pktd_cmd_result
 
 def pktd_worker(pktd_cmd_result, progress_callback):
     print('Running PKTD Worker ...')
-    while pktd_cmd_result.poll() is None or int(pktd_cmd_result.poll()) > 0:
+    while True:
+    #pktd_cmd_result.poll() is None or int(pktd_cmd_result.poll()) > 0:
         print(str((pktd_cmd_result.stdout.readline()).decode('utf-8')))
     return
 
@@ -1777,7 +1777,8 @@ def pktwllt_worker(pktwallet_cmd_result, progress_callback):
     print('Running PKT Wallet Worker ...')
 
     # Watch the wallet to ensure it stays open.
-    while pktwallet_cmd_result.poll() is None or int(pktwallet_cmd_result.poll()) > 0:
+    while True: 
+        #pktwallet_cmd_result.poll() is None or int(pktwallet_cmd_result.poll()) > 0:
         print(str((pktwallet_cmd_result.stdout.readline()).decode('utf-8')))
     return
 
