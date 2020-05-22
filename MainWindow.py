@@ -1,8 +1,14 @@
-# Copyright (c) 2020 Vishnu J. Seesahai
-# Use of this source code is governed by an MIT
-# license that can be found in the LICENSE file.
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'mainwindow.ui'
+#
+# Created by: PyQt5 UI code generator 5.14.2
+#
+# WARNING! All changes made in this file will be lost!
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -45,31 +51,14 @@ class Ui_MainWindow(object):
         self.frame_3.setFrameShadow(QtWidgets.QFrame.Plain)
         self.frame_3.setLineWidth(0)
         self.frame_3.setObjectName("frame_3")
-        self.gridLayout_2.addWidget(self.frame_3, 3, 0, 1, 1)
-        self.frame_48 = QtWidgets.QFrame(self.menu_frame)
-        self.frame_48.setMinimumSize(QtCore.QSize(0, 65))
-        self.frame_48.setMaximumSize(QtCore.QSize(16777215, 65))
-        self.frame_48.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.frame_48.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame_48.setLineWidth(0)
-        self.frame_48.setObjectName("frame_48")
-        self.gridLayout_10 = QtWidgets.QGridLayout(self.frame_48)
-        self.gridLayout_10.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout_10.setHorizontalSpacing(0)
-        self.gridLayout_10.setObjectName("gridLayout_10")
-        self.name_icon = QtWidgets.QPushButton(self.frame_48)
-        self.name_icon.setEnabled(False)
-        self.name_icon.setStyleSheet("color: rgb(252, 252, 252);\n"
-"font: 57 22pt \"Futura\";\n"
-"")
-        self.name_icon.setText("")
-        self.name_icon.setCheckable(False)
-        self.name_icon.setAutoDefault(False)
-        self.name_icon.setDefault(False)
-        self.name_icon.setFlat(True)
-        self.name_icon.setObjectName("name_icon")
-        self.gridLayout_10.addWidget(self.name_icon, 0, 0, 1, 1)
-        self.gridLayout_2.addWidget(self.frame_48, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        self.gridLayout_2.addWidget(self.frame_3, 2, 0, 1, 1)
+        self.label_25 = QtWidgets.QLabel(self.menu_frame)
+        self.label_25.setMinimumSize(QtCore.QSize(0, 70))
+        self.label_25.setMaximumSize(QtCore.QSize(16777215, 70))
+        self.label_25.setText("")
+        self.label_25.setPixmap(QtGui.QPixmap("../PKT-Cash-Wallet/img/app_icon.png"))
+        self.label_25.setObjectName("label_25")
+        self.gridLayout_2.addWidget(self.label_25, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
         self.frame = QtWidgets.QFrame(self.menu_frame)
         self.frame.setMinimumSize(QtCore.QSize(0, 0))
         self.frame.setMaximumSize(QtCore.QSize(16777215, 300))
@@ -77,7 +66,7 @@ class Ui_MainWindow(object):
         self.frame.setFrameShadow(QtWidgets.QFrame.Plain)
         self.frame.setLineWidth(0)
         self.frame.setObjectName("frame")
-        self.gridLayout_2.addWidget(self.frame, 4, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.frame, 3, 0, 1, 1)
         self.gridLayout.addWidget(self.menu_frame, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
         self.body_frame = QtWidgets.QFrame(self.centralwidget)
         self.body_frame.setStyleSheet("background-color: rgb(229, 231, 238);")
@@ -147,6 +136,12 @@ class Ui_MainWindow(object):
         self.gridLayout_8 = QtWidgets.QGridLayout(self.balance_frame)
         self.gridLayout_8.setContentsMargins(12, -1, -1, -1)
         self.gridLayout_8.setObjectName("gridLayout_8")
+        self.total_label = QtWidgets.QLabel(self.balance_frame)
+        self.total_label.setMinimumSize(QtCore.QSize(0, 30))
+        self.total_label.setMaximumSize(QtCore.QSize(50, 30))
+        self.total_label.setStyleSheet("font: 18pt \"Helvetica\";")
+        self.total_label.setObjectName("total_label")
+        self.gridLayout_8.addWidget(self.total_label, 0, 0, 1, 1)
         self.balance_amount = QtWidgets.QLabel(self.balance_frame)
         self.balance_amount.setMinimumSize(QtCore.QSize(0, 30))
         self.balance_amount.setMaximumSize(QtCore.QSize(16777215, 30))
@@ -160,12 +155,9 @@ class Ui_MainWindow(object):
         self.balance_amount.setStyleSheet("font: 18pt \"Helvetica\";")
         self.balance_amount.setObjectName("balance_amount")
         self.gridLayout_8.addWidget(self.balance_amount, 0, 1, 1, 1)
-        self.total_label = QtWidgets.QLabel(self.balance_frame)
-        self.total_label.setMinimumSize(QtCore.QSize(0, 30))
-        self.total_label.setMaximumSize(QtCore.QSize(50, 30))
-        self.total_label.setStyleSheet("font: 18pt \"Helvetica\";")
-        self.total_label.setObjectName("total_label")
-        self.gridLayout_8.addWidget(self.total_label, 0, 0, 1, 1)
+        self.recalc_btn = QtWidgets.QPushButton(self.balance_frame)
+        self.recalc_btn.setObjectName("recalc_btn")
+        self.gridLayout_8.addWidget(self.recalc_btn, 0, 2, 1, 1, QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
         self.verticalLayout_2.addWidget(self.balance_frame)
         self.gridLayout_12.addWidget(self.balance_group, 0, 0, 1, 1)
         self.addresses_group = QtWidgets.QGroupBox(self.frame_22)
@@ -433,7 +425,7 @@ class Ui_MainWindow(object):
         self.rcp_list.setAutoScrollMargin(5)
         self.rcp_list.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.rcp_list.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerItem)
-        #self.rcp_list.setItemAlignment(QtCore.Qt.AlignTop)
+        self.rcp_list.setItemAlignment(QtCore.Qt.AlignTop)
         self.rcp_list.setObjectName("rcp_list")
         self.gridLayout_95.addWidget(self.rcp_list, 0, 0, 1, 1)
         self.gridLayout_57.addWidget(self.frame_78, 5, 0, 1, 1)
@@ -3223,7 +3215,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(22)
+        self.stackedWidget.setCurrentIndex(0)
         self.fld_to_box.setCurrentIndex(-1)
         self.fld_frm_box.setCurrentIndex(-1)
         self.sig_box.setCurrentIndex(2)
@@ -3234,11 +3226,12 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "PKT Wallet"))
         self.frame_22.setToolTip(_translate("MainWindow", "View your addresses and balances here. "))
         self.balance_header_label.setText(_translate("MainWindow", "PKT Cash Balance"))
-        self.balance_amount.setText(_translate("MainWindow", "000000000.0000000"))
         self.total_label.setText(_translate("MainWindow", "Total:"))
+        self.balance_amount.setText(_translate("MainWindow", "000000000.0000000"))
+        self.recalc_btn.setText(_translate("MainWindow", "Recalculate"))
         self.all_addr_btn.setText(_translate("MainWindow", "Get All Addresses"))
         self.address_gen_btn2.setText(_translate("MainWindow", "Create New Address"))
-        self.bal_addr_btn.setText(_translate("MainWindow", "Get Balances"))
+        self.bal_addr_btn.setText(_translate("MainWindow", "Get Address Balances"))
         self.address_header_label.setText(_translate("MainWindow", "My Addresses"))
         self.balance_tree.headerItem().setText(0, _translate("MainWindow", "Address"))
         self.balance_tree.headerItem().setText(1, _translate("MainWindow", "Balance"))
@@ -3534,4 +3527,3 @@ class Ui_MainWindow(object):
         self.actionNew_Wallet.setText(_translate("MainWindow", "New Wallet"))
         self.actionManual_Resync.setText(_translate("MainWindow", "Manual Resync"))
         self.actionResync.setText(_translate("MainWindow", "Resync"))
-

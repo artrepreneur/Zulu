@@ -286,7 +286,7 @@ def get_transactions():
 
 def show_balance():
     if pktd_synching(): 
-        sync_msg("Wallet currently syncing. Some features may not work until sync is complete.")
+        sync_msg("Wallet daemon is currently syncing. Some features may not work until sync is complete.")
     elif pktwllt_synching():
         sync_msg('Wallet is currently synching to chain. Some balances may be inaccurate until chain sync\'s fully.')
 
@@ -331,13 +331,11 @@ def change_pass(old_pass, new_pass):
 # Additional customizations
 def add_custom_styles():
 
-    window.label_19.setPixmap(QPixmap(resource_path("img/app_icon2.png")))
-    #"img/PKT.iconset/icon_1024x1024@2x.png"
-
-    pm = QPixmap(resource_path('img/app_icon.png'))
-    window.name_icon.setIcon(QIcon(pm))
-    window.name_icon.setIconSize(QSize(200,180))
-    window.name_icon.setStyleSheet("QPushButton#name_icon {color: rgb(252, 252, 252); font: 57 22pt 'Futura'; text-align: left;}")
+    # window.label_19.setPixmap(QPixmap(resource_path("img/app_icon2.png")))
+    #pm = QPixmap(resource_path('img/app_icon.png'))
+    #window.name_icon.setIcon(QIcon(pm))
+    #window.name_icon.setIconSize(QSize(200,180))
+    #window.name_icon.setStyleSheet("QPushButton#name_icon {color: rgb(252, 252, 252); font: 57 22pt 'Futura'; text-align: left;}")
 
     # Frame customizations
     window.send_exec_group.setStyleSheet("QGroupBox#send_exec_group {border-radius: 5px; background-color: rgb(228, 234, 235);}")
@@ -468,6 +466,10 @@ def add_custom_styles():
     window.open_wllt_btn.setStyleSheet("QPushButton {border-radius: 5px; border: 1px solid rgb(2, 45, 147); font: 57 14pt 'Futura';} QPushButton:pressed {border-radius: 5px; border: 1px solid #FF6600; font: 57 14pt 'Futura'; background-color: #022D93; color: #FF6600;}")
     window.open_wllt_btn.setFixedSize(100, 40)
 
+    window.recalc_btn.setStyleSheet("QPushButton {border-radius: 5px; border: 1px solid rgb(2, 45, 147); font: 57 14pt 'Futura';} QPushButton:pressed {border-radius: 5px; border: 1px solid #FF6600; font: 57 14pt 'Futura'; background-color: #022D93; color: #FF6600;}")
+    window.recalc_btn.setFixedSize(100, 25)
+    
+
 # Cleanup on exit
 def exit_handler():
     global os_sys
@@ -529,6 +531,7 @@ def button_listeners():
     window.seed_next_btn.clicked.connect(btn_released)
     window.no_seed_next_btn.clicked.connect(btn_released)
     window.open_wllt_btn.clicked.connect(btn_released)
+    window.recalc_btn.clicked.connect(btn_released)
 
 
 # Menu listeners
@@ -721,6 +724,9 @@ def btn_released(self):
             seed_msg_box = QtWidgets.QMessageBox()
             seed_msg_box.setText('Your seed has an incorrect number of words. Check your seed and try again.')
             seed_msg_box.exec()
+
+    elif clicked_widget.objectName() == 'recalc_btn':
+        show_balance()
 
     elif clicked_widget.objectName() == 'open_wllt_btn':
         start_wallet_thread()
@@ -2018,10 +2024,11 @@ if __name__ == "__main__":
     #print('create new wallet', CREATE_NEW_WALLET)
     
     if not CREATE_NEW_WALLET:
+        # Add balances
         print('Getting Balance ...')
         show_balance()
 
-        # Add address buttons
+        # Add address balances and addresses
         print('Getting Address Balances ...')
         add_addresses(['balances'])
         add_addresses(['addresses'])
