@@ -33,22 +33,24 @@ def resource_path(relative_path):
 # Check if pkt wallet sync in progress
 def pktwllt_synching():
     info = wlltinf.get_inf(uname, pwd)
+    print('##', info)
     if info:
         try:
-            return str(info["WalletStats"]["Syncing"]).strip()
+            return bool(info["WalletStats"]["Syncing"]).strip()
         except:
             print('Unable to get wallet status.')
-            return "false"
+            return False
 
 # Check if pktd sync in progress
 def pktd_synching():
     info = wlltinf.get_inf(uname, pwd)
+    print('##', info)
     if info:
         try:
-            return str(info["IsSyncing"]).strip()
+            return bool(info["IsSyncing"]).strip()
         except:
             print('Unable to get wallet status.')
-            return "false"
+            return False
 
 # Message box for wallet sync
 def sync_msg(msg):
@@ -261,7 +263,7 @@ def side_menu_clicked(btn):
         font.setFamily("Helvetica")
         font.setPointSize(15)
         item_0.setFont(0, font)
-        if pktd_synching(): # or pktwllt_synching()
+        if pktd_synching():
             sync_msg("Transactions aren\'t available until wallet has completely sync\'d")
             #window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Wallet Syncing..."))
         else:
