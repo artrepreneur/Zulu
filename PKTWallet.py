@@ -333,11 +333,7 @@ def change_pass(old_pass, new_pass):
 # Additional customizations
 def add_custom_styles():
 
-    # window.label_19.setPixmap(QPixmap(resource_path("img/app_icon2.png")))
-    #pm = QPixmap(resource_path('img/app_icon.png'))
-    #window.name_icon.setIcon(QIcon(pm))
-    #window.name_icon.setIconSize(QSize(200,180))
-    #window.name_icon.setStyleSheet("QPushButton#name_icon {color: rgb(252, 252, 252); font: 57 22pt 'Futura'; text-align: left;}")
+    window.label_25.setPixmap(QPixmap(resource_path('img/app_icon.png')))
 
     # Frame customizations
     window.send_exec_group.setStyleSheet("QGroupBox#send_exec_group {border-radius: 5px; background-color: rgb(228, 234, 235);}")
