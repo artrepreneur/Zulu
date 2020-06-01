@@ -13,10 +13,11 @@ def refresh_all(window, list, type):
         window.addr_combo.addItems(list)
         window.comboBox_4.clear()
         window.comboBox_4.addItems(list)
+        window.comboBox_3.clear()
+        window.comboBox_3.addItems(list)
+        list = [item for item in list if (item[0]=='P' or (item[0:3] =='pkt' and len(item)<=61))]
         window.fld_to_box.clear()
         window.fld_to_box.addItems(list)
-        window.comboBox_3.clear()
-        window.comboBox_3.addItems(list)      
 
     elif type == 'multisig':
         window.comboBox_2.clear()

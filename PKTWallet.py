@@ -7,7 +7,7 @@ from MainWindow import Ui_MainWindow
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from functools import partial
-import os, sys, subprocess, json, threading, time, random, signal, traceback, re
+import os, sys, subprocess, json, threading, time, random, signal, traceback, re, psutil
 import platform, transactions, estimate, ingest, signMultiSigTrans, sendMultiSigTrans, sendCombMultiSigTrans, fold, createWallet, getSeed, resync
 import balances, addresses, balanceAddresses, rpcworker, privkey, pubkey, password, wlltinf, send, time, datetime, genMultiSig, createMultiSigTrans, sendCombMultiSigTrans
 #import combineSigned
@@ -20,9 +20,11 @@ from PIL import Image
 from shutil import copyfile
 from pathlib import Path
 
+
 VERSION_NUM = "1.0.0"
 AUTO_RESTART_WALLET = False
 CREATE_NEW_WALLET = False
+SHUTDOWN_CYCLE = False
 FEE = ".00000001"
 
 def resource_path(relative_path):
@@ -44,7 +46,6 @@ def pktwllt_synching():
 # Check if pktd sync in progress
 def pktd_synching():
     info = wlltinf.get_inf(uname, pwd)
-    print('##', info)
     if info:
         try:
             return bool(info["IsSyncing"]).strip()
@@ -466,29 +467,6 @@ def add_custom_styles():
 
     window.recalc_btn.setStyleSheet("QPushButton {border-radius: 5px; border: 1px solid rgb(2, 45, 147); font: 57 14pt 'Futura';} QPushButton:pressed {border-radius: 5px; border: 1px solid #FF6600; font: 57 14pt 'Futura'; background-color: #022D93; color: #FF6600;}")
     window.recalc_btn.setFixedSize(100, 25)
-    
-
-# Cleanup on exit
-def exit_handler():
-    global os_sys
-    print("Cleaning up.")
-
-    os_sys = platform.system()
-
-    if os_sys == 'Linux' or os_sys == 'Darwin':
-        try:
-            subprocess.call(['pkill', '-9', 'wallet'], shell=False)
-            subprocess.call(['pkill', '-9', 'pktd'], shell=False)
-        except:
-            print('Failed to clean up.')
-
-
-    elif os_sys == 'Windows':
-        try:
-            os.system("taskkill /f /im  wallet.exe")
-            os.system("taskkill /f /im  pktd.exe")
-        except:
-            print('Failed to clean up.')
 
 # Listen for static buttons
 def button_listeners():
@@ -555,7 +533,14 @@ def menubar_listeners():
     window.actionFold_Address.triggered.connect(menubar_released)
     window.actionWebsite.triggered.connect(menubar_released)
     window.actionManual_Resync.triggered.connect(menubar_released)
-    app.aboutToQuit.connect(exit_handler)
+    app.aboutToQuit.connect(quit_app)
+
+# Quit app
+def quit_app():
+    global SHUTDOWN_CYCLE
+    SHUTDOWN_CYCLE = True
+    exit_handler()
+
 
 # Handler for menu item click
 def btn_released(self):
@@ -742,6 +727,28 @@ def btn_released(self):
         window.label_77.clear()
         fr = window.fld_frm_box.currentText()
         to = window.fld_to_box.currentText()
+       
+        # Handle empty addresses
+        if fr == '':
+            # Select a fold address.
+            msg_box_26= QtWidgets.QMessageBox()
+            msg_box_26.setText('You must select an address to fold from.')
+            msg_box_26.exec()
+            return 
+
+        elif to == '':
+            # If you have no fold addresses, click here to generate one.
+            msg_box_26= QtWidgets.QMessageBox()
+            msg_box_26.setText('You must select an address to fold to. Do you wish to create a new fold address?')
+            msg_box_26.setStandardButtons(QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
+            msg_box_26.setDefaultButton(QtWidgets.QMessageBox.Yes)
+            snd_yes_btn = msg_box_26.button(QtWidgets.QMessageBox.Yes)
+            snd_no_btn = msg_box_26.button(QtWidgets.QMessageBox.No)
+            msg_box_26.exec()
+            if msg_box_26.clickedButton() == snd_yes_btn:
+                window.address_gen_btn2.click()
+            return
+
         passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
 
         if ok:
@@ -1319,9 +1326,6 @@ def btn_released(self):
         except:
             return
 
-
-
-
     elif clicked_widget.objectName() == 'combine_send_btn':
         window.label_69.clear()
         try:
@@ -1440,21 +1444,21 @@ def menubar_released(self):
             cont = del_msg_box.exec()
 
             if cont == QtWidgets.QMessageBox.Yes and success:
-                # Kill wallet
+                # Kill wallet, then restart it
                 global AUTO_RESTART_WALLET
                 if os_sys == 'Linux' or os_sys == 'Darwin':
                     try:
-                        subprocess.call(['pkill', '-9', 'wallet'], shell=False)
+                        subprocess.call(['pkill', 'signal', 'SIGINT', 'wallet'], shell=False)
                         AUTO_RESTART_WALLET = True
                     except:
-                        QCoreApplication.quit()
+                        sys.exit()
 
                 elif os_sys == 'Windows':
                     try:
                         os.system("taskkill /f /im  wallet.exe")
                         AUTO_RESTART_WALLET = True
                     except:
-                        QCoreApplication.exit(0)
+                        sys.exit()
 
                 window.menu_frame.hide()
                 window.menubar.setEnabled(False)
@@ -1463,7 +1467,7 @@ def menubar_released(self):
 
             elif cont == QtWidgets.QMessageBox.No and success:
                 exit_handler()
-                QCoreApplication.quit() if (os_sys == 'Linux' or os_sys == 'Darwin') else QCoreApplication.exit(0)
+                sys.exit()
 
     elif clicked_item == 'actionPay_to_Many':
         window.label_6.clear()
@@ -1689,8 +1693,72 @@ def import_qr():
 
     return
 
-def restart(proc):
 
+# Check if procs are running     
+def chk_live_proc():
+    
+    proc_array = []
+    for proc in psutil.process_iter(['pid', 'name', 'username']):
+        if proc.info['name']=='wallet':
+            proc_array.append('wallet')
+        if proc.info['name']=='pktd':
+            proc_array.append('pktd') 
+    return proc_array
+
+def kill_procs(procs):
+    global os_sys
+    os_sys = platform.system()
+    if len(procs) > 0:
+        if not SHUTDOWN_CYCLE: # At start up
+            msg_box_X = QtWidgets.QMessageBox()
+            proc_text = ('a ' + procs[0]) if len(procs) == 1 else ('a ' + procs[0] + ' and a '+ procs[1]) 
+            text = 'You are running ' + proc_text + ' instance. Would you like to kill all instances?'
+            msg_box_X.setText(text)
+            msg_box_X.setWindowTitle("Kill Daemon")
+            kill_yes = QtWidgets.QMessageBox.Yes
+            kill_no = QtWidgets.QMessageBox.No
+            msg_box_X.setStandardButtons(kill_yes | kill_no)
+            msg_box_X.setDefaultButton(kill_yes)
+            ret = msg_box_X.exec()
+
+            if (ret == QtWidgets.QMessageBox.Yes):
+                print('Restarting daemons...')
+                kill_it()
+            else:
+               print('Quitting application...')
+               sys.exit()
+
+        else: # At shutdown
+            kill_it()
+            sys.exit()
+
+def kill_it():
+    global AUTO_RESTART_WALLET
+    try:
+        AUTO_RESTART_WALLET = False
+        print(os_sys)
+        if os_sys == 'Linux' or os_sys == 'Darwin':
+            subprocess.call(['pkill', 'signal','SIGINT', 'wallet'], shell=False)
+            time.sleep(10)
+            subprocess.call(['pkill', 'signal', 'SIGINT', 'pktd'], shell=False)
+        elif os_sys == 'Windows':
+            os.system("taskkill /f /im  wallet.exe")
+            time.sleep(10)
+            os.system("taskkill /f /im  pktd.exe")
+        time.sleep(10)        
+    except:
+        print('Failed to clean up.')    
+
+
+# Cleanup on exit
+def exit_handler():
+    print("Cleaning up...")       
+    procs = chk_live_proc()
+    if procs:
+        kill_procs(procs)
+
+def restart(proc):
+    print('process:', proc)
     rst_msg_box = QtWidgets.QMessageBox()
     if proc == "pktwallet":
         process = "PKT wallet"
@@ -1712,10 +1780,10 @@ def restart(proc):
                 start_pktd_thread()
         except:
             print("Process could not be restarted.")
-            exit()
+            sys.exit()
 
     elif ret == QtWidgets.QMessageBox.Cancel:
-        exit()
+        sys.exit()
 
 
 # Thread PKT wallet
@@ -1726,11 +1794,13 @@ def start_wallet_thread():
     threadpool.start(worker)
 
 def pktwllt_dead():
-    if not AUTO_RESTART_WALLET:
-        restart('pktwallet')
-    else:
-        start_wallet_thread()
-
+    print('$$Wallet died', SHUTDOWN_CYCLE)
+    if not SHUTDOWN_CYCLE:
+        if not AUTO_RESTART_WALLET and wallet_db != '':
+            restart('pktwallet')
+        else:
+            start_wallet_thread()
+    
 # Thread PKT Daemon
 def start_pktd_thread():
     pktd_cmd_result = inv_pktd()
@@ -1739,7 +1809,9 @@ def start_pktd_thread():
     threadpool.start(worker)
 
 def pktd_dead():
-    restart('pktd')
+    print('$$pktd died', SHUTDOWN_CYCLE)
+    if not SHUTDOWN_CYCLE:
+        restart('pktd')
 
 def inv_pktd():
     global pktd_pid, pktd_cmd_result
@@ -1751,8 +1823,7 @@ def inv_pktd():
 
 def pktd_worker(pktd_cmd_result, progress_callback):
     print('Running PKTD Worker ...')
-    while True:
-    #pktd_cmd_result.poll() is None or int(pktd_cmd_result.poll()) > 0:
+    while pktd_cmd_result.poll() is None or int(pktd_cmd_result.poll()) > 0:
         print(str((pktd_cmd_result.stdout.readline()).decode('utf-8')))
     return
 
@@ -1767,6 +1838,7 @@ def inv_pktwllt():
     # Loop until wallet successfully opens.
     while not ('Opened wallet' in status) and (pktwallet_cmd_result.poll() is None):
         pktwllt_stdout = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
+        print('pktwllt_stdout:',pktwllt_stdout)
         if pktwllt_stdout:
             status = pktwllt_stdout
     return pktwallet_cmd_result
@@ -1775,9 +1847,11 @@ def pktwllt_worker(pktwallet_cmd_result, progress_callback):
     print('Running PKT Wallet Worker ...')
 
     # Watch the wallet to ensure it stays open.
-    while True: 
-        #pktwallet_cmd_result.poll() is None or int(pktwallet_cmd_result.poll()) > 0:
-        print(str((pktwallet_cmd_result.stdout.readline()).decode('utf-8')))
+    while True:
+        output = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
+        print(output)
+        if not pktwallet_cmd_result.poll() is None or output =='': 
+            break    
     return
 
 def start_daemon(uname, pwd):
@@ -1792,7 +1866,7 @@ def start_daemon(uname, pwd):
         except:
             print('Failed to invoke daemon.')
             exit_handler()
-            QCoreApplication.quit()
+            sys.exit()
     else:
         try:
             global CREATE_NEW_WALLET
@@ -1807,17 +1881,20 @@ def start_daemon(uname, pwd):
         except:
             print('Failed to invoke pktd daemon.')
             exit_handler()
-            QCoreApplication.quit()
+            sys.exit()
+
 
 def get_wallet_db():
     wallet_db = ''
     get_db_cmd = "bin/getwalletdb"
     get_db_result = (subprocess.Popen(resource_path(get_db_cmd), shell=True, stdout=subprocess.PIPE).communicate()[0]).decode("utf-8")
+    print('get_db_result:', get_db_result) 
     if get_db_result.strip() != "Path not found":    
         wallet_db = get_db_result.strip('\n')+'/wallet.db'
         print('Wallet location:', wallet_db)
     else:
-        wallet_db = ''    
+        wallet_db = ''
+    print('wallet_db', wallet_db)        
     return wallet_db    
 
 def clear_send_rcp():
@@ -1985,14 +2062,14 @@ if __name__ == "__main__":
     uname = str(random.getrandbits(128))
     pwd = str(random.getrandbits(128))
 
-    # Shutdown any other instances
-    exit_handler()
-
     # Set up app
     app = QtWidgets.QApplication(sys.argv)
     icons = set_pixmaps()
     window = MainWindow()
     window.raise_() #added for pyinstaller only, else menubar fails
+
+    # Shutdown any other instances
+    exit_handler()
 
     # Size the app
     init_size()
