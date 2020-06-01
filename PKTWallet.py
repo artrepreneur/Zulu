@@ -1448,7 +1448,7 @@ def menubar_released(self):
                 global AUTO_RESTART_WALLET
                 if os_sys == 'Linux' or os_sys == 'Darwin':
                     try:
-                        subprocess.call(['pkill', 'signal', 'SIGINT', 'wallet'], shell=False)
+                        subprocess.call(['pkill', 'SIGINT', 'wallet'], shell=False)
                         AUTO_RESTART_WALLET = True
                     except:
                         sys.exit()
@@ -1738,9 +1738,9 @@ def kill_it():
         AUTO_RESTART_WALLET = False
         print(os_sys)
         if os_sys == 'Linux' or os_sys == 'Darwin':
-            subprocess.call(['pkill', 'signal','SIGINT', 'wallet'], shell=False)
+            subprocess.call(['pkill', 'SIGINT', 'wallet'], shell=False)
             time.sleep(10)
-            subprocess.call(['pkill', 'signal', 'SIGINT', 'pktd'], shell=False)
+            subprocess.call(['pkill', 'SIGINT', 'pktd'], shell=False)
         elif os_sys == 'Windows':
             os.system("taskkill /f /im  wallet.exe")
             time.sleep(10)
