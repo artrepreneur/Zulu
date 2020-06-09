@@ -25,10 +25,11 @@ def get_all_addresses(uname, pwd, progress_callback):
     addr_d={}
     temp_d={}
     multisig_arr = []
+    
     try:
         
         if type == 'balances':
-             addr_cmd_result = json.loads(subprocess.Popen([resource_path("bin/btcctl"), '-u', uname, '-P', pwd, '--wallet', 'getaddressbalances', MIN_CONF], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0])
+            addr_cmd_result = json.loads(subprocess.Popen([resource_path("bin/btcctl"), '-u', uname, '-P', pwd, '--wallet', 'getaddressbalances', MIN_CONF], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0])
 
         else:
             addr_cmd_result = json.loads(subprocess.Popen([resource_path("bin/btcctl"), '-u', uname, '-P', pwd, '--wallet', 'getaddressbalances', MIN_CONF, 'True'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0])
@@ -97,6 +98,7 @@ def print_addresses(addr):
     multisig_arr = addr[1]
     list = []
     length = len(addr_dict)
+
     if length > 0:
         if type == 'balances' or type == 'all':
             window.balance_tree.clear()

@@ -50,7 +50,7 @@ def pktd_synching():
         try:
             return bool(info["IsSyncing"]).strip()
         except:
-            print('Unable to get wallet status.')
+            print('Unable to get pktd status.')
             return False
 
 # Message box for wallet sync
@@ -266,7 +266,6 @@ def side_menu_clicked(btn):
         item_0.setFont(0, font)
         if pktd_synching():
             sync_msg("Transactions aren\'t available until wallet has completely sync\'d")
-            #window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Wallet Syncing..."))
         else:
             window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Loading..."))
         get_transactions()
@@ -347,6 +346,9 @@ def add_custom_styles():
 
     window.fold_btn_1.setStyleSheet("QPushButton {border-radius: 5px; border: 1px solid rgb(2, 45, 147); font: 57 14pt 'Futura';} QPushButton:pressed {border-radius: 5px; border: 1px solid #FF6600; font: 57 14pt 'Futura'; background-color: #022D93; color: #FF6600;}")
     window.fold_btn_1.setMinimumSize(80, 40)
+
+    #window.fold_again_btn.setStyleSheet("QPushButton {border-radius: 5px; border: 1px solid rgb(2, 45, 147); font: 57 14pt 'Futura';} QPushButton:pressed {border-radius: 5px; border: 1px solid #FF6600; font: 57 14pt 'Futura'; background-color: #022D93; color: #FF6600;}")
+    #window.fold_again_btn.setMinimumSize(80, 40)
 
     window.snd_btn.setStyleSheet("QPushButton {border-radius: 5px; border: 1px solid rgb(2, 45, 147); font: 57 14pt 'Futura';} QPushButton:pressed {border-radius: 5px; border: 1px solid #FF6600; font: 57 14pt 'Futura'; background-color: #022D93; color: #FF6600;}")
     window.snd_btn.setMinimumSize(50, 40)
@@ -492,6 +494,7 @@ def button_listeners():
     window.add_trns_btn.clicked.connect(btn_released)
     window.comb_clear_btn.clicked.connect(btn_released)
     window.fold_btn_1.clicked.connect(btn_released)
+    #window.fold_again_btn.clicked.connect(btn_released)
     window.multi_send_btn.clicked.connect(btn_released)
     window.rtr_prvk_btn.clicked.connect(btn_released)
     window.rtr_pubk_btn.clicked.connect(btn_released)
@@ -723,6 +726,10 @@ def btn_released(self):
         add_addresses(['balances'])
         add_addresses(['addresses'])
 
+    #elif clicked_widget.fold_again_btn.objectName() == 'fold_again_btn':
+    #    i = window.stackedWidget.indexOf(window.fold_page_1)
+    #    window.stackedWidget.setCurrentIndex(i)
+
     elif clicked_widget.objectName() == 'fold_btn_1':
         window.label_77.clear()
         fr = window.fld_frm_box.currentText()
@@ -749,12 +756,20 @@ def btn_released(self):
                 window.address_gen_btn2.click()
             return
 
+        if pktwllt_synching():
+            msg_box_26= QtWidgets.QMessageBox()
+            msg_box_26.setText('Wallet is syncing, unable to fold at this time.')
+            msg_box_26.exec()
+            return
+
         passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
 
         if ok:
             #Get passphrase
             fold.execute(uname, pwd, window, worker_state_active, threadpool, passphrase, fr, to)
-
+            msg_box_26= QtWidgets.QMessageBox()
+            msg_box_26.setText('Wallet is currently folding. You may need to fold multiple times if your entire balance is not folded.')
+            msg_box_26.exec()
         else:
             msg_box_18= QtWidgets.QMessageBox()
             msg_box_18.setText('You must enter your wallet passphase to submit transaction')
@@ -907,7 +922,7 @@ def btn_released(self):
         window.label_26.setStyleSheet("font: 16pt 'Helvetica'")
 
     elif clicked_widget.objectName() == 'address_gen_btn':
-        if not pktwllt_synching() == "True":
+        if not pktwllt_synching() == "True" or worker_state_active['FOLD_WALLET']:
             get_new_address(uname, pwd, window, worker_state_active, threadpool)
         else:
             msg = 'Wallet is syncing, this will not work until sync is complete.'
@@ -1173,62 +1188,63 @@ def btn_released(self):
     elif clicked_widget.objectName() == 'snd_btn':
         global pay_dict
 
-        #Get passphrase
-        passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+        if not worker_state_active['FOLD_WALLET']:
+            #Get passphrase
+            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
 
-        if ok:
+            if ok:
 
-            pay_dict = {}
-            address = str(window.pay_from_combo_box.currentText())
-            msg_box_3d = QtWidgets.QMessageBox()
-            is_valid = True
-            for i in rcp_list_dict:
-                pay_to = rcp_list_dict[i].lineEdit_6.text().strip()
-                amt = rcp_list_dict[i].send_amt_input.text().strip()
-
-
-                if pay_to == address:
-                    msg_box_3d.setText('Cannot submit transaction. Payee and payer must be different.')
-                    msg_box_3d.exec()
-                    is_valid = False
-                    return
+                pay_dict = {}
+                address = str(window.pay_from_combo_box.currentText())
+                msg_box_3d = QtWidgets.QMessageBox()
+                is_valid = True
+                for i in rcp_list_dict:
+                    pay_to = rcp_list_dict[i].lineEdit_6.text().strip()
+                    amt = rcp_list_dict[i].send_amt_input.text().strip()
 
 
-                amt_isnum = False
-                try:
-                    amt = float(amt)
-                    amt_isnum = True
-                except:
-                    amt_isnum = True
+                    if pay_to == address:
+                        msg_box_3d.setText('Cannot submit transaction. Payee and payer must be different.')
+                        msg_box_3d.exec()
+                        is_valid = False
+                        return
 
-                if amt_isnum and pay_to.isalnum():
-                    pay_dict[pay_to] = amt
-                    #print('payto:', pay_to)
-                    #print('amt:', amt)
 
-                else:
-                    msg_box_3d.setText('Cannot submit transaction. Make sure all payees have a valid address and amount.')
-                    msg_box_3d.exec()
-                    is_valid = False
-                    return #break
+                    amt_isnum = False
+                    try:
+                        amt = float(amt)
+                        amt_isnum = True
+                    except:
+                        amt_isnum = True
 
-            if is_valid:
-                msg_box_3b = QtWidgets.QMessageBox()
-                msg_box_3b.setStandardButtons(QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
-                msg_box_3b.setDefaultButton(QtWidgets.QMessageBox.Yes)
-                snd_yes_btn = msg_box_3b.button(QtWidgets.QMessageBox.Yes)
-                snd_no_btn = msg_box_3b.button(QtWidgets.QMessageBox.No)
-                msg_box_3b.setText('Are you sure you \nwish to send?')
-                msg_box_3b.exec()
+                    if amt_isnum and pay_to.isalnum():
+                        pay_dict[pay_to] = amt
+                        #print('payto:', pay_to)
+                        #print('amt:', amt)
 
-                if msg_box_3b.clickedButton() == snd_yes_btn:
+                    else:
+                        msg_box_3d.setText('Cannot submit transaction. Make sure all payees have a valid address and amount.')
+                        msg_box_3d.exec()
+                        is_valid = False
+                        return #break
 
-                    send.execute2(uname, pwd, address, passphrase, pay_dict, window, worker_state_active)
-                    
-        else:
-            msg_box_3a = QtWidgets.QMessageBox()
-            msg_box_3a.setText('You must enter your wallet passphase to submit transaction')
-            msg_box_3a.exec()
+                if is_valid:
+                    msg_box_3b = QtWidgets.QMessageBox()
+                    msg_box_3b.setStandardButtons(QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
+                    msg_box_3b.setDefaultButton(QtWidgets.QMessageBox.Yes)
+                    snd_yes_btn = msg_box_3b.button(QtWidgets.QMessageBox.Yes)
+                    snd_no_btn = msg_box_3b.button(QtWidgets.QMessageBox.No)
+                    msg_box_3b.setText('Are you sure you \nwish to send?')
+                    msg_box_3b.exec()
+
+                    if msg_box_3b.clickedButton() == snd_yes_btn:
+
+                        send.execute2(uname, pwd, address, passphrase, pay_dict, window, worker_state_active)
+                        
+            else:
+                msg_box_3a = QtWidgets.QMessageBox()
+                msg_box_3a.setText('You must enter your wallet passphase to submit transaction')
+                msg_box_3a.exec()
 
     elif clicked_widget.objectName() == 'import_keys_btn':
         txt = window.import_text.toPlainText()
@@ -1328,32 +1344,37 @@ def btn_released(self):
 
     elif clicked_widget.objectName() == 'combine_send_btn':
         window.label_69.clear()
-        try:
-            multi_comb_trans = window.combine_trans_txt.toPlainText()
-            result = sendCombMultiSigTrans.create(uname, pwd, FEE, multi_comb_trans, window)
-            err_result = str(result["result"]).split(':')[0]
+        if not worker_state_active['FOLD_WALLET']:
+            try:
+                multi_comb_trans = window.combine_trans_txt.toPlainText()
+                result = sendCombMultiSigTrans.create(uname, pwd, FEE, multi_comb_trans, window)
+                err_result = str(result["result"]).split(':')[0]
 
-            if err_result == "Error":
+                if err_result == "Error":
+                    msg_box_22 = QtWidgets.QMessageBox()
+                    msg_box_22.setText(result["result"])
+                    msg_box_22.exec()
+
+                elif err_result == "Cancel":
+                    return
+
+                else:
+                    i = window.stackedWidget.indexOf(window.sent_page)
+                    window.stackedWidget.setCurrentIndex(i)
+                    window.lineEdit_7.setText(result["result"])
+                    window.textEdit_4.setText(result["details"])
+            except:
                 msg_box_22 = QtWidgets.QMessageBox()
-                msg_box_22.setText(result["result"])
+                msg_box_22.setText("Transaction send failed. Check that all necessary signatures have been combined.")
                 msg_box_22.exec()
-
-            elif err_result == "Cancel":
-                return
-
-            else:
-                i = window.stackedWidget.indexOf(window.sent_page)
-                window.stackedWidget.setCurrentIndex(i)
-                window.lineEdit_7.setText(result["result"])
-                window.textEdit_4.setText(result["details"])
-        except:
-            msg_box_22 = QtWidgets.QMessageBox()
-            msg_box_22.setText("Transaction send failed. Check that all necessary signatures have been combined.")
-            msg_box_22.exec()
-            window.label_69.setText("Transaction send failed. Check that all necessary signatures have been combined.")
+                window.label_69.setText("Transaction send failed. Check that all necessary signatures have been combined.")
 
     elif clicked_widget.objectName() == 'load_trns_btn':
         get_transactions()
+        msg_box_27 = QtWidgets.QMessageBox()
+        msg_box_27.setText("Loading...")
+        msg_box_27.exec()
+
 
 def menubar_released(self):
     global FEE
@@ -1745,7 +1766,7 @@ def kill_it():
             os.system("taskkill /f /im  wallet.exe")
             time.sleep(10)
             os.system("taskkill /f /im  pktd.exe")
-        time.sleep(10)        
+        #time.sleep(10)        
     except:
         print('Failed to clean up.')    
 
