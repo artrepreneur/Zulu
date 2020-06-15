@@ -19,8 +19,10 @@ from pyzbar.pyzbar import decode
 from PIL import Image
 from shutil import copyfile
 from pathlib import Path
+from datetime import datetime
+import time, threading
 
-
+WAIT_SECONDS = 10
 VERSION_NUM = "1.0.0"
 AUTO_RESTART_WALLET = False
 CREATE_NEW_WALLET = False
@@ -33,25 +35,24 @@ def resource_path(relative_path):
     return os.path.join(os.path.abspath('.'), relative_path)
 
 # Check if pkt wallet sync in progress
-def pktwllt_synching():
-    info = wlltinf.get_inf(uname, pwd)
-    print('##', info)
-    if info:
-        try:
-            return bool(info["WalletStats"]["Syncing"]).strip()
-        except:
-            print('Unable to get wallet status.')
-            return False
+def pktwllt_synching(info):
+    #print('info', info["WalletStats"]["Syncing"])
+    if info != []:
+            status = (info["WalletStats"]["Syncing"])
+            return bool(status)
+    else:
+        print('Unable to get wallet status.')
+        return False
 
 # Check if pktd sync in progress
-def pktd_synching():
-    info = wlltinf.get_inf(uname, pwd)
-    if info:
-        try:
-            return bool(info["IsSyncing"]).strip()
-        except:
-            print('Unable to get pktd status.')
-            return False
+def pktd_synching(info):
+    #print('info',info["IsSyncing"])
+    if info != []:
+        status = (info["IsSyncing"]) 
+        return bool(status)
+    else:
+        print('Unable to get pktd status.')
+        return False
 
 # Message box for wallet sync
 def sync_msg(msg):
@@ -72,24 +73,23 @@ class SendRcp(QtWidgets.QFrame):
         self.obj_num = obj_num
         self.item = item
         self.name = item_nm
-
         self.setObjectName(self.name)
         self.setStyleSheet("background-color: rgb(228, 234, 235); margin-bottom: 0px; margin-right: 0px")
         self.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.setFrameShadow(QtWidgets.QFrame.Plain)
-
         self.verticalLayout_21 = QtWidgets.QFormLayout(self)
         self.verticalLayout_21.setObjectName("verticalLayout_21")
+        self.verticalLayout_21.setAlignment(Qt.AlignVCenter)
 
         self.label_9 = QtWidgets.QLabel(self)
-        self.label_9.setStyleSheet("font: 16pt 'Helvetica'; padding-bottom: 4px;")
+        self.label_9.setStyleSheet("font: 75 15pt 'Gill Sans'; padding-bottom: 4px;")
         self.label_9.setObjectName("label_9")
         self.label_9.setText("Pay To:")
         self.label_9.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
         self.lineEdit_6 = QtWidgets.QLineEdit(self)
         self.lineEdit_6.setMinimumSize(QSize(0, 35))
         self.lineEdit_6.setMaximumSize(QSize(16777215, 35))
-        self.lineEdit_6.setStyleSheet("background-color: rgb(253, 253, 255);")
+        self.lineEdit_6.setStyleSheet("background-color: rgb(253, 253, 255); border: 1px solid rgb(210, 216, 216); border-radius: 4px;")
         self.lineEdit_6.setObjectName("lineEdit_6")
         self.lineEdit_6.setToolTip("Enter Address of Payee")
         self.verticalLayout_21.addRow(self.label_9, self.lineEdit_6)
@@ -97,13 +97,13 @@ class SendRcp(QtWidgets.QFrame):
         self.verticalLayout_21.setFieldGrowthPolicy(QtWidgets.QFormLayout.AllNonFixedFieldsGrow)
 
         self.label_10 = QtWidgets.QLabel(self)
-        self.label_10.setStyleSheet("font: 16pt 'Helvetica';padding-bottom: 4px;")
+        self.label_10.setStyleSheet("font: 75 15pt 'Gill Sans';padding-bottom: 4px;")
         self.label_10.setObjectName("label_10")
         self.label_10.setText("Amount:")
         self.send_amt_input = QtWidgets.QLineEdit(self)
         self.send_amt_input.setMinimumSize(QSize(0, 35))
         self.send_amt_input.setMaximumSize(QSize(16777215, 35))
-        self.send_amt_input.setStyleSheet("background-color: rgb(253, 253, 255);")
+        self.send_amt_input.setStyleSheet("background-color: rgb(253, 253, 255); border: 1px solid rgb(210, 216, 216); border-radius: 4px;")
         self.send_amt_input.setToolTip("Enter Amount to Pay")
         self.send_amt_input.setObjectName("send_amt_input")
         self.verticalLayout_21.addRow(self.label_10, self.send_amt_input)
@@ -126,6 +126,10 @@ class SendRcp(QtWidgets.QFrame):
         self.send_amt_input.clear()
 
     def del_clicked(self):
+
+        self.lineEdit_6.clear()
+        self.send_amt_input.clear()
+
         class_id = self.name.split('_')[0]
         chld_num = window.rcp_list.count() if (class_id == 'send') else window.rcp_list_2.count()
 
@@ -233,19 +237,18 @@ class SideMenuBtn(QtWidgets.QPushButton):
 
 def side_menu_clicked(btn):
 
-    #print('button pressed:', btn.objectName(), btn.objectName().split('_')[0])
     if btn.objectName().strip() == 'Balances':
         i = window.stackedWidget.indexOf(window.balance_page)
-        #window.balance_tree.clear()
-        #window.balance_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Loading..."))
         show_balance()
         add_addresses(['balances'])
+        window.stackedWidget.setCurrentIndex(i)
 
     elif btn.objectName().strip() == 'Send':
         window.label_6.clear()
         i = window.stackedWidget.indexOf(window.send_page)
         init_send_rcp()
         set_fee_est()
+        window.stackedWidget.setCurrentIndex(i)
 
     elif btn.objectName().strip() == 'Receive':
         i = window.stackedWidget.indexOf(window.receive_page)
@@ -253,24 +256,27 @@ def side_menu_clicked(btn):
         window.receive_hist_tree2.clear()
         window.msg_line.clear()
         window.label_26.clear()
+        window.stackedWidget.setCurrentIndex(i)
 
-    elif btn.objectName().strip() == 'Transaction':
+    elif btn.objectName().strip() == 'Transactions':
         global iteration
-
         i = window.stackedWidget.indexOf(window.transactions_page)
         iteration = 0
         item_0 = QtWidgets.QTreeWidgetItem(window.transaction_hist_tree)
         font = QFont()
-        font.setFamily("Helvetica")
+        font.setFamily("Gill Sans")
         font.setPointSize(15)
         item_0.setFont(0, font)
-        if pktd_synching():
+        if pktd_synching(wlltinf.get_inf(uname, pwd)):
             sync_msg("Transactions aren\'t available until wallet has completely sync\'d")
         else:
-            window.transaction_hist_tree.topLevelItem(0).setText(0, _translate("MainWindow", "Loading..."))
-        get_transactions()
+            get_transactions()
+            window.stackedWidget.setCurrentIndex(i)
+            msg_box_27 = QtWidgets.QMessageBox()
+            msg_box_27.setText("Loading...")
+            msg_box_27.exec()    
 
-    window.stackedWidget.setCurrentIndex(i)
+    
 
 def get_transactions():
     global iteration
@@ -284,12 +290,13 @@ def get_transactions():
         trns_msg_box.setWindowTitle("Transaction History Failed")
         trns_msg_box.setText(msg)
         trns_msg_box.exec()
-        print('Unable to get transactioss')
+        print('Unable to get transactions')
 
 def show_balance():
-    if pktd_synching(): 
+    info = wlltinf.get_inf(uname, pwd)
+    if pktd_synching(info): 
         sync_msg("Wallet daemon is currently syncing. Some features may not work until sync is complete.")
-    elif pktwllt_synching():
+    elif pktwllt_synching(info):
         sync_msg('Wallet is currently synching to chain. Some balances may be inaccurate until chain sync\'s fully.')
 
     window.balance_amount.clear()
@@ -310,7 +317,7 @@ def add_addresses(type):
         if item == "balances" or item == "all":
             # Add loading message
             load_label= QtWidgets.QLabel()
-            load_label.setStyleSheet("font: 16pt \'Helvetica\'; padding-bottom: 4px; text-align: center;")
+            load_label.setStyleSheet("font: 15pt \'Gill Sans\'; padding-bottom: 4px; text-align: center;")
             load_label.setText("Addresses loading please wait...")
             load_label.setAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
             balanceAddresses.get_addresses(uname, pwd, window, item, worker_state_active, threadpool)
@@ -717,8 +724,9 @@ def btn_released(self):
     elif clicked_widget.objectName() == 'open_wllt_btn':
         start_wallet_thread()
         window.menubar.setEnabled(True)
-        #window.resize(1000, 800)
+        #window.resize(1030, 800)
         window.menu_frame.show()
+        window.frame_4.show()
         window.balance_tree.clear()
         i = window.stackedWidget.indexOf(window.balance_page)
         window.stackedWidget.setCurrentIndex(i)
@@ -756,7 +764,7 @@ def btn_released(self):
                 window.address_gen_btn2.click()
             return
 
-        if pktwllt_synching():
+        if pktwllt_synching(wlltinf.get_inf(uname, pwd)):
             msg_box_26= QtWidgets.QMessageBox()
             msg_box_26.setText('Wallet is syncing, unable to fold at this time.')
             msg_box_26.exec()
@@ -794,7 +802,7 @@ def btn_released(self):
         window.rcp_list.setItemWidget(item_line_N, vars()[item_nm])
         rcp_list_dict[item_nm] = vars()[item_nm]
         window.rcp_list.setCurrentRow(int(window.rcp_list.count()))
-        window.rcp_list.repaint() #.update()
+        window.rcp_list.repaint()
 
     elif clicked_widget.objectName() == 'multi_add_btn':
         global rcp_list_dict2, pay_dict2
@@ -919,10 +927,10 @@ def btn_released(self):
             return
 
         window.label_26.setText(_translate("MainWindow","Share the QR code you saved with the party you are requesting payment from."))
-        window.label_26.setStyleSheet("font: 16pt 'Helvetica'")
+        window.label_26.setStyleSheet("font: 15pt 'Gill Sans'")
 
     elif clicked_widget.objectName() == 'address_gen_btn':
-        if not pktwllt_synching() == "True" or worker_state_active['FOLD_WALLET']:
+        if not pktwllt_synching(wlltinf.get_inf(uname, pwd)) == "True" or worker_state_active['FOLD_WALLET']:
             get_new_address(uname, pwd, window, worker_state_active, threadpool)
         else:
             msg = 'Wallet is syncing, this will not work until sync is complete.'
@@ -1189,6 +1197,7 @@ def btn_released(self):
         global pay_dict
 
         if not worker_state_active['FOLD_WALLET']:
+           
             #Get passphrase
             passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
 
@@ -1219,14 +1228,12 @@ def btn_released(self):
 
                     if amt_isnum and pay_to.isalnum():
                         pay_dict[pay_to] = amt
-                        #print('payto:', pay_to)
-                        #print('amt:', amt)
 
                     else:
                         msg_box_3d.setText('Cannot submit transaction. Make sure all payees have a valid address and amount.')
                         msg_box_3d.exec()
                         is_valid = False
-                        return #break
+                        return
 
                 if is_valid:
                     msg_box_3b = QtWidgets.QMessageBox()
@@ -1238,7 +1245,6 @@ def btn_released(self):
                     msg_box_3b.exec()
 
                     if msg_box_3b.clickedButton() == snd_yes_btn:
-
                         send.execute2(uname, pwd, address, passphrase, pay_dict, window, worker_state_active)
                         
             else:
@@ -1830,26 +1836,26 @@ def start_pktd_thread():
     threadpool.start(worker)
 
 def pktd_dead():
-    print('$$pktd died', SHUTDOWN_CYCLE)
+    print('pktd died', SHUTDOWN_CYCLE)
     if not SHUTDOWN_CYCLE:
         restart('pktd')
 
 def inv_pktd():
     global pktd_pid, pktd_cmd_result
-    print('Invoking PKTD ...')
+    print('Invoking PKTD...')
     pktd_cmd = "bin/pktd -u "+uname+" -P " +pwd+ " --txindex --addrindex"
     pktd_cmd_result = subprocess.Popen(resource_path(pktd_cmd), shell=True, stdout=subprocess.PIPE)
     pktd_pid = pktd_cmd_result.pid + 1
     return pktd_cmd_result
 
 def pktd_worker(pktd_cmd_result, progress_callback):
-    print('Running PKTD Worker ...')
+    print('Running PKTD Worker...')
     while pktd_cmd_result.poll() is None or int(pktd_cmd_result.poll()) > 0:
         print(str((pktd_cmd_result.stdout.readline()).decode('utf-8')))
     return
 
 def inv_pktwllt():
-    print('Invoking PKT Wallet ...')
+    print('Invoking PKT Wallet...')
     global pktwallet_pid, pktwallet_cmd_result
     pktwallet_cmd_result = subprocess.Popen([resource_path('bin/wallet'), '-u', uname, '-P', pwd], shell=False, stdout=subprocess.PIPE)
     pktwallet_pid = pktwallet_cmd_result.pid + 1
@@ -1861,16 +1867,17 @@ def inv_pktwllt():
         pktwllt_stdout = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
         print('pktwllt_stdout:',pktwllt_stdout)
         if pktwllt_stdout:
-            status = pktwllt_stdout
+            status = pktwllt_stdout   
     return pktwallet_cmd_result
 
 def pktwllt_worker(pktwallet_cmd_result, progress_callback):
-    print('Running PKT Wallet Worker ...')
+    print('Running PKT Wallet Worker...')
 
     # Watch the wallet to ensure it stays open.
     while True:
         output = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
         print(output)
+        status_light()
         if not pktwallet_cmd_result.poll() is None or output =='': 
             break    
     return
@@ -1895,6 +1902,7 @@ def start_daemon(uname, pwd):
             CREATE_NEW_WALLET = True
             start_pktd_thread()
             window.menu_frame.hide()
+            window.frame_4.hide()
             window.menubar.setEnabled(False)
             i = window.stackedWidget.indexOf(window.new_wallet_page)
             window.stackedWidget.setCurrentIndex(i)
@@ -1904,6 +1912,19 @@ def start_daemon(uname, pwd):
             exit_handler()
             sys.exit()
 
+def check_status():
+    worker = Worker(status_light())
+    worker.signals.result.connect(status_dead)
+    threadpool.start(worker)
+
+def status_dead():
+    print("Status died")
+
+def status_light():
+    #print('Checking status...')
+    info = wlltinf.get_inf(uname, pwd)
+    window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if not pktwllt_synching(info) else window.label_103.setPixmap(QPixmap(resource_path('img/red_btn.png')))   
+    window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if  not pktd_synching(info) else window.label_100.setPixmap(QPixmap(resource_path('img/red_btn.png')))                                  
 
 def get_wallet_db():
     wallet_db = ''
@@ -2017,7 +2038,7 @@ def init_side_menu():
     balance_btn = SideMenuBtn('Balances', 'Balances', 'pixmap_balance_btn', 'View Your Balances')
     send_btn = SideMenuBtn('Send', 'Send', 'pixmap_send_btn', 'Send PKT Cash')
     receive_btn = SideMenuBtn('Receive', 'Receive', 'pixmap_receive_btn', 'Receive PKT Cash')
-    transaction_btn = SideMenuBtn('Transaction', 'Transaction', 'pixmap_transaction_btn', 'View Transaction History')
+    transaction_btn = SideMenuBtn('Transactions', 'Transactions', 'pixmap_transaction_btn', 'View Transaction History')
     grid = QtWidgets.QGridLayout(window.frame_3)
     grid.addWidget(balance_btn, 0, 0)
     grid.addWidget(send_btn, 1, 0)
@@ -2032,7 +2053,10 @@ def deactivate():
     window.comboBox_3.hide()
     window.label_41.hide()
     window.multi_add_btn.hide()
+    window.multi_clear_btn.hide()
     window.add_btn.hide()
+    window.label_9.setText('Enter Your Payee Below')
+    window.label_17.setText('Enter Your Payee Below')
     window.actionPay_to_Many.setVisible(False)
     window.actionEncrypt_Decrypt_Message.setVisible(False)
     window.actionCombine_Multisig_Transactions.setVisible(False)
@@ -2044,7 +2068,8 @@ def deactivate():
     window.lineEdit_6.hide()
 
 def init_size():
-    window.setMinimumSize(1100, 580)
+    window.setMinimumSize(1300, 800)
+    #window.transaction_hist_tree.setStyleSheet("QTreeView::item { padding: 5px; background-color: rgb(201, 207, 207)}")
     window.stackedWidget.setCurrentIndex(0)
     window.balance_tree.header().setMinimumHeight(40)
     window.transaction_hist_tree.header().setMinimumHeight(40)
@@ -2137,5 +2162,8 @@ if __name__ == "__main__":
     button_listeners()
     menubar_listeners()
     window.show()
+    
+    window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png')))
+    #check_status()
     
     app.exec()

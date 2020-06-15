@@ -47,8 +47,7 @@ def execute2(u, p, a, pp, pd, win, state):
             #addresses = " '{" + payments + "}' '[" + '"' + address + '"' + "]'"
             addresses = " " + payments + " '[" + '"' + address + '"' + "]'"
              
-            try:
-                
+            try:     
                     cmd_2 = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet sendfrom" + addresses + " 1"
                     print(cmd_2)
                     result_2, err_2 = subprocess.Popen(resource_path(cmd_2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -57,7 +56,52 @@ def execute2(u, p, a, pp, pd, win, state):
                     print(result_2, err_2)
 
                     if not err_2:
-                        print_result(result_2)
+                        print('Transaction ID:', result_2)
+                        window.lineEdit_7.clear()
+   
+                        # Relock wallet.
+                        lock = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet walletlock"
+                        subprocess.Popen(resource_path(lock), shell=True, stdout=subprocess.PIPE).communicate()
+
+                        window.lineEdit_7.setText(result_2)
+                        try:
+                            cmd_3 = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet gettransaction " + result_2
+                            result_3, err_3 = subprocess.Popen(resource_path(cmd_3), shell=True, stdout=subprocess.PIPE).communicate()
+                            if not err_3:
+                                hex = json.loads(result_3)["hex"]
+                                fee = str(format(round(float(json.loads(result_3)["fee"]), 8), '.8f'))
+                                cmd_4 = "bin/btcctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + hex
+                                result_4, err_4 = subprocess.Popen(resource_path(cmd_4), shell=True, stdout=subprocess.PIPE).communicate()
+
+                                if not err_4:
+                                    #print('result', result_4)
+                                    vout = json.loads(result_4)["vout"]
+                                    balance = 0
+                                    deet = ''
+                                    for i in range(0, len(vout)):
+                                        addr = vout[i]['scriptPubKey']['addresses'][0]
+                                        amount = str(round(float(vout[i]['value']),8))
+                                        if not(addr.strip() == address):
+                                            deet += 'You sent address: ' + addr + '\nthe amount: ' + amount + ' PKT\n\n'
+                                        else:
+                                            balance += float(amount)
+
+                                    details = deet
+                                    details += 'Your fees were: ' + fee + ' PKT'
+                                    #print(details)
+                                    window.textEdit_4.setText(details.strip())
+                                    window.stackedWidget.setCurrentIndex(window.stackedWidget.indexOf(window.sent_page))
+                                else:
+                                    print('Error:', err_4)
+                                    window.textEdit_4.setText(_translate("MainWindow","Could not get transaction details."))
+
+                            else:
+                                print('Error:', err_3)
+                                window.textEdit_4.setText(_translate("MainWindow","Could not get transaction details."))
+
+                        except subprocess.CalledProcessError as e:
+                            print('Error:', e.output)
+
                     else:
                         print('Error:', err_2)
                         if "waddrmgr.scriptAddress" in err_2:

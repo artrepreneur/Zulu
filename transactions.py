@@ -63,10 +63,10 @@ def row_count(iterator):
             else:
                 count += 1
             iterator += 1
-        if item.text(0).strip()=='Loading...' :
+        print('item.text(0).strip()',item.text(0).strip())    
+        if item.text(0).strip()=='':
             count = 0
             window.transaction_hist_tree.clear()
-    #print('count', count)        
     return count
 
 def print_result(result):
@@ -83,17 +83,15 @@ def print_result(result):
                 address = item["address"]
                 amount = str(round(item["amount"],8)) + ' PKT'
                 trans_id = item["txid"]
-
                 item_0 = QtWidgets.QTreeWidgetItem(window.transaction_hist_tree)
                 font = QFont()
-                font.setFamily("Helvetica")
+                font.setFamily("Gil Sans")
                 font.setPointSize(15)
                 item_0.setFont(0, font)
                 item_0.setFont(1, font)
                 item_0.setFont(2, font)
                 item_0.setFont(3, font)
-                #print(ts, address, amount, trans_id)
-                window.transaction_hist_tree.setStyleSheet("QTreeView::item { padding: 5px }")
+                window.transaction_hist_tree.setStyleSheet("QTreeView::item { padding: 5px; background-color: rgb(201, 207, 207)}")
                 window.transaction_hist_tree.topLevelItem(index).setText(0, _translate("MainWindow", ts))
                 window.transaction_hist_tree.topLevelItem(index).setText(1, _translate("MainWindow", address))
                 window.transaction_hist_tree.topLevelItem(index).setText(2, _translate("MainWindow", amount))
