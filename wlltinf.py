@@ -19,8 +19,8 @@ def get_inf(uname, pwd):
         result, err = subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         result = json.loads(result.decode('utf-8'))
         err = err.decode('utf-8')
-        #if not err:
-        #    print('Wallet Info:', result)
+        if not err:
+            print('Wallet Info:', result)
         if err:
             print('Error:', err)
             result = {}

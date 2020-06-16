@@ -16,10 +16,11 @@ def seed_execute(uname, pwd, pp, old_pass_line, seed_entry):
     try:
         cmd_result, err = subprocess.Popen(resource_path("bin/wallet -u "+uname+" -P "+pwd+" --create"), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(("{\"passphrase\":\""+pp+"\",\"seed\":\""+ seed_entry +"\",\"seedpassphrase\":\""+old_pass_line+"\"}").encode('utf-8'))
         err = err.decode('utf-8')
-        #print('cmd_result', cmd_result)
+        print('cmd_result', cmd_result)
 
-        if err:
+        if err and not "pktwallet.conf does not exist" in err:
             print('Error:', err)
+
             cmd_result = {}
         else:
             cmd_result = json.loads(cmd_result.decode('utf-8'))

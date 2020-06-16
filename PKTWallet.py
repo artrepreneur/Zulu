@@ -698,25 +698,25 @@ def btn_released(self):
             seed_msg_box.setText('You failed to enter your old password.')
             seed_msg_box.exec()
             return
-        if len(seed_entry.split()) == 15:
-            try:
-                seed = createWallet.seed_execute(uname, pwd, pp, old_pass_line, seed_entry)["seed"]
-                if not seed:
-                    seed_msg_box = QtWidgets.QMessageBox()
-                    seed_msg_box.setText('Your wallet could not be created. Verify seed and/or old password.')
-                    seed_msg_box.exec()
-                else:
-                    window.seed_txt.setText(seed)
-                    i = window.stackedWidget.indexOf(window.wllt_done_page)
-                    window.stackedWidget.setCurrentIndex(i)
-            except:
+        #if len(seed_entry.split()) == 15:
+        try:
+            seed = createWallet.seed_execute(uname, pwd, pp, old_pass_line, seed_entry)["seed"]
+            if not seed:
                 seed_msg_box = QtWidgets.QMessageBox()
                 seed_msg_box.setText('Your wallet could not be created. Verify seed and/or old password.')
                 seed_msg_box.exec()
-        else:
+            else:
+                window.seed_txt.setText(seed)
+                i = window.stackedWidget.indexOf(window.wllt_done_page)
+                window.stackedWidget.setCurrentIndex(i)
+        except:
             seed_msg_box = QtWidgets.QMessageBox()
-            seed_msg_box.setText('Your seed has an incorrect number of words. Check your seed and try again.')
+            seed_msg_box.setText('Your wallet could not be created. Verify seed and/or old password.')
             seed_msg_box.exec()
+        #else:
+        #    seed_msg_box = QtWidgets.QMessageBox()
+        #    seed_msg_box.setText('Your seed has an incorrect number of words. Check your seed and try again.')
+        #    seed_msg_box.exec()
 
     elif clicked_widget.objectName() == 'recalc_btn':
         show_balance()
