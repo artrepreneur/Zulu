@@ -32,10 +32,13 @@ a.datas += [('img/glyphicons_325_wallet_blk@2x.png', 'img/glyphicons_325_wallet_
          ('img/glyphicons_457_transfer_alt@2x.png', 'img/glyphicons_457_transfer_alt@2x.png', 'DATA'),
          ('img/app_icon.png', 'img/app_icon.png', 'DATA'),
          ('img/PKT.iconset/icon_1024x1024@2x.png','img/PKT.iconset/icon_1024x1024@2x.png', 'DATA'),
+         ('img/grn_btn.png','img/grn_btn.png', 'DATA'),
+         ('img/red_btn.png','img/red_btn.png', 'DATA'),
          ('MultisigData/mdata.json', 'MultisigData/mdata.json', 'DATA'),
          ('bin/pktd', 'bin/pktd', 'DATA'),
          ('bin/btcctl', 'bin/btcctl', 'DATA'),
          ('bin/wallet', 'bin/wallet', 'DATA'),
+         ('bin/getwalletdb', 'bin/getwalletdb', 'DATA'),
          ('img/glyphicons_325_wallet_blk_alt@2x.png', 'img/glyphicons_325_wallet_blk_alt@2x.png', 'DATA')]
 
 

@@ -26,6 +26,8 @@ VERSION_NUM = "1.0.0"
 AUTO_RESTART_WALLET = False
 CREATE_NEW_WALLET = False
 SHUTDOWN_CYCLE = False
+WALLET_SYNCING = False
+PKTD_SYNCING = False
 COUNTER = 1 
 FEE = ".00000001"
 
@@ -36,23 +38,31 @@ def resource_path(relative_path):
 
 # Check if pkt wallet sync in progress
 def pktwllt_synching(info):
-    #print('info', info["WalletStats"]["Syncing"])
+    global WALLET_SYNCING
     if info != []:
             status = (info["WalletStats"]["Syncing"])
-            return bool(status)
+            WALLET_SYNCING = bool(status)
+            print('WALLET_SYNCING',WALLET_SYNCING)
+            return WALLET_SYNCING
     else:
-        print('Unable to get wallet status.')
-        return False
+        print('Unable to get wallet status.') 
+        WALLET_SYNCING = False
+        print('WALLET_SYNCING',WALLET_SYNCING)
+        return WALLET_SYNCING
 
 # Check if pktd sync in progress
 def pktd_synching(info):
-    #print('info',info["IsSyncing"])
+    global PKTD_SYNCING
     if info != []:
         status = (info["IsSyncing"]) 
-        return bool(status)
+        PKTD_SYNCING = bool(status)
+        print('PKTD_SYNCING',PKTD_SYNCING)
+        return PKTD_SYNCING
     else:
         print('Unable to get pktd status.')
-        return False
+        PKTD_SYNCING = False
+        print('PKTD_SYNCING',PKTD_SYNCING)
+        return PKTD_SYNCING
 
 # Message box for wallet sync
 def sync_msg(msg):
@@ -315,6 +325,10 @@ def add_addresses(type):
 
     for item in type:
         if item == "balances" or item == "all":
+            if WALLET_SYNCING:
+                sync_msg('Wallet is synching, balances will take a while to return.')
+            elif PKTD_SYNCING:     
+                sync_msg('Wallet is synching, balances will take a while to return.')
             # Add loading message
             load_label= QtWidgets.QLabel()
             load_label.setStyleSheet("font: 15pt \'Gill Sans\'; padding-bottom: 4px; text-align: center;")
@@ -1877,6 +1891,7 @@ def pktwllt_worker(pktwallet_cmd_result, progress_callback):
     # Watch the wallet to ensure it stays open.
     while True:
         output = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
+        print('Wallet Output:', output)
         if COUNTER % 60 == 0:
             status_light()         
         else:
@@ -1926,12 +1941,25 @@ def status_dead():
 
 def status_light():
     global COUNTER
-
     #print('Checking status...')
     COUNTER = 1
     info = wlltinf.get_inf(uname, pwd)
+
+    '''
+    if not pktwllt_synching(info):
+        window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png')))
+        print('PKT Wallet synced')
+    else:
+        window.label_103.setPixmap(QPixmap(resource_path('img/red_btn.png')))
+        print('PKT Wallet is synced') 
+
+    if not pktd_synching(info):
+        window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png')))
+    else:
+        window.label_100.setPixmap(QPixmap(resource_path('img/red_btn.png'))) 
+    '''
     window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if not pktwllt_synching(info) else window.label_103.setPixmap(QPixmap(resource_path('img/red_btn.png')))   
-    window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if  not pktd_synching(info) else window.label_100.setPixmap(QPixmap(resource_path('img/red_btn.png')))                                  
+    window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if not pktd_synching(info) else window.label_100.setPixmap(QPixmap(resource_path('img/red_btn.png')))                                  
 
 def get_wallet_db():
     wallet_db = ''
@@ -2147,10 +2175,7 @@ if __name__ == "__main__":
 
     # Fire up daemon and wallet backend
     print('Starting Daemon ...')
-    start_daemon(uname, pwd)
-
-    # show balance
-    #print('create new wallet', CREATE_NEW_WALLET)
+    start_daemon(uname, pwd) 
     
     if not CREATE_NEW_WALLET:
         # Add balances
@@ -2171,6 +2196,6 @@ if __name__ == "__main__":
     window.show()
     
     window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png')))
-    #check_status()
-    
+    status_light()
+
     app.exec()

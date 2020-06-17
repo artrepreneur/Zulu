@@ -19,7 +19,7 @@ def get_history(uname, pwd, progress_callback):
     global err, count, state
     count = 200
     state = int(page) * (count -1)
-    print('count:', count, state, page)
+    #print('count:', count, state, page)
 
     try:
         result, err = subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet', 'listtransactions', str(count), str(state)], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -74,7 +74,7 @@ def print_result(result):
     if result:
         iterator = QtWidgets.QTreeWidgetItemIterator(window.transaction_hist_tree)
         count = row_count(iterator)
-        print('count2:', count)
+        #print('count2:', count)
         for i, item in enumerate(result):
                 index = (count) + i
                 print(i, index, item)
