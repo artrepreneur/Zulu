@@ -4,4 +4,5 @@ opencv-python
 Pillow>=6.2.2
 PyQt5
 qrtools==0.0.2
+psutil
 

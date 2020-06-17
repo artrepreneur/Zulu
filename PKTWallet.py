@@ -20,13 +20,13 @@ from PIL import Image
 from shutil import copyfile
 from pathlib import Path
 from datetime import datetime
-import time, threading
 
 WAIT_SECONDS = 10
 VERSION_NUM = "1.0.0"
 AUTO_RESTART_WALLET = False
 CREATE_NEW_WALLET = False
 SHUTDOWN_CYCLE = False
+COUNTER = 1 
 FEE = ".00000001"
 
 def resource_path(relative_path):
@@ -1871,13 +1871,17 @@ def inv_pktwllt():
     return pktwallet_cmd_result
 
 def pktwllt_worker(pktwallet_cmd_result, progress_callback):
+    global COUNTER
     print('Running PKT Wallet Worker...')
 
     # Watch the wallet to ensure it stays open.
     while True:
         output = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
-        print(output)
-        status_light()
+        if COUNTER % 60 == 0:
+            status_light()         
+        else:
+            COUNTER +=1
+        
         if not pktwallet_cmd_result.poll() is None or output =='': 
             break    
     return
@@ -1921,7 +1925,10 @@ def status_dead():
     print("Status died")
 
 def status_light():
+    global COUNTER
+
     #print('Checking status...')
+    COUNTER = 1
     info = wlltinf.get_inf(uname, pwd)
     window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if not pktwllt_synching(info) else window.label_103.setPixmap(QPixmap(resource_path('img/red_btn.png')))   
     window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if  not pktd_synching(info) else window.label_100.setPixmap(QPixmap(resource_path('img/red_btn.png')))                                  

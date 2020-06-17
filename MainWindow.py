@@ -237,7 +237,29 @@ class Ui_MainWindow(object):
         self.gridLayout_6.addWidget(self.address_header_frame, 1, 0, 1, 1, QtCore.Qt.AlignVCenter)
         self.frame_18 = QtWidgets.QFrame(self.addresses_group)
         self.frame_18.setStyleSheet("QFrame#frame_18{border-radius: 4px;}\n"
-"")
+"QScrollBar:vertical {\n"
+"            border: 0px solid #999999;\n"
+"            background:white;\n"
+"            width:10px;    \n"
+"            margin: 0px 0px 0px 0px;\n"
+"        }\n"
+"        QScrollBar::handle:vertical {         \n"
+"       \n"
+"            min-height: 0px;\n"
+"              border: 0px solid red;\n"
+"            border-radius: 4px;\n"
+"            background-color: black;\n"
+"        }\n"
+"        QScrollBar::add-line:vertical {       \n"
+"            height: 0px;\n"
+"            subcontrol-position: bottom;\n"
+"            subcontrol-origin: margin;\n"
+"        }\n"
+"        QScrollBar::sub-line:vertical {\n"
+"            height: 0 px;\n"
+"            subcontrol-position: top;\n"
+"            subcontrol-origin: margin;\n"
+"        }")
         self.frame_18.setFrameShape(QtWidgets.QFrame.Box)
         self.frame_18.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_18.setObjectName("frame_18")
@@ -322,7 +344,30 @@ class Ui_MainWindow(object):
         self.gridLayout_57.addWidget(self.frame_69, 2, 0, 1, 1)
         self.frame_78 = QtWidgets.QFrame(self.groupBox)
         self.frame_78.setMinimumSize(QtCore.QSize(0, 190))
-        self.frame_78.setStyleSheet("QFrame#frame_78{border-radius: 4px;}")
+        self.frame_78.setStyleSheet("QFrame#frame_78{border-radius: 4px;}\n"
+"QScrollBar:vertical {\n"
+"            border: 0px solid #999999;\n"
+"            background:white;\n"
+"            width:10px;    \n"
+"            margin: 0px 0px 0px 0px;\n"
+"        }\n"
+"        QScrollBar::handle:vertical {         \n"
+"       \n"
+"            min-height: 0px;\n"
+"              border: 0px solid red;\n"
+"            border-radius: 4px;\n"
+"            background-color: black;\n"
+"        }\n"
+"        QScrollBar::add-line:vertical {       \n"
+"            height: 0px;\n"
+"            subcontrol-position: bottom;\n"
+"            subcontrol-origin: margin;\n"
+"        }\n"
+"        QScrollBar::sub-line:vertical {\n"
+"            height: 0 px;\n"
+"            subcontrol-position: top;\n"
+"            subcontrol-origin: margin;\n"
+"        }")
         self.frame_78.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_78.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_78.setObjectName("frame_78")
@@ -803,7 +848,30 @@ class Ui_MainWindow(object):
         self.gridLayout_17 = QtWidgets.QGridLayout(self.receive_groupBox_2)
         self.gridLayout_17.setObjectName("gridLayout_17")
         self.frame_15 = QtWidgets.QFrame(self.receive_groupBox_2)
-        self.frame_15.setStyleSheet("QFrame#frame_15{border-radius: 4px;}")
+        self.frame_15.setStyleSheet("QFrame#frame_15{border-radius: 4px;}\n"
+"QScrollBar:vertical {\n"
+"            border: 0px solid #999999;\n"
+"            background:white;\n"
+"            width:10px;    \n"
+"            margin: 0px 0px 0px 0px;\n"
+"        }\n"
+"        QScrollBar::handle:vertical {         \n"
+"       \n"
+"            min-height: 0px;\n"
+"              border: 0px solid red;\n"
+"            border-radius: 4px;\n"
+"            background-color: black;\n"
+"        }\n"
+"        QScrollBar::add-line:vertical {       \n"
+"            height: 0px;\n"
+"            subcontrol-position: bottom;\n"
+"            subcontrol-origin: margin;\n"
+"        }\n"
+"        QScrollBar::sub-line:vertical {\n"
+"            height: 0 px;\n"
+"            subcontrol-position: top;\n"
+"            subcontrol-origin: margin;\n"
+"        }")
         self.frame_15.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_15.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_15.setObjectName("frame_15")
@@ -873,6 +941,29 @@ class Ui_MainWindow(object):
         self.gridLayout_19 = QtWidgets.QGridLayout(self.transactions_page)
         self.gridLayout_19.setObjectName("gridLayout_19")
         self.frame_8 = QtWidgets.QFrame(self.transactions_page)
+        self.frame_8.setStyleSheet("QScrollBar:vertical {\n"
+"            border: 0px solid #999999;\n"
+"            background:white;\n"
+"            width:10px;    \n"
+"            margin: 0px 0px 0px 0px;\n"
+"        }\n"
+"        QScrollBar::handle:vertical {         \n"
+"       \n"
+"            min-height: 0px;\n"
+"              border: 0px solid red;\n"
+"            border-radius: 4px;\n"
+"            background-color: black;\n"
+"        }\n"
+"        QScrollBar::add-line:vertical {       \n"
+"            height: 0px;\n"
+"            subcontrol-position: bottom;\n"
+"            subcontrol-origin: margin;\n"
+"        }\n"
+"        QScrollBar::sub-line:vertical {\n"
+"            height: 0 px;\n"
+"            subcontrol-position: top;\n"
+"            subcontrol-origin: margin;\n"
+"        }")
         self.frame_8.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_8.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_8.setLineWidth(0)
@@ -1319,6 +1410,29 @@ class Ui_MainWindow(object):
         self.gridLayout_29 = QtWidgets.QGridLayout(self.multisig_create_page)
         self.gridLayout_29.setObjectName("gridLayout_29")
         self.frame_24 = QtWidgets.QFrame(self.multisig_create_page)
+        self.frame_24.setStyleSheet("QScrollBar:vertical {\n"
+"            border: 0px solid #999999;\n"
+"            background:white;\n"
+"            width:10px;    \n"
+"            margin: 0px 0px 0px 0px;\n"
+"        }\n"
+"        QScrollBar::handle:vertical {         \n"
+"       \n"
+"            min-height: 0px;\n"
+"              border: 0px solid red;\n"
+"            border-radius: 4px;\n"
+"            background-color: black;\n"
+"        }\n"
+"        QScrollBar::add-line:vertical {       \n"
+"            height: 0px;\n"
+"            subcontrol-position: bottom;\n"
+"            subcontrol-origin: margin;\n"
+"        }\n"
+"        QScrollBar::sub-line:vertical {\n"
+"            height: 0 px;\n"
+"            subcontrol-position: top;\n"
+"            subcontrol-origin: margin;\n"
+"        }")
         self.frame_24.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_24.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_24.setObjectName("frame_24")
@@ -1617,6 +1731,7 @@ class Ui_MainWindow(object):
         self.gridLayout_31 = QtWidgets.QGridLayout(self.multisig_send_page)
         self.gridLayout_31.setObjectName("gridLayout_31")
         self.frame_28 = QtWidgets.QFrame(self.multisig_send_page)
+        self.frame_28.setStyleSheet("")
         self.frame_28.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_28.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_28.setObjectName("frame_28")
@@ -1788,7 +1903,30 @@ class Ui_MainWindow(object):
         self.gridLayout_33.addWidget(self.frame_5, 8, 0, 1, 1)
         self.frame_80 = QtWidgets.QFrame(self.groupBox_5)
         self.frame_80.setMinimumSize(QtCore.QSize(0, 250))
-        self.frame_80.setStyleSheet("QFrame#frame_80{border-radius: 4px;}")
+        self.frame_80.setStyleSheet("QFrame#frame_80{border-radius: 4px;}\n"
+"QScrollBar:vertical {\n"
+"            border: 0px solid #999999;\n"
+"            background:white;\n"
+"            width:10px;    \n"
+"            margin: 0px 0px 0px 0px;\n"
+"        }\n"
+"        QScrollBar::handle:vertical {         \n"
+"       \n"
+"            min-height: 0px;\n"
+"              border: 0px solid red;\n"
+"            border-radius: 4px;\n"
+"            background-color: black;\n"
+"        }\n"
+"        QScrollBar::add-line:vertical {       \n"
+"            height: 0px;\n"
+"            subcontrol-position: bottom;\n"
+"            subcontrol-origin: margin;\n"
+"        }\n"
+"        QScrollBar::sub-line:vertical {\n"
+"            height: 0 px;\n"
+"            subcontrol-position: top;\n"
+"            subcontrol-origin: margin;\n"
+"        }")
         self.frame_80.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_80.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_80.setObjectName("frame_80")
@@ -2593,6 +2731,29 @@ class Ui_MainWindow(object):
         self.gridLayout_55 = QtWidgets.QGridLayout(self.export_keys_page)
         self.gridLayout_55.setObjectName("gridLayout_55")
         self.frame_38 = QtWidgets.QFrame(self.export_keys_page)
+        self.frame_38.setStyleSheet("QScrollBar:vertical {\n"
+"            border: 0px solid #999999;\n"
+"            background:white;\n"
+"            width:10px;    \n"
+"            margin: 0px 0px 0px 0px;\n"
+"        }\n"
+"        QScrollBar::handle:vertical {         \n"
+"       \n"
+"            min-height: 0px;\n"
+"              border: 0px solid red;\n"
+"            border-radius: 4px;\n"
+"            background-color: black;\n"
+"        }\n"
+"        QScrollBar::add-line:vertical {       \n"
+"            height: 0px;\n"
+"            subcontrol-position: bottom;\n"
+"            subcontrol-origin: margin;\n"
+"        }\n"
+"        QScrollBar::sub-line:vertical {\n"
+"            height: 0 px;\n"
+"            subcontrol-position: top;\n"
+"            subcontrol-origin: margin;\n"
+"        }")
         self.frame_38.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_38.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_38.setObjectName("frame_38")
@@ -4042,7 +4203,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(10)
+        self.stackedWidget.setCurrentIndex(24)
         self.fld_to_box.setCurrentIndex(-1)
         self.fld_frm_box.setCurrentIndex(-1)
         self.sig_box.setCurrentIndex(2)

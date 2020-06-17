@@ -85,7 +85,7 @@ def print_result(result):
                 trans_id = item["txid"]
                 item_0 = QtWidgets.QTreeWidgetItem(window.transaction_hist_tree)
                 font = QFont()
-                font.setFamily("Gil Sans")
+                font.setFamily("Gill Sans")
                 font.setPointSize(15)
                 item_0.setFont(0, font)
                 item_0.setFont(1, font)
