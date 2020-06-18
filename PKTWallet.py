@@ -39,7 +39,7 @@ def resource_path(relative_path):
 # Check if pkt wallet sync in progress
 def pktwllt_synching(info):
     global WALLET_SYNCING
-    if info != []:
+    if info != {}:
             status = (info["WalletStats"]["Syncing"])
             WALLET_SYNCING = bool(status)
             print('WALLET_SYNCING',WALLET_SYNCING)
@@ -53,7 +53,7 @@ def pktwllt_synching(info):
 # Check if pktd sync in progress
 def pktd_synching(info):
     global PKTD_SYNCING
-    if info != []:
+    if info != {}:
         status = (info["IsSyncing"]) 
         PKTD_SYNCING = bool(status)
         print('PKTD_SYNCING',PKTD_SYNCING)
@@ -1772,6 +1772,7 @@ def kill_procs(procs):
 
         else: # At shutdown
             kill_it()
+            print('About to exit...')
             sys.exit()
 
 def kill_it():
@@ -1781,13 +1782,12 @@ def kill_it():
         print(os_sys)
         if os_sys == 'Linux' or os_sys == 'Darwin':
             subprocess.call(['pkill', 'SIGINT', 'wallet'], shell=False)
-            time.sleep(10)
             subprocess.call(['pkill', 'SIGINT', 'pktd'], shell=False)
         elif os_sys == 'Windows':
             os.system("taskkill /f /im  wallet.exe")
-            time.sleep(10)
             os.system("taskkill /f /im  pktd.exe")
-        #time.sleep(10)        
+        time.sleep(30)
+        return        
     except:
         print('Failed to clean up.')    
 

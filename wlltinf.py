@@ -12,7 +12,6 @@ def resource_path(relative_path):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath('.'), relative_path)
 
-
 def get_inf(uname, pwd):
     try:
         cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet getinfo"
@@ -25,5 +24,8 @@ def get_inf(uname, pwd):
             print('Error:', err)
             result = {}
         return result
-    except:
-        pass
+    except Exception as e:
+        #pass
+        print('Exception:', e)
+        result = {}
+        return result
