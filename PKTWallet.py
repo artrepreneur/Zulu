@@ -1737,18 +1737,19 @@ def import_qr():
 
 # Check if procs are running     
 def chk_live_proc():
-    
     proc_array = []
+    print('Checking live processes, if any...')
     for proc in psutil.process_iter(['pid', 'name', 'username']):
         if proc.info['name']=='wallet':
             proc_array.append('wallet')
         if proc.info['name']=='pktd':
-            proc_array.append('pktd') 
+            proc_array.append('pktd')
     return proc_array
 
 def kill_procs(procs):
     global os_sys
     os_sys = platform.system()
+    print('Trying to kill procs')
     if len(procs) > 0:
         if not SHUTDOWN_CYCLE: # At start up
             msg_box_X = QtWidgets.QMessageBox()
@@ -1797,6 +1798,7 @@ def exit_handler():
     procs = chk_live_proc()
     if procs:
         kill_procs(procs)
+    
 
 def restart(proc):
     print('process:', proc)
@@ -1835,7 +1837,7 @@ def start_wallet_thread():
     threadpool.start(worker)
 
 def pktwllt_dead():
-    print('$$Wallet died', SHUTDOWN_CYCLE)
+    print('Wallet died', SHUTDOWN_CYCLE)
     if not SHUTDOWN_CYCLE:
         if not AUTO_RESTART_WALLET and wallet_db != '':
             restart('pktwallet')
@@ -1931,6 +1933,14 @@ def start_daemon(uname, pwd):
             exit_handler()
             sys.exit()
 
+def make_executable():
+    print('Checking permissions...')
+    if not os.access("./bin/pktd", os.X_OK):
+        result = subprocess.Popen('chmod 755 bin/*',shell=True, stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
+        return
+    else:
+        return 
+
 def check_status():
     worker = Worker(status_light())
     worker.signals.result.connect(status_dead)
@@ -1944,20 +1954,6 @@ def status_light():
     #print('Checking status...')
     COUNTER = 1
     info = wlltinf.get_inf(uname, pwd)
-
-    '''
-    if not pktwllt_synching(info):
-        window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png')))
-        print('PKT Wallet synced')
-    else:
-        window.label_103.setPixmap(QPixmap(resource_path('img/red_btn.png')))
-        print('PKT Wallet is synced') 
-
-    if not pktd_synching(info):
-        window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png')))
-    else:
-        window.label_100.setPixmap(QPixmap(resource_path('img/red_btn.png'))) 
-    '''
     window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if not pktwllt_synching(info) else window.label_103.setPixmap(QPixmap(resource_path('img/red_btn.png')))   
     window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if not pktd_synching(info) else window.label_100.setPixmap(QPixmap(resource_path('img/red_btn.png')))                                  
 
@@ -2148,6 +2144,9 @@ if __name__ == "__main__":
     icons = set_pixmaps()
     window = MainWindow()
     window.raise_() #added for pyinstaller only, else menubar fails
+
+    # check perms
+    make_executable()
 
     # Shutdown any other instances
     exit_handler()
