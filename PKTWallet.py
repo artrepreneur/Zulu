@@ -19,7 +19,6 @@ from pyzbar.pyzbar import decode
 from PIL import Image
 from shutil import copyfile
 from pathlib import Path
-from datetime import datetime
 
 WAIT_SECONDS = 10
 VERSION_NUM = "1.0.0"
