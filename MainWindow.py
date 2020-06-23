@@ -446,10 +446,12 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Gill Sans")
         self.pay_from_combo_box.setFont(font)
-        self.pay_from_combo_box.setStyleSheet("border-radius: 3px; \n"
+        self.pay_from_combo_box.setStyleSheet("border-radius: 4px; \n"
 "border: 1px solid rgb(210, 216, 216);\n"
 "background-color: rgb(253, 253, 255);\n"
-"selection-color: blue;")
+"selection-color: white;\n"
+"selection-background-color: rgb(2, 39, 126);\n"
+"")
         self.pay_from_combo_box.setObjectName("pay_from_combo_box")
         self.pay_from_combo_box.addItem("")
         self.gridLayout_5.addWidget(self.pay_from_combo_box, 0, 1, 1, 1)
@@ -584,7 +586,9 @@ class Ui_MainWindow(object):
         self.fld_to_box.setStyleSheet("border-radius: 4px; \n"
 "border: 1px solid rgb(210, 216, 216);\n"
 "background-color: rgb(253, 253, 255);\n"
-"selection-color: blue;")
+"selection-color: white;\n"
+"selection-background-color: rgb(2, 39, 126);\n"
+"")
         self.fld_to_box.setEditable(True)
         self.fld_to_box.setCurrentText("")
         self.fld_to_box.setObjectName("fld_to_box")
@@ -638,10 +642,10 @@ class Ui_MainWindow(object):
         self.fld_frm_box.setFont(font)
         self.fld_frm_box.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
         self.fld_frm_box.setStyleSheet("border-radius: 4px; \n"
-"background-color: rgb(253, 253, 255);\n"
-"selection-color: blue;\n"
 "border: 1px solid rgb(210, 216, 216);\n"
-"\n"
+"background-color: rgb(253, 253, 255);\n"
+"selection-color: white;\n"
+"selection-background-color: rgb(2, 39, 126);\n"
 "")
         self.fld_frm_box.setEditable(True)
         self.fld_frm_box.setCurrentText("")
@@ -831,10 +835,12 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Gill Sans")
         self.pay_to_combo_box.setFont(font)
-        self.pay_to_combo_box.setStyleSheet("border: 1px solid rgb(210, 216, 216);\n"
-"border-radius: 4px;\n"
+        self.pay_to_combo_box.setStyleSheet("border-radius: 4px; \n"
+"border: 1px solid rgb(210, 216, 216);\n"
 "background-color: rgb(253, 253, 255);\n"
-"selection-color: blue;")
+"selection-color: white;\n"
+"selection-background-color: rgb(2, 39, 126);\n"
+"")
         self.pay_to_combo_box.setEditable(True)
         self.pay_to_combo_box.setObjectName("pay_to_combo_box")
         self.gridLayout_11.addWidget(self.pay_to_combo_box, 0, 2, 1, 1)
@@ -1348,6 +1354,37 @@ class Ui_MainWindow(object):
         self.address_create_frame.setObjectName("address_create_frame")
         self.gridLayout_38 = QtWidgets.QGridLayout(self.address_create_frame)
         self.gridLayout_38.setObjectName("gridLayout_38")
+        self.address_line = QtWidgets.QLineEdit(self.address_create_frame)
+        self.address_line.setMinimumSize(QtCore.QSize(0, 35))
+        font = QtGui.QFont()
+        font.setFamily("Gill Sans")
+        self.address_line.setFont(font)
+        self.address_line.setStyleSheet("background-color: rgb(253, 253, 255);\n"
+"border: 1px solid rgb(210, 216, 216);\n"
+"border-radius: 4px;")
+        self.address_line.setObjectName("address_line")
+        self.gridLayout_38.addWidget(self.address_line, 0, 1, 1, 1)
+        self.pubkey_label = QtWidgets.QLabel(self.address_create_frame)
+        self.pubkey_label.setMaximumSize(QtCore.QSize(16777215, 50))
+        font = QtGui.QFont()
+        font.setFamily("Gill Sans")
+        font.setPointSize(15)
+        font.setBold(True)
+        font.setWeight(75)
+        self.pubkey_label.setFont(font)
+        self.pubkey_label.setStyleSheet("")
+        self.pubkey_label.setObjectName("pubkey_label")
+        self.gridLayout_38.addWidget(self.pubkey_label, 1, 0, 1, 1)
+        self.pubkey_line = QtWidgets.QLineEdit(self.address_create_frame)
+        self.pubkey_line.setMinimumSize(QtCore.QSize(0, 35))
+        font = QtGui.QFont()
+        font.setFamily("Gill Sans")
+        self.pubkey_line.setFont(font)
+        self.pubkey_line.setStyleSheet("background-color: rgb(253, 253, 255);\n"
+"border: 1px solid rgb(210, 216, 216);\n"
+"border-radius: 4px;")
+        self.pubkey_line.setObjectName("pubkey_line")
+        self.gridLayout_38.addWidget(self.pubkey_line, 1, 1, 1, 1)
         self.address_label = QtWidgets.QLabel(self.address_create_frame)
         self.address_label.setMaximumSize(QtCore.QSize(16777215, 50))
         font = QtGui.QFont()
@@ -1360,37 +1397,6 @@ class Ui_MainWindow(object):
         self.address_label.setStyleSheet("")
         self.address_label.setObjectName("address_label")
         self.gridLayout_38.addWidget(self.address_label, 0, 0, 1, 1)
-        self.pubkey_line = QtWidgets.QLineEdit(self.address_create_frame)
-        self.pubkey_line.setMinimumSize(QtCore.QSize(0, 35))
-        font = QtGui.QFont()
-        font.setFamily("Gill Sans")
-        self.pubkey_line.setFont(font)
-        self.pubkey_line.setStyleSheet("background-color: rgb(253, 253, 255);\n"
-"border: 1px solid rgb(210, 216, 216);\n"
-"border-radius: 4px;")
-        self.pubkey_line.setObjectName("pubkey_line")
-        self.gridLayout_38.addWidget(self.pubkey_line, 1, 1, 1, 1)
-        self.pubkey_label = QtWidgets.QLabel(self.address_create_frame)
-        self.pubkey_label.setMaximumSize(QtCore.QSize(16777215, 50))
-        font = QtGui.QFont()
-        font.setFamily("Gill Sans")
-        font.setPointSize(15)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pubkey_label.setFont(font)
-        self.pubkey_label.setStyleSheet("")
-        self.pubkey_label.setObjectName("pubkey_label")
-        self.gridLayout_38.addWidget(self.pubkey_label, 1, 0, 1, 1)
-        self.address_line = QtWidgets.QLineEdit(self.address_create_frame)
-        self.address_line.setMinimumSize(QtCore.QSize(0, 35))
-        font = QtGui.QFont()
-        font.setFamily("Gill Sans")
-        self.address_line.setFont(font)
-        self.address_line.setStyleSheet("background-color: rgb(253, 253, 255);\n"
-"border: 1px solid rgb(210, 216, 216);\n"
-"border-radius: 4px;")
-        self.address_line.setObjectName("address_line")
-        self.gridLayout_38.addWidget(self.address_line, 0, 1, 1, 1)
         self.address_gen_btn = QtWidgets.QPushButton(self.address_create_frame)
         self.address_gen_btn.setObjectName("address_gen_btn")
         self.gridLayout_38.addWidget(self.address_gen_btn, 2, 1, 1, 1)
@@ -1797,10 +1803,12 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Gill Sans")
         self.comboBox_2.setFont(font)
-        self.comboBox_2.setStyleSheet("border-radius: 3px; \n"
+        self.comboBox_2.setStyleSheet("border-radius: 4px; \n"
 "border: 1px solid rgb(210, 216, 216);\n"
 "background-color: rgb(253, 253, 255);\n"
-"selection-color: blue;")
+"selection-color: white;\n"
+"selection-background-color: rgb(2, 39, 126);\n"
+"")
         self.comboBox_2.setObjectName("comboBox_2")
         self.comboBox_2.addItem("")
         self.gridLayout_34.addWidget(self.comboBox_2, 0, 1, 1, 1)
@@ -2154,10 +2162,12 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Gill Sans")
         self.comboBox_3.setFont(font)
-        self.comboBox_3.setStyleSheet("border-radius: 3px; \n"
+        self.comboBox_3.setStyleSheet("border-radius: 4px; \n"
 "border: 1px solid rgb(210, 216, 216);\n"
 "background-color: rgb(253, 253, 255);\n"
-"selection-color: blue;")
+"selection-color: white;\n"
+"selection-background-color: rgb(2, 39, 126);\n"
+"")
         self.comboBox_3.setObjectName("comboBox_3")
         self.comboBox_3.addItem("")
         self.gridLayout_48.addWidget(self.comboBox_3, 3, 1, 1, 1)
@@ -2334,10 +2344,12 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Gill Sans")
         self.comboBox_4.setFont(font)
-        self.comboBox_4.setStyleSheet("border-radius: 3px; \n"
+        self.comboBox_4.setStyleSheet("border-radius: 4px; \n"
 "border: 1px solid rgb(210, 216, 216);\n"
 "background-color: rgb(253, 253, 255);\n"
-"selection-color: blue;")
+"selection-color: white;\n"
+"selection-background-color: rgb(2, 39, 126);\n"
+"")
         self.comboBox_4.setObjectName("comboBox_4")
         self.comboBox_4.addItem("")
         self.gridLayout_89.addWidget(self.comboBox_4, 1, 1, 1, 1)
@@ -3674,10 +3686,12 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Gill Sans")
         self.addr_combo.setFont(font)
-        self.addr_combo.setStyleSheet("border-radius: 3px; \n"
+        self.addr_combo.setStyleSheet("border-radius: 4px; \n"
 "border: 1px solid rgb(210, 216, 216);\n"
 "background-color: rgb(253, 253, 255);\n"
-"selection-color: blue;")
+"selection-color: white;\n"
+"selection-background-color: rgb(2, 39, 126);\n"
+"")
         self.addr_combo.setObjectName("addr_combo")
         self.addr_combo.addItem("")
         self.gridLayout_79.addWidget(self.addr_combo, 0, 1, 1, 1)
@@ -3815,10 +3829,12 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Gill Sans")
         self.comboBox_5.setFont(font)
-        self.comboBox_5.setStyleSheet("border-radius: 3px; \n"
+        self.comboBox_5.setStyleSheet("border-radius: 4px; \n"
 "border: 1px solid rgb(210, 216, 216);\n"
 "background-color: rgb(253, 253, 255);\n"
-"selection-color: blue;")
+"selection-color: white;\n"
+"selection-background-color: rgb(2, 39, 126);\n"
+"")
         self.comboBox_5.setObjectName("comboBox_5")
         self.comboBox_5.addItem("")
         self.gridLayout_98.addWidget(self.comboBox_5, 0, 1, 1, 1)
@@ -4203,7 +4219,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(24)
+        self.stackedWidget.setCurrentIndex(1)
         self.fld_to_box.setCurrentIndex(-1)
         self.fld_frm_box.setCurrentIndex(-1)
         self.sig_box.setCurrentIndex(2)
@@ -4289,10 +4305,10 @@ class Ui_MainWindow(object):
         self.address_create_label.setText(_translate("MainWindow", "New Address"))
         self.address_sublabel.setText(_translate("MainWindow", "Create a new address by simply clicking the generate button below"))
         self.address_create_frame.setToolTip(_translate("MainWindow", "Click generate to create a new publick key, private key, and address."))
-        self.address_label.setText(_translate("MainWindow", "Address (Share this publicly):"))
-        self.pubkey_line.setToolTip(_translate("MainWindow", "Your public key. "))
-        self.pubkey_label.setText(_translate("MainWindow", "Public key (Share this publicly):"))
         self.address_line.setToolTip(_translate("MainWindow", "Your public address."))
+        self.pubkey_label.setText(_translate("MainWindow", "Public key (Share this publicly):"))
+        self.pubkey_line.setToolTip(_translate("MainWindow", "Your public key. "))
+        self.address_label.setText(_translate("MainWindow", "Address (Share this publicly):"))
         self.address_gen_btn.setToolTip(_translate("MainWindow", "Generate your address and associated keys."))
         self.address_gen_btn.setText(_translate("MainWindow", "Generate"))
         self.label_12.setText(_translate("MainWindow", "New MultiSig Address"))

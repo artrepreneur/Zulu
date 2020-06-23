@@ -38,13 +38,11 @@ def execute2(u, p, a, pp, pd, win, state):
 
             for i, item in enumerate(pay_dict):
                 item = str(item)
-                #payments += '"' + item + '":' + str(pay_dict[item])
                 payments += item + ' ' + str(pay_dict[item])
                 amount += float(pay_dict[item])
                 if not len(pay_dict) == (i + 1):
                     payments +=', '
 
-            #addresses = " '{" + payments + "}' '[" + '"' + address + '"' + "]'"
             addresses = " " + payments + " '[" + '"' + address + '"' + "]'"
              
             try:     
@@ -62,38 +60,29 @@ def execute2(u, p, a, pp, pd, win, state):
                         # Relock wallet.
                         lock = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet walletlock"
                         subprocess.Popen(resource_path(lock), shell=True, stdout=subprocess.PIPE).communicate()
-
                         window.lineEdit_7.setText(result_2)
+
                         try:
-                            cmd_3 = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet gettransaction " + result_2
+                            cmd_3 = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet gettransaction " + result_2 + " true"
                             result_3, err_3 = subprocess.Popen(resource_path(cmd_3), shell=True, stdout=subprocess.PIPE).communicate()
+                            
                             if not err_3:
                                 hex = json.loads(result_3)["hex"]
                                 fee = str(format(round(float(json.loads(result_3)["fee"]), 8), '.8f'))
-                                cmd_4 = "bin/btcctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + hex
-                                result_4, err_4 = subprocess.Popen(resource_path(cmd_4), shell=True, stdout=subprocess.PIPE).communicate()
+                                details = json.loads(result_3)["details"]
+                                deet = ''
 
-                                if not err_4:
-                                    #print('result', result_4)
-                                    vout = json.loads(result_4)["vout"]
-                                    balance = 0
-                                    deet = ''
-                                    for i in range(0, len(vout)):
-                                        addr = vout[i]['scriptPubKey']['addresses'][0]
-                                        amount = str(round(float(vout[i]['value']),8))
-                                        if not(addr.strip() == address):
-                                            deet += 'You sent address: ' + addr + '\nthe amount: ' + amount + ' PKT\n\n'
-                                        else:
-                                            balance += float(amount)
+                                for item in details:
+                                    if (item["category"] == "receive"):
+                                        addr = item["address"]
+                                        amount = str(format(round(float(item["amount"]), 8), '.8f'))
+                                        deet += 'You sent address: ' + addr + '\nthe amount: ' + amount + ' PKT\n\n'
+                                 
+                                deet += 'Your fees were: ' + fee + ' PKT'
+                                window.textEdit_4.setText(deet.strip())
+                                window.stackedWidget.setCurrentIndex(window.stackedWidget.indexOf(window.sent_page))
 
-                                    details = deet
-                                    details += 'Your fees were: ' + fee + ' PKT'
-                                    #print(details)
-                                    window.textEdit_4.setText(details.strip())
-                                    window.stackedWidget.setCurrentIndex(window.stackedWidget.indexOf(window.sent_page))
-                                else:
-                                    print('Error:', err_4)
-                                    window.textEdit_4.setText(_translate("MainWindow","Could not get transaction details."))
+                            
 
                             else:
                                 print('Error:', err_3)
@@ -112,6 +101,8 @@ def execute2(u, p, a, pp, pd, win, state):
                             window.label_6.setText(_translate("MainWindow","Insufficient fees error."))
                         elif "ErrOrphanTransactionDisallowed" in err_2:
                             window.label_6.setText(_translate("MainWindow","This transaction references and orphan output, try to resync."))
+                        elif "TooManyInputsError:" in err_2:
+                            window.label_6.setText(_translate("MainWindow","To complete this transaction you will need to fold all balances from this address."))
                         else:
                             window.label_6.setText(_translate("MainWindow","Unable to submit transaction. Make sure all payees have a valid address and amount."))
 

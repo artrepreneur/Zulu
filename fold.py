@@ -39,7 +39,7 @@ def fold_it(progress_callback):
                 result_2, err_2 = (subprocess.Popen(resource_path(cmd_2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
                 result_2 = result_2.decode('utf-8')
                 err_2 = err_2.decode('utf-8')
-                #print(result_2, err_2)
+                
 
                 if err_2:
                     print("Error:", err_2)
@@ -54,49 +54,33 @@ def fold_it(progress_callback):
                     exit()
 
                 else:
-
+                    print('Transaction Id:',result_2)    
                     # Relock wallet.
                     result_lock, err_lock = subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet', 'walletlock'], shell=False, stdout=subprocess.PIPE).communicate()
 
                     try:
-                        cmd_3 = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet gettransaction " + result_2
+                        cmd_3 = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet gettransaction " + result_2 + " true"
                         result_3, err_3 = subprocess.Popen(resource_path(cmd_3), shell=True, stdout=subprocess.PIPE).communicate()
                         
                         if not err_3:
                             hex = json.loads(result_3)["hex"]
                             fee = str(format(round(float(json.loads(result_3)["fee"]), 8), '.8f'))
-                            cmd_4 = "bin/btcctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + hex
-                            result_4, err_4 = subprocess.Popen(resource_path(cmd_4), shell=True, stdout=subprocess.PIPE).communicate()
-                            #print(result_4)#!
+                            amount = str(format(round(float(json.loads(result_3)["amount"]), 8), '.8f'))
+                            details += '\n\nYou folded to address: ' + to + '\nAmount: ' + amount + ' PKT\n'
 
-                            if not err_4:
-                                vout = json.loads(result_4)["vout"]
-                                sender = fr
-                                
-                                for i in range(0, len(vout)):
-                                    addr = vout[i]['scriptPubKey']['addresses'][0]
-                                    amount = str(round(float(vout[i]['value']),8))
-                                    if not(addr.strip() == sender):
-                                        details += '\n\nYou folded to address: ' + addr + '\nAmount: ' + amount + ' PKT\n'
-
-                                details += 'Your fees were: ' + fee + ' PKT\n'
-                                lft_ovr_bal = float(balance) - float(amount) + float(fee)
-
-                                # Append results
-                                details += 'Transaction ID:' + result_2
-                                trns_list.append(details)
-                                print('Details:', details)    
-
-                            else:
-                                print('Error:', err_4)
+                            # Append results
+                            details += 'Transaction ID:' + result_2
+                            trns_list.append(details)
+                            print('Details:', details)
+                            return details
 
                         else:
                             print('Error:', err_3)
+                            return err_3
 
                     except subprocess.CalledProcessError as e:
                         print('Error:', e.output)
 
-                #return result_2
 
             else:
                 msg = "Could not unlock wallet."
@@ -121,7 +105,6 @@ def fold_it(progress_callback):
     return details
 
    
-
 def get_balance():
     bal_cmd_result = json.loads(subprocess.Popen([resource_path("bin/btcctl"), '-u', uname, '-P', pwd, '--wallet', 'getaddressbalances', MIN_CONF], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0])
 

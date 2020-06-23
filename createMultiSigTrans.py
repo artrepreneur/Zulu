@@ -92,7 +92,7 @@ def create_tr(uname, pwd, fee, redeem_script, addr_arr, from_addr): #amount
 
             if dynamic_fee > round(float(fee),8):
                 fee = dynamic_fee
-            print('accurate fee:', fee)
+            print('Accurate fee:', fee)
 
             # Adds on the change balance address
             change = round((float(bal) - float(amount) - float(fee)), 8)

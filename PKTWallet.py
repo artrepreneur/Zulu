@@ -1872,7 +1872,7 @@ def pktd_worker(pktd_cmd_result, progress_callback):
 def inv_pktwllt():
     print('Invoking PKT Wallet...')
     global pktwallet_pid, pktwallet_cmd_result
-    pktwallet_cmd_result = subprocess.Popen([resource_path('bin/wallet'), '-u', uname, '-P', pwd], shell=False, stdout=subprocess.PIPE)
+    pktwallet_cmd_result = subprocess.Popen([resource_path('bin/wallet'), '-u', uname, '-P', pwd, '--usespv'], shell=False, stdout=subprocess.PIPE)
     pktwallet_pid = pktwallet_cmd_result.pid + 1
     pktwllt_stdout = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
     status = ''
