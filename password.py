@@ -19,7 +19,7 @@ def change_pass(uname, pwd, progress_callback):
     global err
 
     try:
-        cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrasechange " + old_pwd + " " + new_pwd
+        cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrasechange " + old_pwd + " " + new_pwd
         result, err = subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         result = result.decode('utf-8')
         err = err.decode('utf-8')
@@ -51,7 +51,7 @@ def change(u, p, op, np, win, state, pool):
 
 def print_result(result):
     # Relock wallet.
-    lock = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet walletlock"
+    lock = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletlock"
     result_lock, err_lock = subprocess.Popen(resource_path(lock), shell=True, stdout=subprocess.PIPE).communicate()
 
     if not err:

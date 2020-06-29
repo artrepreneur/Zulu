@@ -8,7 +8,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from functools import partial
 import os, sys, subprocess, json, threading, time, random, signal, traceback, re, psutil
-import platform, transactions, estimate, ingest, signMultiSigTrans, sendMultiSigTrans, sendCombMultiSigTrans, fold, createWallet, getSeed, resync
+import platform, transactions, estimate, ingest, signMultiSigTrans, sendMultiSigTrans, sendCombMultiSigTrans, fold, createWallet, getSeed, resync, peerinf
 import balances, addresses, balanceAddresses, rpcworker, privkey, pubkey, password, wlltinf, send, time, datetime, genMultiSig, createMultiSigTrans, sendCombMultiSigTrans
 #import combineSigned
 from pixMp import *
@@ -29,6 +29,8 @@ WALLET_SYNCING = False
 PKTD_SYNCING = False
 COUNTER = 1 
 FEE = ".00000001"
+STATUS_INTERVAL = 10
+passphrase = ''
 
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
@@ -89,7 +91,6 @@ class SendRcp(QtWidgets.QFrame):
         self.verticalLayout_21 = QtWidgets.QFormLayout(self)
         self.verticalLayout_21.setObjectName("verticalLayout_21")
         self.verticalLayout_21.setAlignment(Qt.AlignVCenter)
-
         self.label_9 = QtWidgets.QLabel(self)
         self.label_9.setStyleSheet("font: 75 15pt 'Gill Sans'; padding-bottom: 4px;")
         self.label_9.setObjectName("label_9")
@@ -281,9 +282,9 @@ def side_menu_clicked(btn):
         else:
             get_transactions()
             window.stackedWidget.setCurrentIndex(i)
-            msg_box_27 = QtWidgets.QMessageBox()
-            msg_box_27.setText("Loading...")
-            msg_box_27.exec()    
+            #msg_box_27 = QtWidgets.QMessageBox()
+            #msg_box_27.setText("Loading...")
+            #msg_box_27.exec()
 
     
 
@@ -490,6 +491,9 @@ def add_custom_styles():
     window.recalc_btn.setStyleSheet("QPushButton {border-radius: 5px; border: 1px solid rgb(2, 45, 147); font: 57 14pt 'Futura';} QPushButton:pressed {border-radius: 5px; border: 1px solid #FF6600; font: 57 14pt 'Futura'; background-color: #022D93; color: #FF6600;}")
     window.recalc_btn.setFixedSize(100, 25)
 
+    
+
+
 # Listen for static buttons
 def button_listeners():
     window.snd_btn.clicked.connect(btn_released)
@@ -567,7 +571,7 @@ def quit_app():
 
 # Handler for menu item click
 def btn_released(self):
-    global FEE
+    global FEE, passphrase
 
     clicked_widget = window.sender()
     #print('pressed button:', clicked_widget.objectName())
@@ -606,7 +610,10 @@ def btn_released(self):
                     return
 
             #Get passphrase
-            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+            if passphrase == '':
+                passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+            else:
+                ok = True
 
             if ok:
                 msg = "Create new multisig address?"
@@ -702,7 +709,7 @@ def btn_released(self):
 
     elif clicked_widget.objectName() == 'seed_next_btn':
         pp = wllt_pass
-        seed_entry = window.imprt_seed_txt.toPlainText().strip() #.split()
+        seed_entry = window.imprt_seed_txt.toPlainText().strip()
         #print('seed entry:', seed_entry)
         old_pass_line = window.old_pass_line.text().strip()
 
@@ -711,7 +718,6 @@ def btn_released(self):
             seed_msg_box.setText('You failed to enter your old password.')
             seed_msg_box.exec()
             return
-        #if len(seed_entry.split()) == 15:
         try:
             seed = createWallet.seed_execute(uname, pwd, pp, old_pass_line, seed_entry)["seed"]
             if not seed:
@@ -782,8 +788,10 @@ def btn_released(self):
             msg_box_26.setText('Wallet is syncing, unable to fold at this time.')
             msg_box_26.exec()
             return
-
-        passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+        if passphrase == '':
+            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+        else:
+            ok = True
 
         if ok:
             #Get passphrase
@@ -976,7 +984,7 @@ def btn_released(self):
 
     elif clicked_widget.objectName() == 'address_gen_btn2':
         window.address_line.clear()
-        window.pubkey_line.clear()
+        #window.pubkey_line.clear()
         i = window.stackedWidget.indexOf(window.address_create_page)
         window.stackedWidget.setCurrentIndex(i)
         inf_msg_box = QtWidgets.QMessageBox()
@@ -1036,7 +1044,10 @@ def btn_released(self):
         if len(rcp_list_dict2) > 0:
 
             #Get passphrase
-            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+            if passphrase == '':
+                passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+            else:
+                ok = True
 
             if ok:
                 result = createMultiSigTrans.create(uname, pwd, amt, address, pay_dict2, FEE, passphrase, window)
@@ -1104,7 +1115,11 @@ def btn_released(self):
 
     elif clicked_widget.objectName() == 'multi_sign_btn':
         raw_trans = (str(window.trans_text.toPlainText())).strip()
-        passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+        
+        if passphrase == '':
+            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+        else:
+            ok = True
 
         if ok:
             result = signMultiSigTrans.create(uname, pwd, raw_trans, passphrase, window)
@@ -1212,7 +1227,10 @@ def btn_released(self):
         if not worker_state_active['FOLD_WALLET']:
            
             #Get passphrase
-            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+            if passphrase == '':
+                passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+            else:
+                ok = True
 
             if ok:
 
@@ -1268,7 +1286,11 @@ def btn_released(self):
     elif clicked_widget.objectName() == 'import_keys_btn':
         txt = window.import_text.toPlainText()
         keys = txt.replace('\n',' ').split()
-        passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+
+        if passphrase == '':
+            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+        else:
+            ok = True
 
         if ok:
             ingest.all_keys(uname, pwd, keys, passphrase, window, worker_state_active, threadpool)
@@ -1280,19 +1302,27 @@ def btn_released(self):
 
     elif clicked_widget.objectName() == 'rtr_prvk_btn':
         address = str(window.comboBox_5.currentText())
-        passphrase = str(window.lineEdit_9.text().strip())
-        if address[0] == 'P':
-            msg_box_10 = QtWidgets.QMessageBox()
-            msg_box_10.setText("Can't retrieve private key for multisig address.")
-            msg_box_10.exec()
-            return
-
-        if address.isalnum() and passphrase.isalnum():
-            get_priv_key(address, passphrase)
+        #if passphrase =='':
+        #    passphrase = str(window.lineEdit_9.text().strip())
+        if passphrase == '':
+            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
         else:
-            msg_box_10 = QtWidgets.QMessageBox()
-            msg_box_10.setText('Make sure to select and address and enter your wallet passphrase to retrieve your private key.')
-            msg_box_10.exec()
+            ok = True
+
+        if ok:
+
+            if address[0] == 'P':
+                msg_box_10 = QtWidgets.QMessageBox()
+                msg_box_10.setText("Can't retrieve private key for multisig address.")
+                msg_box_10.exec()
+                return
+
+            if address.isalnum() and passphrase.isalnum():
+                get_priv_key(address, passphrase)
+            else:
+                msg_box_10 = QtWidgets.QMessageBox()
+                msg_box_10.setText('Make sure to select and address and enter your wallet passphrase to retrieve your private key.')
+                msg_box_10.exec()
 
     elif clicked_widget.objectName() == 'rtr_pubk_btn':
         address = str(window.addr_combo.currentText())
@@ -1388,20 +1418,20 @@ def btn_released(self):
                 msg_box_22.exec()
                 window.label_69.setText("Transaction send failed. Check that all necessary signatures have been combined.")
 
-    elif clicked_widget.objectName() == 'load_trns_btn':
+    elif clicked_widget.objectName() == 'load_trns_btn' and not worker_state_active['TRANS']:
         get_transactions()
-        msg_box_27 = QtWidgets.QMessageBox()
-        msg_box_27.setText("Loading...")
-        msg_box_27.exec()
+        #msg_box_27 = QtWidgets.QMessageBox()
+        #msg_box_27.setText("Loading...")
+        #msg_box_27.exec()
 
 
 def menubar_released(self):
-    global FEE
+    global FEE, passphrase
     clicked_item = window.sender().objectName()
     #print('pressed menubar item', clicked_item)
     if clicked_item == 'actionAddress_2':
         window.address_line.clear()
-        window.pubkey_line.clear()
+        #window.pubkey_line.clear()
         i = window.stackedWidget.indexOf(window.address_create_page)
         window.stackedWidget.setCurrentIndex(i)
         inf_msg_box = QtWidgets.QMessageBox()
@@ -1542,7 +1572,10 @@ def menubar_released(self):
         resync.execute(uname, pwd, window, worker_state_active, threadpool)
 
     elif clicked_item == 'actionSeed':
-        passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter your wallet passphrase to access your seed:',QtWidgets.QLineEdit.Password)
+        if passphrase == '':
+            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter your wallet passphrase to access your seed:',QtWidgets.QLineEdit.Password)
+        else:
+            ok = True
 
         if ok:
             try:
@@ -1611,7 +1644,7 @@ def menubar_released(self):
 
     elif clicked_item == 'actionGet_Private_Key':
         i = window.stackedWidget.indexOf(window.privkey_page)
-        window.lineEdit_9.clear()
+        #window.lineEdit_9.clear()
         window.lineEdit_8.clear()
         window.stackedWidget.setCurrentIndex(i)
         #window.comboBox_5.addItems(['Loading addresses ...'])
@@ -1800,7 +1833,9 @@ def exit_handler():
     
 
 def restart(proc):
-    print('process:', proc)
+    global COUNTER
+    COUNTER = 0
+    print('Process:', proc)
     rst_msg_box = QtWidgets.QMessageBox()
     if proc == "pktwallet":
         process = "PKT wallet"
@@ -1820,6 +1855,7 @@ def restart(proc):
                 start_wallet_thread()
             else:
                 start_pktd_thread()
+                
         except:
             print("Process could not be restarted.")
             sys.exit()
@@ -1837,6 +1873,8 @@ def start_wallet_thread():
 
 def pktwllt_dead():
     print('Wallet died', SHUTDOWN_CYCLE)
+    window.label_103.setPixmap(QPixmap(resource_path('img/red_btn.png')))
+    window.label_106.setText('0%')
     if not SHUTDOWN_CYCLE:
         if not AUTO_RESTART_WALLET and wallet_db != '':
             restart('pktwallet')
@@ -1850,11 +1888,6 @@ def start_pktd_thread():
     worker.signals.result.connect(pktd_dead)
     threadpool.start(worker)
 
-def pktd_dead():
-    print('pktd died', SHUTDOWN_CYCLE)
-    if not SHUTDOWN_CYCLE:
-        restart('pktd')
-
 def inv_pktd():
     global pktd_pid, pktd_cmd_result
     print('Invoking PKTD...')
@@ -1864,10 +1897,19 @@ def inv_pktd():
     return pktd_cmd_result
 
 def pktd_worker(pktd_cmd_result, progress_callback):
+    global COUNTER
     print('Running PKTD Worker...')
-    while pktd_cmd_result.poll() is None or int(pktd_cmd_result.poll()) > 0:
-        print(str((pktd_cmd_result.stdout.readline()).decode('utf-8')))
+    while (pktd_cmd_result.poll() is None or int(pktd_cmd_result.poll()) > 0) and not SHUTDOWN_CYCLE:
+        output = str((pktd_cmd_result.stdout.readline()).decode('utf-8'))
+        print('PKTD Output:', output)
     return
+
+def pktd_dead():
+    print('pktd died', SHUTDOWN_CYCLE)
+    window.label_100.setPixmap(QPixmap(resource_path('img/red_btn.png'))) 
+    window.label_105.setText('0%')
+    if not SHUTDOWN_CYCLE:
+        restart('pktd')
 
 def inv_pktwllt():
     print('Invoking PKT Wallet...')
@@ -1893,12 +1935,7 @@ def pktwllt_worker(pktwallet_cmd_result, progress_callback):
     while True:
         output = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
         print('Wallet Output:', output)
-        if COUNTER % 60 == 0:
-            status_light()         
-        else:
-            COUNTER +=1
-        
-        if not pktwallet_cmd_result.poll() is None or output =='': 
+        if not pktwallet_cmd_result.poll() is None or output =='' or SHUTDOWN_CYCLE:
             break    
     return
 
@@ -1941,20 +1978,74 @@ def make_executable():
         return 
 
 def check_status():
-    worker = Worker(status_light())
+    worker = Worker(get_status)
     worker.signals.result.connect(status_dead)
     threadpool.start(worker)
+
+def get_status(progress_callback):
+    global COUNTER
+    while True:
+        print('COUNTER:', COUNTER)
+        if COUNTER % STATUS_INTERVAL == 0:
+            status_light()         
+        else:
+            COUNTER +=1
+        if SHUTDOWN_CYCLE:
+            break    
+        time.sleep(1)
+    return        
 
 def status_dead():
     print("Status died")
 
 def status_light():
     global COUNTER
-    #print('Checking status...')
     COUNTER = 1
+    pktd_pct = '0.0%'
+    wllt_pct = '0.0%'
+    print('Checking status...')
+    
     info = wlltinf.get_inf(uname, pwd)
-    window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if not pktwllt_synching(info) else window.label_103.setPixmap(QPixmap(resource_path('img/red_btn.png')))   
-    window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if not pktd_synching(info) else window.label_100.setPixmap(QPixmap(resource_path('img/red_btn.png')))                                  
+    w_sync = pktwllt_synching(info)
+    p_sync = pktd_synching(info)
+
+    if not p_sync: # synched
+        pktd_pct='100.0%'
+        print('pktd synced', pktd_pct)
+    else:
+        peerinfo = (peerinf.get_inf(uname, pwd))
+        print('peerinfo:', peerinfo)
+
+        if len(peerinfo)>0:
+            peerinfo = peerinfo[0]
+            strt_height = peerinfo['startingheight']
+            curr_height_1 = peerinfo['currentheight']
+            print('Current Height', curr_height_1, 'Start Height:', strt_height)
+            pktd_pct = str(round((strt_height / curr_height_1) * 100,1)) + '%'
+
+            if pktd_pct=='100.0%':
+                pktd_pct = '0.0%'
+
+        else: # no data for peerinfo
+                pktd_pct = '0.0%'             
+
+    if not w_sync: # synched
+        wllt_pct='100.0%'
+    else: 
+        curr_height_2 = int(info['CurrentHeight'])
+        bnd_height = int(info['BackendHeight'])
+        print('Current Height', curr_height_2, 'Back End Height:', bnd_height)
+        wllt_pct = str(round((curr_height_2 / bnd_height) * 100,1)) + '%'
+        if wllt_pct=='100.0%':
+            wllt_pct = '0.0%'    
+
+    print('Wallet Sync:', w_sync, 'Wallet Percent:',wllt_pct)
+    print('PKTD Sync:', p_sync, 'PKTD Percent:',  pktd_pct)
+
+    window.label_105.setText(pktd_pct)
+    window.label_106.setText(wllt_pct)
+    window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if (not w_sync or wllt_pct=='100.0%') else window.label_103.setPixmap(QPixmap(resource_path('img/ylw_btn.png')))   
+    window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if (not p_sync or pktd_pct=='100.0%') else window.label_100.setPixmap(QPixmap(resource_path('img/ylw_btn.png')))                                  
 
 def get_wallet_db():
     wallet_db = ''
@@ -2085,6 +2176,7 @@ def deactivate():
     window.multi_add_btn.hide()
     window.multi_clear_btn.hide()
     window.add_btn.hide()
+    window.trns_status.hide()
     window.label_9.setText('Enter Your Payee Below')
     window.label_17.setText('Enter Your Payee Below')
     window.actionPay_to_Many.setVisible(False)
@@ -2192,8 +2284,5 @@ if __name__ == "__main__":
     button_listeners()
     menubar_listeners()
     window.show()
-    
-    window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png')))
-    status_light()
-
+    check_status()
     app.exec()

@@ -24,7 +24,7 @@ def create(uname, pwd, fee, raw_trans, window):
         #try:
 
         # decode the raw transaction and display it during sending for confirmation.
-        decode_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + raw_trans
+        decode_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + raw_trans
         result, err = (subprocess.Popen(resource_path(decode_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
         result = result.decode('utf-8')
         err = err.decode('utf-8')
@@ -48,7 +48,7 @@ def create(uname, pwd, fee, raw_trans, window):
         ret = msg_box_21.exec()
 
         if ret == QtWidgets.QMessageBox.Yes:
-            send_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet sendrawtransaction " + str(raw_trans)
+            send_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet sendrawtransaction " + str(raw_trans)
             #print('send cmd', send_cmd)
             send_result, err = (subprocess.Popen(resource_path(send_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
             send_result = send_result.decode('utf-8')

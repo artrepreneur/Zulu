@@ -4,7 +4,7 @@
 # PKT Cash Wallet
 PKT Cash wallet is a QT wallet for the PKT Cash blockchain mainnet. This wallet adds a graphical user interface (GUI) to the command line daemon [pktwallet](https://github.com/pkt-cash/pktd/tree/master/pktwallet). PKT Cash Wallet runs as a standalone application for macOS currently, and eventually will have support for Unix. 
 
-This is a full node wallet and not SPV at this time. It comes bundled with binaries for a full node daemon [pktd](https://github.com/pkt-cash/pktd/tree/develop), [pktwallet](https://github.com/pkt-cash/pktd/tree/develop/pktwallet), and the remote procedure call (RPC) client [btcctl](https://github.com/pkt-cash/pktd/tree/develop/cmd/btcctl). These binaries are stored in the bin folder of this repo. It is also possible to compile these binaries from their respective repositories. If you decide to compile on your own, use the development branch of the [pkt-cash](https://github.com/pkt-cash/pktd/tree/develop) repo. These binaries should be placed in the bin folder or the wallet will cease to work.     
+This is a full node wallet and not SPV at this time. It comes bundled with binaries for a full node daemon [pktd](https://github.com/pkt-cash/pktd/tree/develop), [pktwallet](https://github.com/pkt-cash/pktd/tree/develop/pktwallet), and the remote procedure call (RPC) client [pktctl](https://github.com/pkt-cash/pktd/tree/develop/cmd/pktctl). These binaries are stored in the bin folder of this repo. It is also possible to compile these binaries from their respective repositories. If you decide to compile on your own, use the development branch of the [pkt-cash](https://github.com/pkt-cash/pktd/tree/develop) repo. These binaries should be placed in the bin folder or the wallet will cease to work.     
 
 ## Wallet Features
 The wallet includes the following features. 
@@ -51,7 +51,7 @@ pip install -r requirements.txt
 ##### Linux (required):
 
 
-Swap the binaries for pktd, pktwallet and btcctl in the bin directory for linux binaries. You can build them from the repo's mentioned above or use these [releases.](https://github.com/pkt-cash/pktd/releases) This is required for linux to work but is optional on mac's. 
+Swap the binaries for pktd, pktwallet and pktctl in the bin directory for linux binaries. You can build them from the repo's mentioned above or use these [releases.](https://github.com/pkt-cash/pktd/releases) This is required for linux to work but is optional on mac's. 
 
 Finally, change the permissions of the binaries.
 

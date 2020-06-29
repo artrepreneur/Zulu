@@ -20,14 +20,14 @@ def new_addresses_sync(uname, pwd):
     pub_key = ''
 
     try:
-        #cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet getnewaddress"
+        #cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet getnewaddress"
         #new_address = (subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]).decode("utf-8")
-        new_address = (subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet', 'getnewaddress'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]).decode("utf-8")
+        new_address = (subprocess.Popen([resource_path('bin/pktctl'), '-u', uname, '-P', pwd, '--wallet', 'getnewaddress'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]).decode("utf-8")
         if new_address:
-            pubkey_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet validateaddress " + new_address
+            pubkey_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet validateaddress " + new_address
             try:
                 pub_key = json.loads(subprocess.Popen(resource_path(pubkey_cmd), shell=True, stdout=subprocess.PIPE).communicate()[0])["pubkey"]
-                #pub_key = (json.loads(subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet', 'validateaddress', new_address], shell=False, stdout=subprocess.PIPE).communicate()[0]))["pubkey"]
+                #pub_key = (json.loads(subprocess.Popen([resource_path('bin/pktctl'), '-u', uname, '-P', pwd, '--wallet', 'validateaddress', new_address], shell=False, stdout=subprocess.PIPE).communicate()[0]))["pubkey"]
                 print(pub_key)
             except subprocess.CalledProcessError as e:
                 print(e.output)
@@ -45,21 +45,19 @@ def new_addresses(uname, pwd, progress_callback):
     new_address = ''
     pub_key = ''
     try:
-        cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet getnewaddress"
+        cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet getnewaddress"
         new_address = (subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]).decode("utf-8")
-        #new_address = (subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet', 'getnewaddress'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]).decode("utf-8")
 
+        '''
         if new_address:
-            pubkey_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet validateaddress " + new_address
+            pubkey_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet validateaddress " + new_address
             try:
                 pub_key = json.loads(subprocess.Popen(resource_path(pubkey_cmd), shell=True, stdout=subprocess.PIPE).communicate()[0])["pubkey"]
-                #pub_key = json.loads(subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet','validateaddress', new_address], shell=False, stdout=subprocess.PIPE).communicate()[0])#["pubkey"]
-                #pub_key = pub_key["pubkey"]
             except subprocess.CalledProcessError as e:
                 print(e.output)
-
         else:
             print('Failed to create new addresses')
+        '''    
 
     except subprocess.CalledProcessError as e:
         print('Failed to create new addresses', e.output)
@@ -82,8 +80,8 @@ def get_new_address(u, p, win, state, pool):
 
 def print_address(list):
     window.address_line.setText(list[0])
-    window.pubkey_line.setText(list[1])
-    window.pubkey_line.repaint()
-    window.pubkey_line.setCursorPosition(0)
+    #window.pubkey_line.setText(list[1])
+    #window.pubkey_line.repaint()
+    #window.pubkey_line.setCursorPosition(0)
     worker_state_active['GET_NEW_ADDRESS']= False
     addresses.get_addresses(uname, pwd, window, "addresses", worker_state_active, threadpool)

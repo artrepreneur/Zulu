@@ -28,14 +28,14 @@ def fold_it(progress_callback):
         try:
         
             # unlock
-            cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrase " + passphrase + ' 1000'
+            cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrase " + passphrase + ' 1000'
             result, err = (subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
             result = result.decode('utf-8')
             err = err.decode('utf-8')
 
             # Send
             if not err:
-                cmd_2 = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet sendfrom " + to + " 0 '[\"" + fr + "\"]' 1"
+                cmd_2 = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet sendfrom " + to + " 0 '[\"" + fr + "\"]' 1"
                 result_2, err_2 = (subprocess.Popen(resource_path(cmd_2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
                 result_2 = result_2.decode('utf-8')
                 err_2 = err_2.decode('utf-8')
@@ -56,10 +56,10 @@ def fold_it(progress_callback):
                 else:
                     print('Transaction Id:',result_2)    
                     # Relock wallet.
-                    result_lock, err_lock = subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet', 'walletlock'], shell=False, stdout=subprocess.PIPE).communicate()
+                    result_lock, err_lock = subprocess.Popen([resource_path('bin/pktctl'), '-u', uname, '-P', pwd, '--wallet', 'walletlock'], shell=False, stdout=subprocess.PIPE).communicate()
 
                     try:
-                        cmd_3 = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet gettransaction " + result_2 + " true"
+                        cmd_3 = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet gettransaction " + result_2 + " true"
                         result_3, err_3 = subprocess.Popen(resource_path(cmd_3), shell=True, stdout=subprocess.PIPE).communicate()
                         
                         if not err_3:
@@ -106,7 +106,7 @@ def fold_it(progress_callback):
 
    
 def get_balance():
-    bal_cmd_result = json.loads(subprocess.Popen([resource_path("bin/btcctl"), '-u', uname, '-P', pwd, '--wallet', 'getaddressbalances', MIN_CONF], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0])
+    bal_cmd_result = json.loads(subprocess.Popen([resource_path("bin/pktctl"), '-u', uname, '-P', pwd, '--wallet', 'getaddressbalances', MIN_CONF], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0])
 
     for i, item in enumerate(bal_cmd_result):
         address = item["address"]
@@ -142,17 +142,17 @@ def fold_response(result):
     window.lineEdit_7.setText(result)
 
     # Relock wallet.
-    result_lock, err_lock = subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet', 'walletlock'], shell=False, stdout=subprocess.PIPE).communicate()
+    result_lock, err_lock = subprocess.Popen([resource_path('bin/pktctl'), '-u', uname, '-P', pwd, '--wallet', 'walletlock'], shell=False, stdout=subprocess.PIPE).communicate()
 
     if result:
         try:
-            cmd_3 = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet gettransaction " + result
+            cmd_3 = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet gettransaction " + result
             result_3, err_3 = subprocess.Popen(resource_path(cmd_3), shell=True, stdout=subprocess.PIPE).communicate()
             
             if not err_3:
                 hex = json.loads(result_3)["hex"]
                 fee = str(format(round(float(json.loads(result_3)["fee"]), 8), '.8f'))
-                cmd_4 = "bin/btcctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + hex
+                cmd_4 = "bin/pktctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + hex
                 result_4, err_4 = subprocess.Popen(resource_path(cmd_4), shell=True, stdout=subprocess.PIPE).communicate()
 
                 if not err_4:

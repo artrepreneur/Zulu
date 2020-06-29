@@ -21,7 +21,7 @@ def create(uname, pwd, raw_trans, passphrase, window):
 
     try:
         # unlock wallet
-        unlock_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrase " + passphrase + ' 10000'
+        unlock_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrase " + passphrase + ' 10000'
         result, err = (subprocess.Popen(resource_path(unlock_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
         result = result.decode('utf-8')
         err = err.decode('utf-8')
@@ -39,7 +39,7 @@ def create(uname, pwd, raw_trans, passphrase, window):
             window.label_66.setText("Error: Wallet could not be unlocked. Check your wallet passphrase.")
 
         else:
-            decode_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + raw_trans
+            decode_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + raw_trans
             print('decode command', decode_cmd)
             result, err = (subprocess.Popen(resource_path(decode_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
             result = result.decode('utf-8')
@@ -55,7 +55,7 @@ def create(uname, pwd, raw_trans, passphrase, window):
                 txid = (json_trans)['vin'][0]["txid"]
                 vout = (json_trans)['vin'][0]["vout"]
                 print('txid', txid, 'vout', vout)
-                sender_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" getrawtransaction " + txid
+                sender_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" getrawtransaction " + txid
                 print(sender_cmd)
                 sndr_result, sndr_err = (subprocess.Popen(resource_path(sender_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
                 sndr_result = sndr_result.decode('utf-8')
@@ -63,7 +63,7 @@ def create(uname, pwd, raw_trans, passphrase, window):
                 print('sender res', sndr_result, sndr_err) 
 
                 if not sndr_err:
-                    decode_cmd_2 = "bin/btcctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + sndr_result
+                    decode_cmd_2 = "bin/pktctl -u "+  uname +" -P "+ pwd +" decoderawtransaction " + sndr_result
                     result_2, err_2 = (subprocess.Popen(resource_path(decode_cmd_2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
                     result_2 = result_2.decode('utf-8')
                     err_2 = err_2.decode('utf-8')
@@ -110,7 +110,7 @@ def create(uname, pwd, raw_trans, passphrase, window):
                                         break
                             
 
-                                sign_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet signrawtransaction " + str(raw_trans) + " '[{\"txid\":\""+str(txid)+"\",\"n\":\""+str(vout)+"\",\"scriptpubkey\":\""+str(scriptpubkey)+"\",\"redeemscript\":\""+str(redeem_script)+"\"}]'"
+                                sign_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet signrawtransaction " + str(raw_trans) + " '[{\"txid\":\""+str(txid)+"\",\"n\":\""+str(vout)+"\",\"scriptpubkey\":\""+str(scriptpubkey)+"\",\"redeemscript\":\""+str(redeem_script)+"\"}]'"
                                 print(sign_cmd)
 
                                 sign_result, err_3 = (subprocess.Popen(resource_path(sign_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
@@ -120,7 +120,7 @@ def create(uname, pwd, raw_trans, passphrase, window):
                                 print(signed_trans)
 
                                 # Relock wallet.
-                                lock = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet walletlock"
+                                lock = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletlock"
                                 result_lock, err_lock = subprocess.Popen(resource_path(lock), shell=True, stdout=subprocess.PIPE).communicate()
 
                                 if err_3:

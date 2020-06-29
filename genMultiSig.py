@@ -19,7 +19,7 @@ def resource_path(relative_path):
 def new_multisig (uname, pwd, required_sigs, pub_keys, passphrase, progress_callback):
     global e, multisig_result
 
-    base_cmd ='bin/btcctl -u ' + uname + ' -P ' + pwd + ' --wallet '
+    base_cmd ='bin/pktctl -u ' + uname + ' -P ' + pwd + ' --wallet '
     multisig_cmd = base_cmd + 'createmultisig ' + required_sigs + pub_keys
 
     try:
@@ -39,7 +39,7 @@ def new_multisig (uname, pwd, required_sigs, pub_keys, passphrase, progress_call
 # Add it to the wallet via import
 def add_new_multisig (uname, pwd, required_sigs, pub_keys, passphrase):
 
-    base_cmd ='bin/btcctl -u ' + uname + ' -P ' + pwd + ' --wallet '
+    base_cmd ='bin/pktctl -u ' + uname + ' -P ' + pwd + ' --wallet '
 
     # Unlock the wallet first
     unlock_cmd = base_cmd + ' walletpassphrase ' + passphrase + ' 1000'

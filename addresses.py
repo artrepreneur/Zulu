@@ -27,18 +27,11 @@ def get_all_addresses(uname, pwd, progress_callback):
     addr_arr = []
 
     try:
-        '''
-        if type == 'balances':
-            addr_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet getaddressbalances " + MIN_CONF
-        else:
-            addr_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet getaddressbalances " + MIN_CONF + ' True'
-        addr_cmd_result = json.loads(subprocess.Popen(resource_path(addr_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0])
-        '''
         
         if type == 'balances':
-             addr_cmd_result = json.loads(subprocess.Popen([resource_path("bin/btcctl"), '-u', uname, '-P', pwd, '--wallet', 'getaddressbalances', MIN_CONF], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0])
+             addr_cmd_result = json.loads(subprocess.Popen([resource_path("bin/pktctl"), '-u', uname, '-P', pwd, '--wallet', 'getaddressbalances', MIN_CONF], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0])
         else:
-            addr_cmd_result = json.loads(subprocess.Popen([resource_path("bin/btcctl"), '-u', uname, '-P', pwd, '--wallet', 'getaddressbalances', MIN_CONF, 'True'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0])
+            addr_cmd_result = json.loads(subprocess.Popen([resource_path("bin/pktctl"), '-u', uname, '-P', pwd, '--wallet', 'getaddressbalances', MIN_CONF, 'True'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0])
 
 
         for i, item in enumerate(addr_cmd_result):

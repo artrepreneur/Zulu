@@ -19,14 +19,14 @@ def get_private_key(uname, pwd, progress_callback):
     global err, err_2
 
     try:
-        cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrase " + passphrase + ' 1000'
+        cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrase " + passphrase + ' 1000'
         result, err = (subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
         result = result.decode('utf-8')
         err = err.decode('utf-8')
 
         if not err:
             try:
-                cmd_2 = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet dumpprivkey " + address
+                cmd_2 = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet dumpprivkey " + address
                 result_2, err_2 = (subprocess.Popen(resource_path(cmd_2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
                 result_2 = result_2.decode('utf-8')
                 err_2 = err_2.decode('utf-8')
@@ -74,7 +74,7 @@ def get_key(u, p, a, pp, win, state, pool):
 
 def print_result(result):
     # Relock wallet.
-    lock = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet walletlock"
+    lock = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletlock"
     result_lock, err_lock = subprocess.Popen(resource_path(lock), shell=True, stdout=subprocess.PIPE).communicate()
     window.lineEdit_8.clear()
     if result:

@@ -15,7 +15,7 @@ def resource_path(relative_path):
     return os.path.join(os.path.abspath('.'), relative_path)
     
 def get_balance(uname, pwd, progress_callback):
-    bal_cmd_result, err = (subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet', 'getbalance'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
+    bal_cmd_result, err = (subprocess.Popen([resource_path('bin/pktctl'), '-u', uname, '-P', pwd, '--wallet', 'getbalance'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
     bal_cmd_result = bal_cmd_result.decode('utf-8')
     print('bal_cmd_result', bal_cmd_result)
     err = err.decode('utf-8')
@@ -26,7 +26,7 @@ def get_balance(uname, pwd, progress_callback):
         return str(bal_cmd_result).rstrip()
 
 def get_balance_for_addr(uname, pwd, addr):
-    addr_bal_cmd_result, err = (subprocess.Popen([resource_path('bin/btcctl'), '-u', uname, '-P', pwd, '--wallet', 'listunspent', MIN_CONF, MAX_CONF, '[\"'+addr+'\"]'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
+    addr_bal_cmd_result, err = (subprocess.Popen([resource_path('bin/pktctl'), '-u', uname, '-P', pwd, '--wallet', 'listunspent', MIN_CONF, MAX_CONF, '[\"'+addr+'\"]'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
     addr_bal_cmd_result = addr_bal_cmd_result.decode('utf-8')
     err = err.decode('utf-8')
 

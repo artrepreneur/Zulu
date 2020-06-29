@@ -18,7 +18,7 @@ def resource_path(relative_path):
 def get_public_key(uname, pwd, progress_callback):
     global err
     try:
-        cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet validateaddress " + address
+        cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet validateaddress " + address
         result, err = (subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
         err = err.decode('utf-8')
         if err:

@@ -23,10 +23,10 @@ def get_est(uname, pwd, progress_callback):
     err = False
     
 
-    # estimatefee RPC isn't implemented yet
+    # estimatefee RPC -- isn't implemented yet
     '''
     try:
-        cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet estimatefee " + str(BLOCKS)
+        cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet estimatefee " + str(BLOCKS)
         result, err = (subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
         result = result.decode('utf-8')
         err = err.decode('utf-8')

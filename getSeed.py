@@ -19,7 +19,7 @@ def retrieve():
     global err, err_2
 
     try:
-        cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrase " + passphrase + ' 1000'
+        cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrase " + passphrase + ' 1000'
         result, err = (subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
         result = result.decode('utf-8')
         err = err.decode('utf-8')
@@ -27,7 +27,7 @@ def retrieve():
 
         if not err:
             try:
-                cmd_2 = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet getwalletseed"
+                cmd_2 = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet getwalletseed"
                 result_2, err_2 = (subprocess.Popen(resource_path(cmd_2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
                 result_2 = result_2.decode('utf-8')
                 err_2 = err_2.decode('utf-8')
