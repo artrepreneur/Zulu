@@ -1985,7 +1985,7 @@ def check_status():
 def get_status(progress_callback):
     global COUNTER
     while True:
-        print('COUNTER:', COUNTER)
+        #print('COUNTER:', COUNTER)
         if COUNTER % STATUS_INTERVAL == 0:
             status_light()         
         else:
@@ -2035,7 +2035,7 @@ def status_light():
         curr_height_2 = int(info['CurrentHeight'])
         bnd_height = int(info['BackendHeight'])
         print('Current Height', curr_height_2, 'Back End Height:', bnd_height)
-        wllt_pct = str(round((curr_height_2 / bnd_height) * 100,1)) + '%'
+        wllt_pct = str(round((bnd_height / curr_height_2) * 100,1)) + '%'
         if wllt_pct=='100.0%':
             wllt_pct = '0.0%'    
 

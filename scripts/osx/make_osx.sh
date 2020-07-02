@@ -22,7 +22,16 @@ mkdir -p "$BUILDDIR/deps"
 VERSION=$(git describe --tags --dirty --always)
 
 # Code Signing: See https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
-APP_SIGN=""
+echo $TRAVIS_OS_NAME
+export CERTIFICATE_P12=Certificate.p12
+echo $CERTIFICATE_OSX_P12 | base64 — decode > $CERTIFICATE_P12
+export KEYCHAIN=build.keychain #ios-build.keychain
+#security create-keychain -p mysecretpassword $KEYCHAIN
+#security default-keychain -s $KEYCHAIN
+#security unlock-keychain -p mysecretpassword $KEYCHAIN
+#security import $CERTIFICATE_P12 -k $KEYCHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign
+APP_SIGN='' #security find-identity -v
+
 if [ -n "$1" ]; then
     # Test the identity is valid for signing by doing this hack. There is no other way to do this.
     cp -f /bin/ls ./CODESIGN_TEST
@@ -48,7 +57,7 @@ else
 fi
 PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install -s $PYTHON_VERSION && \
 pyenv global $PYTHON_VERSION || \
-fail "Unable to use Python $PYTHON_VERSION"  
+fail "Unable to use Python $PYTHON_VERSION"
 
 info "Installing requirements..."
 python3 -m pip install --no-dependencies -Ir ./scripts/deterministic-build/requirements.txt --user || \
@@ -82,18 +91,6 @@ APP_SIGN="$APP_SIGN" pyinstaller --noconfirm --ascii --clean --name "$VERSION" P
 
 DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$APP_SIGN" # If APP_SIGN is empty will be a noop
 
-#info "Installing NODE"
-#python3 -m pip install nodeenv --user || \
-#fail "Could not install nodeenv"
-#nodeenv --version
-#nodeenv env
-#. env/bin/activate
-#node -v
-#npm -v
-#info "Installing appdmg"
-#npm install -g appdmg || \
-#    fail "Could not install appdmg"
-
 info "Installing NODE"
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash > /dev/null 2>&1
 source ~/.nvm/nvm.sh
@@ -103,14 +100,14 @@ node --version
 
 info "Installing appdmg"
 npm install -g appdmg --unsafe-perm || \
-    fail "Could not install appdmg"  
+    fail "Could not install appdmg"
 
 info "Creating PKTWallet.json"
 echo -e '{\n\t"title": "pktwallet-'$VERSION'",\n\t"icon": "img/drive.icns",\n\t"contents": [\n\t\t{ "x": 448, "y": 344, "type": "link", "path": "/Applications" },\n\t\t{ "x": 192, "y": 344, "type": "file", "path": "./dist/PKTWallet.app" }\n\t]\n}' > PKTWallet.json || \
     fail "Could not create PKTWallet.json"
 
 info "Creating .DMG"
-DMGFILE="pktwallet-"$VERSION".dmg" 
+DMGFILE="pktwallet-"$VERSION".dmg"
 appdmg PKTWallet.json dist/$DMGFILE || \
     fail "Could not create .DMG"
 
