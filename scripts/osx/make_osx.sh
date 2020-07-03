@@ -22,7 +22,7 @@ mkdir -p "$BUILDDIR/deps"
 VERSION=$(git describe --tags --dirty --always)
 
 # Code Signing: See https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
-#echo "IDENTITY:$IDENTITY"
+echo "identity" $IDENTITY
 echo "$1"
 APP_SIGN='' 
 
@@ -84,8 +84,8 @@ APP_SIGN="$APP_SIGN" pyinstaller --noconfirm --ascii --clean --name "$VERSION" P
     fail "Could not build binary"
 
 info "Code signing PKTWallet.app"
-DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$IDENTITY" # If APP_SIGN is empty will be a noop
-#codesign --deep --force --verbose --sign "$APP_SIGN" "dist/PKTWallet.app"
+#DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$APP_SIGN" # If APP_SIGN is empty will be a noop
+codesign --deep --force --verbose --sign "$IDENTITY" "dist/PKTWallet.app"
 
 info "Installing NODE"
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash > /dev/null 2>&1
@@ -111,8 +111,8 @@ appdmg PKTWallet.json dist/$DMGFILE || \
 #    fail "Could not create .DMG"
 
 info "Code signing dist/pktwallet-${VERSION}.dmg"
-DoCodeSignMaybe ".DMG" "dist/pktwallet-${VERSION}.dmg" "$IDENTITY" # If APP_SIGN is empty will be a noop
-#codesign --deep --force --verbose --sign "$APP_SIGN" "dist/pktwallet-${VERSION}.dmg"
+#DoCodeSignMaybe ".DMG" "dist/pktwallet-${VERSION}.dmg" "$APP_SIGN" # If APP_SIGN is empty will be a noop
+codesign --deep --force --verbose --sign "$IDENTITY" "dist/pktwallet-${VERSION}.dmg"
 
 if [ -z "$APP_SIGN" ]; then
     warn "App was built successfully but was not code signed. Users may get security warnings from macOS."
