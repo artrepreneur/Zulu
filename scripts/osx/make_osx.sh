@@ -22,7 +22,7 @@ mkdir -p "$BUILDDIR/deps"
 VERSION=$(git describe --tags --dirty --always)
 
 # Code Signing: See https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
-echo "Travis OS name:" $TRAVIS_OS_NAME
+#echo "Travis OS name:" $TRAVIS_OS_NAME
 #export CERTIFICATE_P12=Certificate.p12
 #echo $CERTIFICATE_OSX_P12 | base64 — decode > $CERTIFICATE_P12
 #export KEYCHAIN=build.keychain #ios-build.keychain
