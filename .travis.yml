@@ -13,10 +13,9 @@ before_script:
     export IDENTITY='';
     echo security find-identity -v;
     IDENTITY=$(security find-identity -v);
-    echo "identity" $IDENTITY;
   fi
 script:
-- bash ./make_osx.sh $IDENTITY
+- bash ./make_osx.sh
 deploy:
   provider: releases
   skip_cleanup: true
