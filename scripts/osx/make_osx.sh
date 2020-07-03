@@ -109,6 +109,7 @@ appdmg PKTWallet.json dist/$DMGFILE || \
 #hdiutil create -fs HFS+ -volname PKTWallet -srcfolder dist/PKTWallet.app "dist/pktwallet-$VERSION.dmg" || \
 #    fail "Could not create .DMG"
 
+info "Code signing dist/pktwallet-${VERSION}.dmg"
 #DoCodeSignMaybe ".DMG" "dist/pktwallet-${VERSION}.dmg" "$APP_SIGN" # If APP_SIGN is empty will be a noop
 codesign --deep --force --verbose --sign "$APP_SIGN" "dist/pktwallet-${VERSION}.dmg"
 
