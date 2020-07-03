@@ -2,7 +2,6 @@ language: generic
 os:
 - osx
 before_install: 
-before_script:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     export CERTIFICATE_P12=Certificate.p12;
     echo $CERTIFICATE_OSX_P12 | base64 — decode > $CERTIFICATE_P12;
@@ -11,6 +10,7 @@ before_script:
     security default-keychain -s $KEYCHAIN;
     security unlock-keychain -p mysecretpassword $KEYCHAIN;
     security import $CERTIFICATE_P12 -k $KEYCHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign;
+    security find-identity -v
   fi
 script:
 - bash ./make_osx.sh
