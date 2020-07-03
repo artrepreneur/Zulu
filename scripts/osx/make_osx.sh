@@ -31,6 +31,7 @@ VERSION=$(git describe --tags --dirty --always)
 #security unlock-keychain -p mysecretpassword $KEYCHAIN
 #security import $CERTIFICATE_P12 -k $KEYCHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign
 #security find-identity -v
+
 APP_SIGN='' 
 
 if [ -n "$1" ]; then
