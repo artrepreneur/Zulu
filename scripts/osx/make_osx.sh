@@ -84,7 +84,7 @@ APP_SIGN="$APP_SIGN" pyinstaller --noconfirm --ascii --clean --name "$VERSION" P
     fail "Could not build binary"
 
 info "Code signing PKTWallet.app"
-DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$APP_SIGN" # If APP_SIGN is empty will be a noop
+DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$IDENTITY" # If APP_SIGN is empty will be a noop
 #codesign --deep --force --verbose --sign "$APP_SIGN" "dist/PKTWallet.app"
 
 info "Installing NODE"
@@ -111,7 +111,7 @@ appdmg PKTWallet.json dist/$DMGFILE || \
 #    fail "Could not create .DMG"
 
 info "Code signing dist/pktwallet-${VERSION}.dmg"
-DoCodeSignMaybe ".DMG" "dist/pktwallet-${VERSION}.dmg" "$APP_SIGN" # If APP_SIGN is empty will be a noop
+DoCodeSignMaybe ".DMG" "dist/pktwallet-${VERSION}.dmg" "$IDENTITY" # If APP_SIGN is empty will be a noop
 #codesign --deep --force --verbose --sign "$APP_SIGN" "dist/pktwallet-${VERSION}.dmg"
 
 if [ -z "$APP_SIGN" ]; then
