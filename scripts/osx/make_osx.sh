@@ -23,7 +23,7 @@ VERSION=$(git describe --tags --dirty --always)
 
 # Code Signing: See https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
 echo 'IDENTITY:' $IDENTITY
-APP_SIGN=$IDENTITY #'' 
+APP_SIGN="$IDENTITY" #'' 
 
 if [ -n "$1" ]; then
     # Test the identity is valid for signing by doing this hack. There is no other way to do this.
