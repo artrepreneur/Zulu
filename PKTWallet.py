@@ -2027,7 +2027,7 @@ def status_light():
                 pktd_pct = '0.0%'
 
         else: # no data for peerinfo
-                pktd_pct = '0.0%'             
+            pktd_pct = '0.0%'             
 
     if not w_sync: # synched
         wllt_pct='100.0%'
