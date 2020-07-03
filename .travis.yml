@@ -11,7 +11,6 @@ before_script:
     security unlock-keychain -p mysecretpassword $KEYCHAIN;
     security import $CERTIFICATE_P12 -k $KEYCHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign;
     IDENTITY=security find-identity -v
-    echo "IDENTITY"
   fi
 script:
 - bash ./make_osx.sh
