@@ -16,7 +16,7 @@ before_script:
     echo $IDENTITY;
   fi
 script:
-- bash ./make_osx.sh $IDENTITY
+- bash ./make_osx.sh
 deploy:
   provider: releases
   skip_cleanup: true
