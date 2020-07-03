@@ -10,7 +10,6 @@ before_install:
     security default-keychain -s $KEYCHAIN;
     security unlock-keychain -p mysecretpassword $KEYCHAIN;
     security import $CERTIFICATE_P12 -k $KEYCHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign;
-    security find-identity -v
   fi
 script:
 - bash ./make_osx.sh
