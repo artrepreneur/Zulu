@@ -23,7 +23,6 @@ VERSION=$(git describe --tags --dirty --always)
 
 # Code Signing: See https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
 APP_SIGN="Developer ID Application: Healthmatica, Inc (HN2HJ553YW)"
-
 info "Installing Python $PYTHON_VERSION"
 export PATH="${HOME}/.pyenv/bin:${HOME}/.pyenv/shims:${HOME}/Library/Python/3.7/bin:$PATH"
 if [ -d "${HOME}/.pyenv" ]; then
