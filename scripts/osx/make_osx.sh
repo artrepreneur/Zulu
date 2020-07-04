@@ -85,7 +85,7 @@ APP_SIGN="$APP_SIGN" pyinstaller --noconfirm --ascii --clean --name "$VERSION" P
 
 info "Code signing PKTWallet.app"
 #DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$APP_SIGN" # If APP_SIGN is empty will be a noop
-codesign --deep --force --verbose --sign "$APP_SIGN" "dist/PKTWallet.app"
+codesign --deep --force --verbose --sign "Developer ID Application: Healthmatica, Inc (HN2HJ553YW)" "dist/PKTWallet.app"
 
 info "Installing NODE"
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash > /dev/null 2>&1
@@ -112,7 +112,7 @@ appdmg PKTWallet.json dist/$DMGFILE || \
 
 info "Code signing dist/pktwallet-${VERSION}.dmg"
 #DoCodeSignMaybe ".DMG" "dist/pktwallet-${VERSION}.dmg" "$APP_SIGN" # If APP_SIGN is empty will be a noop
-codesign --deep --force --verbose --sign "$APP_SIGN" "dist/pktwallet-${VERSION}.dmg"
+codesign --deep --force --verbose --sign "Developer ID Application: Healthmatica, Inc (HN2HJ553YW)" "dist/pktwallet-${VERSION}.dmg"
 
 if [ -z "$APP_SIGN" ]; then
     warn "App was built successfully but was not code signed. Users may get security warnings from macOS."
