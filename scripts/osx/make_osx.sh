@@ -22,22 +22,22 @@ mkdir -p "$BUILDDIR/deps"
 VERSION=$(git describe --tags --dirty --always)
 
 # Code Signing: See https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
-APP_SIGN='Developer ID Application: Healthmatica, Inc (HN2HJ553YW)' 
+APP_SIGN=""
 
-if [ -n "$1" ]; then
+if [ -z $APP_SIGN]; then
+    warn "Code signing DISABLED. Specify a valid macOS Developer identity installed on the system as the first argument to this script to enable signing."
+else
     # Test the identity is valid for signing by doing this hack. There is no other way to do this.
     cp -f /bin/ls ./CODESIGN_TEST
-    codesign -s "$1" --dryrun -f ./CODESIGN_TEST > /dev/null 2>&1
+    codesign -s "Developer ID Application: Healthmatica, Inc (HN2HJ553YW)" --dryrun -f ./CODESIGN_TEST > /dev/null 2>&1
     res=$?
     rm -f ./CODESIGN_TEST
     if ((res)); then
-        fail "Code signing identity \"$1\" appears to be invalid."
+        fail "Code signing identity \"Developer ID Application: Healthmatica, Inc (HN2HJ553YW)\" appears to be invalid."
     fi
     unset res
-    APP_SIGN="$1"
+    APP_SIGN="Developer ID Application: Healthmatica, Inc (HN2HJ553YW)"
     info "Code signing enabled using identity \"$APP_SIGN\""
-else
-    warn "Code signing DISABLED. Specify a valid macOS Developer identity installed on the system as the first argument to this script to enable signing."
 fi
 
 info "Installing Python $PYTHON_VERSION"
@@ -83,7 +83,7 @@ APP_SIGN="$APP_SIGN" pyinstaller --noconfirm --ascii --clean --name "$VERSION" P
 
 info "Code signing PKTWallet.app"
 #DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$APP_SIGN" # If APP_SIGN is empty will be a noop
-codesign --deep --force --verbose --sign "Developer ID Application: Healthmatica, Inc (HN2HJ553YW)" "dist/PKTWallet.app"
+codesign --deep --force --verbose --sign "$APP_SIGN" "dist/PKTWallet.app"
 
 info "Installing NODE"
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash > /dev/null 2>&1

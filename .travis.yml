@@ -16,7 +16,7 @@ before_script:
   fi
 script:
 - |
-  bash ./make_osx.sh 'Developer ID Application: Healthmatica, Inc (HN2HJ553YW)'
+  bash ./make_osx.sh
 deploy:
   provider: releases
   skip_cleanup: true
