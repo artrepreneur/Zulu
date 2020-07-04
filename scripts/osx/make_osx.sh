@@ -24,7 +24,7 @@ VERSION=$(git describe --tags --dirty --always)
 # Code Signing: See https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
 APP_SIGN="Developer ID Application: Healthmatica, Inc (HN2HJ553YW)"
 
-if [ -z $APP_SIGN]; then
+if [ -z $APP_SIGN ]; then
     warn "Code signing DISABLED. Specify a valid macOS Developer identity installed on the system as the first argument to this script to enable signing."
 else
     # Test the identity is valid for signing by doing this hack. There is no other way to do this.
