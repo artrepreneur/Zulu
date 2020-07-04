@@ -24,21 +24,6 @@ VERSION=$(git describe --tags --dirty --always)
 # Code Signing: See https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
 APP_SIGN="Developer ID Application: Healthmatica, Inc (HN2HJ553YW)"
 
-if [ -z $APP_SIGN ]; then
-    warn "Code signing DISABLED. Specify a valid macOS Developer identity installed on the system as the first argument to this script to enable signing."
-else
-    # Test the identity is valid for signing by doing this hack. There is no other way to do this.
-    cp -f /bin/ls ./CODESIGN_TEST
-    codesign -s $APP_SIGN --dryrun -f ./CODESIGN_TEST > /dev/null 2>&1
-    res=$?
-    rm -f ./CODESIGN_TEST
-    if ((res)); then
-        fail "Code signing identity \"Developer ID Application: Healthmatica, Inc (HN2HJ553YW)\" appears to be invalid."
-    fi
-    unset res
-    info "Code signing enabled using identity \"$APP_SIGN\""
-fi
-
 info "Installing Python $PYTHON_VERSION"
 export PATH="${HOME}/.pyenv/bin:${HOME}/.pyenv/shims:${HOME}/Library/Python/3.7/bin:$PATH"
 if [ -d "${HOME}/.pyenv" ]; then
