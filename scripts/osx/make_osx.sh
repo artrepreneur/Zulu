@@ -22,15 +22,6 @@ mkdir -p "$BUILDDIR/deps"
 VERSION=$(git describe --tags --dirty --always)
 
 # Code Signing: See https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
-export CERTIFICATE_P12=Certificate.p12
-echo $CERTIFICATE_OSX_P12 | base64 --decode > $CERTIFICATE_P12
-export KEYCHAIN=build.keychain
-security create-keychain -p mysecretpassword $KEYCHAIN
-security default-keychain -s $KEYCHAIN
-security unlock-keychain -p mysecretpassword $KEYCHAIN
-security import $CERTIFICATE_P12 -k $KEYCHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign
-security set-key-partition-list -S apple-tool:,apple: -s -k travis $KEY_CHAIN
-echo security find-identity -v
 echo "$1"
 APP_SIGN='Developer ID Application: Healthmatica, Inc (HN2HJ553YW)' 
 
