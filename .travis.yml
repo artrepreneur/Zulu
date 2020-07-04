@@ -1,8 +1,6 @@
 language: generic
-jobs:
-  include:
-    - os: osx
-      osx_image: xcode11.5
+os:
+  - osx
 before_script: 
 - |
   if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
