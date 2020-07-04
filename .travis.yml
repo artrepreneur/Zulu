@@ -10,12 +10,10 @@ before_script:
     security default-keychain -s $KEYCHAIN;
     security unlock-keychain -p mysecretpassword $KEYCHAIN;
     security import $CERTIFICATE_P12 -k $KEYCHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign;
-    export IDENTITY='';
     echo security find-identity -v;
-    IDENTITY=$(security find-identity -v);
   fi
 script:
-- bash ./make_osx.sh
+- bash ./make_osx.sh $IDENTITY
 deploy:
   provider: releases
   skip_cleanup: true
