@@ -68,6 +68,7 @@ info "Code signing PKTWallet.app"
 #DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$APP_SIGN" # If APP_SIGN is empty will be a noop
 codesign --deep --force --verbose --sign "$APP_SIGN" "dist/PKTWallet.app"
 
+# Notarize the app.
 info "Notarizing PKTWallet.app"
 ditto -c -k --rsrc --keepParent dist/PKTWallet.app dist/PKTWallet.app.zip
 #mdls -name kMDItemCFBundleIdentifier -r dist/PKTWallet.app
