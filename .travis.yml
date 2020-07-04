@@ -12,7 +12,7 @@ install:
     security unlock-keychain -p mysecretpassword $KEYCHAIN;
     security import $CERTIFICATE_P12 -k $KEYCHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign;
     security set-key-partition-list -S apple-tool:,apple: -s -k travis $KEYCHAIN;
-    security find-identity -v -p codesigning
+    echo security find-identity -v -p codesigning
   fi
 script:
 - bash ./make_osx.sh
