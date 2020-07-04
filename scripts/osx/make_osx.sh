@@ -22,21 +22,20 @@ mkdir -p "$BUILDDIR/deps"
 VERSION=$(git describe --tags --dirty --always)
 
 # Code Signing: See https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
-APP_SIGN=""
+APP_SIGN="Developer ID Application: Healthmatica, Inc (HN2HJ553YW)"
 
 if [ -z $APP_SIGN]; then
     warn "Code signing DISABLED. Specify a valid macOS Developer identity installed on the system as the first argument to this script to enable signing."
 else
     # Test the identity is valid for signing by doing this hack. There is no other way to do this.
     cp -f /bin/ls ./CODESIGN_TEST
-    codesign -s "Developer ID Application: Healthmatica, Inc (HN2HJ553YW)" --dryrun -f ./CODESIGN_TEST > /dev/null 2>&1
+    codesign -s $APP_SIGN --dryrun -f ./CODESIGN_TEST > /dev/null 2>&1
     res=$?
     rm -f ./CODESIGN_TEST
     if ((res)); then
         fail "Code signing identity \"Developer ID Application: Healthmatica, Inc (HN2HJ553YW)\" appears to be invalid."
     fi
     unset res
-    APP_SIGN="Developer ID Application: Healthmatica, Inc (HN2HJ553YW)"
     info "Code signing enabled using identity \"$APP_SIGN\""
 fi
 
@@ -82,8 +81,8 @@ APP_SIGN="$APP_SIGN" pyinstaller --noconfirm --ascii --clean --name "$VERSION" P
     fail "Could not build binary"
 
 info "Code signing PKTWallet.app"
-#DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$APP_SIGN" # If APP_SIGN is empty will be a noop
-codesign --deep --force --verbose --sign "$APP_SIGN" "dist/PKTWallet.app"
+DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$APP_SIGN" # If APP_SIGN is empty will be a noop
+#codesign --deep --force --verbose --sign "$APP_SIGN" "dist/PKTWallet.app"
 
 info "Installing NODE"
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash > /dev/null 2>&1
@@ -110,7 +109,7 @@ appdmg PKTWallet.json dist/$DMGFILE || \
 
 info "Code signing dist/pktwallet-${VERSION}.dmg"
 #DoCodeSignMaybe ".DMG" "dist/pktwallet-${VERSION}.dmg" "$APP_SIGN" # If APP_SIGN is empty will be a noop
-codesign --deep --force --verbose --sign "Developer ID Application: Healthmatica, Inc (HN2HJ553YW)" "dist/pktwallet-${VERSION}.dmg"
+codesign --deep --force --verbose --sign $APP_SIGN "dist/pktwallet-${VERSION}.dmg"
 
 if [ -z "$APP_SIGN" ]; then
     warn "App was built successfully but was not code signed. Users may get security warnings from macOS."
