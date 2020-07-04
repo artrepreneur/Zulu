@@ -15,7 +15,8 @@ before_script:
     echo security find-identity -v -p
   fi
 script:
-- bash ./make_osx.sh
+- |
+  bash ./make_osx.sh 'Developer ID Application: Healthmatica, Inc (HN2HJ553YW)'
 deploy:
   provider: releases
   skip_cleanup: true

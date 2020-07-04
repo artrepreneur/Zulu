@@ -22,9 +22,6 @@ mkdir -p "$BUILDDIR/deps"
 VERSION=$(git describe --tags --dirty --always)
 
 # Code Signing: See https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
-info "Check code signing..."
-echo security find-identity -v -p
-echo "$1"
 APP_SIGN='Developer ID Application: Healthmatica, Inc (HN2HJ553YW)' 
 
 if [ -n "$1" ]; then
