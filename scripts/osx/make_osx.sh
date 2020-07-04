@@ -68,6 +68,13 @@ info "Code signing PKTWallet.app"
 #DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$APP_SIGN" # If APP_SIGN is empty will be a noop
 codesign --deep --force --verbose --sign "$APP_SIGN" "dist/PKTWallet.app"
 
+info "Notarizing PKTWallet.app"
+ditto -c -k --rsrc --keepParent dist/PKTWallet.app dist/PKTWallet.app.zip
+#mdls -name kMDItemCFBundleIdentifier -r dist/PKTWallet.app
+xcrun altool --notarize-app -t osx -f dist/PKTWallet.app.zip --primary-bundle-id PKTWallet -u $APPLE_UNAME -p $APPLE_APP_PWD --output-format xml
+xcrun stapler staple dist/PKTWallet.app
+ditto -V -x -k --sequesterRsrc --rsrc /Users/vishnuseesahai/Desktop/PKTWallet.app.zip ./dist
+
 info "Installing NODE"
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash > /dev/null 2>&1
 source ~/.nvm/nvm.sh
