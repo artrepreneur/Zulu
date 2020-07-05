@@ -64,12 +64,11 @@ info "Building binary"
 APP_SIGN="$APP_SIGN" pyinstaller --noconfirm --ascii --clean --name "$VERSION" PKTWallet.spec || \
     fail "Could not build binary"
 
-#info "Code signing PKTWallet.app"
-#codesign --deep --force --verify --verbose --options runtime --sign "$APP_SIGN" "dist/PKTWallet.app"
+info "Code signing PKTWallet.app"
 codesign --force --options runtime --deep --verify --verbose --entitlements "./scripts/deterministic-build/entitlements.plist" --sign "$APP_SIGN" "dist/PKTWallet.app"
 
 # Notarize the app.
-#info "Notarizing PKTWallet.app"
+info "Notarizing PKTWallet.app"
 ditto -c -k --rsrc --keepParent dist/PKTWallet.app dist/PKTWallet.app.zip
 UUID=$(xcrun altool --notarize-app -t osx -f dist/PKTWallet.app.zip --primary-bundle-id PKTWallet -u $APPLE_UNAME -p $APPLE_APP_PWD 2>&1 | awk '/RequestUUID/ { print $NF; }')
 request_status="in progress"
