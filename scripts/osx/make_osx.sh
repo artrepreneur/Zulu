@@ -64,17 +64,28 @@ info "Building binary"
 APP_SIGN="$APP_SIGN" pyinstaller --noconfirm --ascii --clean --name "$VERSION" PKTWallet.spec || \
     fail "Could not build binary"
 
-info "Code signing PKTWallet.app"
-#DoCodeSignMaybe "app bundle" "dist/PKTWallet.app" "$APP_SIGN" # If APP_SIGN is empty will be a noop
-codesign --deep --force --options runtime --verbose --sign "$APP_SIGN" "dist/PKTWallet.app"
+#info "Code signing PKTWallet.app"
+#codesign --deep --force --verify --verbose --options runtime --sign "$APP_SIGN" "dist/PKTWallet.app"
+codesign --force --options runtime --deep --verify --verbose --entitlements "./scripts/deterministic-build/entitlements.plist" --sign "$APP_SIGN" "dist/PKTWallet.app"
 
 # Notarize the app.
 #info "Notarizing PKTWallet.app"
-#ditto -c -k --rsrc --keepParent dist/PKTWallet.app dist/PKTWallet.app.zip
-#xcrun altool --notarize-app -t osx -f dist/PKTWallet.app.zip --primary-bundle-id PKTWallet -u $APPLE_UNAME -p $APPLE_APP_PWD --output-format xml
-#ditto -V -x -k --sequesterRsrc --rsrc dist/PKTWallet.app.zip dist
-#xcrun stapler staple dist/PKTWallet.app
-#spctl -a -v PKTWallet.app
+ditto -c -k --rsrc --keepParent dist/PKTWallet.app dist/PKTWallet.app.zip
+UUID=$(xcrun altool --notarize-app -t osx -f dist/PKTWallet.app.zip --primary-bundle-id PKTWallet -u $APPLE_UNAME -p $APPLE_APP_PWD 2>&1 | awk '/RequestUUID/ { print $NF; }')
+request_status="in progress"
+while [[ "$request_status" == "in progress" ]]; do
+    echo -n "waiting... "
+    sleep 10
+    request_status=$(xcrun altool --notarization-info $UUID -u $APPLE_UNAME -p $APPLE_APP_PWD 2>&1 | awk -F ': ' '/Status:/ { print $2; }') 
+    echo "$request_status"
+done
+if [[ $request_status != "success" ]]; then
+        echo "## could not notarize dist/PKTWallet.app"
+        exit 1
+fi
+ditto -V -x -k --sequesterRsrc --rsrc dist/PKTWallet.app.zip dist
+xcrun stapler staple dist/PKTWallet.app
+spctl -a -v --type execute dist/PKTWallet.app
 
 info "Installing NODE"
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash > /dev/null 2>&1
@@ -100,8 +111,8 @@ appdmg PKTWallet.json dist/$DMGFILE || \
 #    fail "Could not create .DMG"
 
 info "Code signing dist/pktwallet-${VERSION}.dmg"
-#DoCodeSignMaybe ".DMG" "dist/pktwallet-${VERSION}.dmg" "$APP_SIGN" # If APP_SIGN is empty will be a noop
 codesign --deep --force --verbose --sign $APP_SIGN "dist/pktwallet-${VERSION}.dmg"
+#codesign --force --options runtime --deep --verify --verbose --entitlements "./scripts/deterministic-build/entitlements.plist" --sign $APP_SIGN "dist/pktwallet-${VERSION}.dmg"
 
 if [ -z "$APP_SIGN" ]; then
     warn "App was built successfully but was not code signed. Users may get security warnings from macOS."
