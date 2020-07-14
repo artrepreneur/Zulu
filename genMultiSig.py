@@ -128,12 +128,12 @@ def print_result(result):
 
         try:
             json_data = []
+            
             # Try to open if it exists.
             with open('MultisigData/mdata.json', 'r') as infile:
-                line = infile.readline()
-                if not line == '':
-                    json_data = json.load(infile)
-                else:
+                #line = infile.readline()
+                json_data = json.load(infile)
+                if json_data == '':
                     raise Exception('Empty mdata.json file.') 
 
             if len(json_data) > 0:
@@ -143,6 +143,8 @@ def print_result(result):
                 # Do an update if you can
                 for data in json_arr:
                     if data["multisigAddress"] == str(multi_addr):
+                        print(data["multisigAddress"], str(multi_addr))
+                        print('Updating mdata.json...')
                         data["multisigAddress"] = str(multi_addr)
                         data["redeemScript"] = redeem_script
                         data["requiredSigs"] = required_sigs
@@ -165,7 +167,6 @@ def print_result(result):
             with open("MultisigData/mdata.json", 'w') as outfile:
                 json.dump(dict, outfile, indent = 4)
         
-
         i = window.stackedWidget.indexOf(window.multi_sccs_page)
         window.stackedWidget.setCurrentIndex(i)
         window.new_multi_line.setText(_translate("MainWindow",multi_addr))

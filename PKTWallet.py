@@ -19,6 +19,8 @@ from pyzbar.pyzbar import decode
 from PIL import Image
 from shutil import copyfile
 from pathlib import Path
+#import os.path 
+from os import path
 
 WAIT_SECONDS = 10
 VERSION_NUM = "1.0.0"
@@ -43,12 +45,12 @@ def pktwllt_synching(info):
     if info != {}:
             status = (info["WalletStats"]["Syncing"])
             WALLET_SYNCING = bool(status)
-            print('WALLET_SYNCING',WALLET_SYNCING)
+            #print('WALLET_SYNCING',WALLET_SYNCING)
             return WALLET_SYNCING
     else:
         print('Unable to get wallet status.') 
         WALLET_SYNCING = False
-        print('WALLET_SYNCING',WALLET_SYNCING)
+        #print('WALLET_SYNCING',WALLET_SYNCING)
         return WALLET_SYNCING
 
 # Check if pktd sync in progress
@@ -57,12 +59,12 @@ def pktd_synching(info):
     if info != {}:
         status = (info["IsSyncing"]) 
         PKTD_SYNCING = bool(status)
-        print('PKTD_SYNCING',PKTD_SYNCING)
+        #print('PKTD_SYNCING',PKTD_SYNCING)
         return PKTD_SYNCING
     else:
         print('Unable to get pktd status.')
         PKTD_SYNCING = False
-        print('PKTD_SYNCING',PKTD_SYNCING)
+        #print('PKTD_SYNCING',PKTD_SYNCING)
         return PKTD_SYNCING
 
 # Message box for wallet sync
@@ -598,7 +600,7 @@ def btn_released(self):
 
         pk_count = int(window.sig_box.currentText())
         msg_box_16 = QtWidgets.QMessageBox()
-
+        print('Key count:', len(pk_arr), pk_count)
         if len(pk_arr) >= pk_count:
             print("Correct number of public keys entered.")
 
@@ -1057,6 +1059,7 @@ def btn_released(self):
                     msg_box_18.setText(result)
                     msg_box_18.exec()
                 else:
+                    window.multi_sign_btn2.setEnabled(True)
                     #QR gen
                     global multisig_trans
                     multisig_trans = str(result)
@@ -1451,6 +1454,7 @@ def menubar_released(self):
         set_fee_est()
         window.label_55.setText("Generate a raw multisig transaction here.")
         window.label_65.clear()
+        window.multi_sign_btn2.setEnabled(False)
         i = window.stackedWidget.indexOf(window.multisig_send_page)
         window.stackedWidget.setCurrentIndex(i)
 
@@ -1772,6 +1776,7 @@ def chk_live_proc():
     proc_array = []
     print('Checking live processes, if any...')
     for proc in psutil.process_iter(['pid', 'name', 'username']):
+        #print('PROCS:', proc)
         if proc.info['name']=='wallet':
             proc_array.append('wallet')
         if proc.info['name']=='pktd':
@@ -1890,11 +1895,16 @@ def start_pktd_thread():
 
 def inv_pktd():
     global pktd_pid, pktd_cmd_result
-    print('Invoking PKTD...')
-    pktd_cmd = "bin/pktd -u "+uname+" -P " +pwd+ " --txindex --addrindex"
-    pktd_cmd_result = subprocess.Popen(resource_path(pktd_cmd), shell=True, stdout=subprocess.PIPE)
-    pktd_pid = pktd_cmd_result.pid + 1
-    return pktd_cmd_result
+    print('PATH', path.exists("bin/pktd"))
+    if path.exists("bin/pktd"):
+        print('Invoking PKTD...')
+        pktd_cmd = "bin/pktd -u "+uname+" -P " +pwd+ " --txindex --addrindex"
+        pktd_cmd_result = subprocess.Popen(resource_path(pktd_cmd), shell=True, stdout=subprocess.PIPE)
+        pktd_pid = pktd_cmd_result.pid + 1
+        return pktd_cmd_result
+    else:
+        sys.exit()    
+
 
 def pktd_worker(pktd_cmd_result, progress_callback):
     global COUNTER
@@ -1912,12 +1922,16 @@ def pktd_dead():
         restart('pktd')
 
 def inv_pktwllt():
-    print('Invoking PKT Wallet...')
-    global pktwallet_pid, pktwallet_cmd_result
-    pktwallet_cmd_result = subprocess.Popen([resource_path('bin/wallet'), '-u', uname, '-P', pwd, '--usespv'], shell=False, stdout=subprocess.PIPE)
-    pktwallet_pid = pktwallet_cmd_result.pid + 1
-    pktwllt_stdout = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
-    status = ''
+    print('PATH', path.exists("bin/wallet"))
+    if path.exists("bin/wallet"):
+        print('Invoking PKT Wallet...')
+        global pktwallet_pid, pktwallet_cmd_result
+        pktwallet_cmd_result = subprocess.Popen([resource_path('bin/wallet'), '-u', uname, '-P', pwd, '--usespv'], shell=False, stdout=subprocess.PIPE)
+        pktwallet_pid = pktwallet_cmd_result.pid + 1
+        pktwllt_stdout = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
+        status = ''
+    else:
+        sys.exit()    
 
     # Loop until wallet successfully opens.
     while not ('Opened wallet' in status) and (pktwallet_cmd_result.poll() is None):
@@ -2003,7 +2017,7 @@ def status_light():
     COUNTER = 1
     pktd_pct = '0.0%'
     wllt_pct = '0.0%'
-    print('Checking status...')
+    #print('Checking status...')
     
     info = wlltinf.get_inf(uname, pwd)
     w_sync = pktwllt_synching(info)
@@ -2011,10 +2025,10 @@ def status_light():
 
     if not p_sync: # synched
         pktd_pct='100.0%'
-        print('pktd synced', pktd_pct)
+        #print('pktd synced', pktd_pct)
     else:
         peerinfo = (peerinf.get_inf(uname, pwd))
-        print('peerinfo:', peerinfo)
+        #print('peerinfo:', peerinfo)
 
         if len(peerinfo)>0:
             peerinfo = peerinfo[0]
@@ -2035,12 +2049,13 @@ def status_light():
         curr_height_2 = int(info['CurrentHeight'])
         bnd_height = int(info['BackendHeight'])
         print('Current Height', curr_height_2, 'Back End Height:', bnd_height)
-        wllt_pct = str(round((bnd_height / curr_height_2) * 100,1)) + '%'
+        curr_height_2 = bnd_height if curr_height_2 > bnd_height else curr_height_2
+        wllt_pct = str(round((curr_height_2 / bnd_height ) * 100,1)) + '%'
         if wllt_pct=='100.0%':
             wllt_pct = '0.0%'    
 
-    print('Wallet Sync:', w_sync, 'Wallet Percent:',wllt_pct)
-    print('PKTD Sync:', p_sync, 'PKTD Percent:',  pktd_pct)
+    #print('Wallet Sync:', w_sync, 'Wallet Percent:',wllt_pct)
+    #print('PKTD Sync:', p_sync, 'PKTD Percent:',  pktd_pct)
 
     window.label_105.setText(pktd_pct)
     window.label_106.setText(wllt_pct)
@@ -2177,6 +2192,7 @@ def deactivate():
     window.multi_clear_btn.hide()
     window.add_btn.hide()
     window.trns_status.hide()
+    window.multi_amt_frame.setEnabled(False)
     window.label_9.setText('Enter Your Payee Below')
     window.label_17.setText('Enter Your Payee Below')
     window.actionPay_to_Many.setVisible(False)

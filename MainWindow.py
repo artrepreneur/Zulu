@@ -1903,7 +1903,8 @@ class Ui_MainWindow(object):
         self.gridLayout_102.addWidget(self.multi_sign_btn2, 0, 3, 1, 1, QtCore.Qt.AlignVCenter)
         self.gridLayout_33.addWidget(self.frame_5, 8, 0, 1, 1)
         self.frame_80 = QtWidgets.QFrame(self.groupBox_5)
-        self.frame_80.setMinimumSize(QtCore.QSize(0, 250))
+        self.frame_80.setMinimumSize(QtCore.QSize(0, 200))
+        self.frame_80.setMaximumSize(QtCore.QSize(16777215, 200))
         self.frame_80.setStyleSheet("QFrame#frame_80{border-radius: 4px;}\n"
 "QScrollBar:vertical {\n"
 "            border: 0px solid #999999;\n"
@@ -4186,7 +4187,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(24)
+        self.stackedWidget.setCurrentIndex(10)
         self.fld_to_box.setCurrentIndex(-1)
         self.fld_frm_box.setCurrentIndex(-1)
         self.sig_box.setCurrentIndex(2)

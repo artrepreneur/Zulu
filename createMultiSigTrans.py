@@ -24,16 +24,21 @@ def create_tr(uname, pwd, fee, redeem_script, addr_arr, from_addr): #amount
     outs = len(addr_arr)
 
     # Get all UTXO's you need to make the transaction happen.
-    chk_bal_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet listunspent " + MIN_CONF + " " + MAX_CONF + " '[" + '"'+ from_addr + '"' + "]'"
+    chk_bal_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet listunspent " + MIN_CONF + " " + MAX_CONF + " '[" + '"'+ from_addr + '"' + "]'"
     chk_bal_result, err = (subprocess.Popen(resource_path(chk_bal_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
     chk_bal_result = json.loads(chk_bal_result.decode('utf-8'))
     err = err.decode('utf-8')
-    print(chk_bal_cmd,'\n', chk_bal_result)
+    print('List unspent result:', chk_bal_result)
 
     if err or chk_bal_result == []:
         print('Error:', err)
-        window.label_65.setText("Error: Not enough balance in "+from_addr)
-        msg = "Error: Not enough balance in "+from_addr
+
+        if 'ErrRPCInvalidAddressOrKey' in err:
+            window.label_65.setText("Error: Invalid address or key"+from_addr)
+            msg = "Error: Invalid address or key"+from_addr
+        else:    
+            window.label_65.setText("Error: Not enough balance in "+from_addr)
+            msg = "Error: Not enough balance in "+from_addr
         return msg
 
     else:
@@ -100,7 +105,7 @@ def create_tr(uname, pwd, fee, redeem_script, addr_arr, from_addr): #amount
             if change > 0:
                 send_to_raw += ', "' + from_addr + '":' + str(change)
             send_to_raw += "}'"
-            trans_cmd = "bin/btcctl -u "+  uname +" -P "+ pwd +" createrawtransaction " + inputs + send_to_raw
+            trans_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" createrawtransaction " + inputs + send_to_raw
             print('create_raw_trans:', trans_cmd)
 
             # unlock wallet
@@ -154,10 +159,11 @@ def create(uname, pwd, amount, from_addr, addr_arr, fee, passphrase, window):
                     break
 
         except:
-            print("no mdata.json file.")
+            print("No mdata.json file present.")
 
         if not success:
-            unlock_cmd = 'bin/btcctl -u ' + uname + ' -P ' + pwd + ' --wallet walletpassphrase ' + passphrase + ' 1000'
+            print('Could not find', from_addr,'in mdata.json')
+            unlock_cmd = 'bin/pktctl -u ' + uname + ' -P ' + pwd + ' --wallet walletpassphrase ' + passphrase + ' 1000'
             unlock_result, err = (subprocess.Popen(resource_path(unlock_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
             unlock_result = unlock_result.decode('utf-8')
             err = err.decode('utf-8')
@@ -170,8 +176,8 @@ def create(uname, pwd, amount, from_addr, addr_arr, fee, passphrase, window):
                 return msg
 
             else:
-                create_trans = "bin/btcctl -u "+  uname +" -P "+ pwd +" --wallet createtransaction " + to_addr + " " +  str(amount) + " '[" + '"'+ from_addr + '"' + "]'"
-                print('create_trans', create_trans)
+                create_trans = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet createtransaction " + to_addr + " " +  str(amount) + " '[" + '"'+ from_addr + '"' + "]'"
+                print('Create Transaction:', create_trans)
                 create_trans_result, err = (subprocess.Popen(resource_path(create_trans), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
                 create_trans_result = create_trans_result.decode('utf-8')
                 err = err.decode('utf-8')
@@ -190,6 +196,7 @@ def create(uname, pwd, amount, from_addr, addr_arr, fee, passphrase, window):
                 else:
                     return create_trans_result
         else:
+            print('Creating Raw Transaction...')
             res = create_tr(uname, pwd, fee, redeem_script, addr_arr, from_addr)
             return res    
 
