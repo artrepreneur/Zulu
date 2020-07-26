@@ -18,6 +18,7 @@ command -v git >/dev/null 2>&1 || fail "Need git"
 
 rm -rf "$ROOT_FOLDER/dist"
 rm -rf "$BUILDDIR"
+chmod 755 "$ROOT_FOLDER/bin/"* || fail "Failed Chmod"
 mkdir -p "$BUILDDIR/deps"
 VERSION=$(git describe --tags --dirty --always)
 

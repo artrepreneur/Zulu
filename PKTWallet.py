@@ -2258,7 +2258,7 @@ if __name__ == "__main__":
     window.raise_() #added for pyinstaller only, else menubar fails
 
     # check perms
-    make_executable()
+    #make_executable()
 
     # Shutdown any other instances
     exit_handler()
