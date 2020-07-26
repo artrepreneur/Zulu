@@ -313,9 +313,7 @@ def show_balance():
     window.balance_amount.clear()
     worker_state_active['GET_BALANCE'] = False
     total_balance = balances.get_balance_thd(uname, pwd, window, worker_state_active, threadpool)
-    #total_balance = balances.get_balance(uname, pwd)
-    #window.balance_amount.setText(_translate("MainWindow", total_balance))
-    #worker_state_active['GET_BALANCE'] = True
+
 
 def set_fee_est():
     global FEE
@@ -1824,7 +1822,7 @@ def kill_it():
         elif os_sys == 'Windows':
             os.system("taskkill /f /im  wallet.exe")
             os.system("taskkill /f /im  pktd.exe")
-        time.sleep(30)
+        time.sleep(15)
         return        
     except:
         print('Failed to clean up.')    
@@ -1869,6 +1867,13 @@ def restart(proc):
     elif ret == QtWidgets.QMessageBox.Cancel:
         sys.exit()
 
+def get_correct_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 # Thread PKT wallet
 def start_wallet_thread():
@@ -1896,8 +1901,9 @@ def start_pktd_thread():
 
 def inv_pktd():
     global pktd_pid, pktd_cmd_result
-    print('PATH', path.exists("bin/pktd"))
-    if path.exists("bin/pktd"):
+    p = path.exists(get_correct_path("bin/pktd"))
+    print('PATH1', p)
+    if p:
         print('Invoking PKTD...')
         pktd_cmd = "bin/pktd -u "+uname+" -P " +pwd+ " --txindex --addrindex"
         pktd_cmd_result = subprocess.Popen(resource_path(pktd_cmd), shell=True, stdout=subprocess.PIPE)
@@ -1923,8 +1929,9 @@ def pktd_dead():
         restart('pktd')
 
 def inv_pktwllt():
-    print('PATH', path.exists("bin/wallet"))
-    if path.exists("bin/wallet"):
+    p = path.exists(get_correct_path("bin/wallet"))
+    print('PATH2', p)
+    if p:
         print('Invoking PKT Wallet...')
         global pktwallet_pid, pktwallet_cmd_result
         pktwallet_cmd_result = subprocess.Popen([resource_path('bin/wallet'), '-u', uname, '-P', pwd, '--usespv', '--userpc'], shell=False, stdout=subprocess.PIPE)
@@ -2056,16 +2063,17 @@ def status_light():
         if pct_w > 100:
             pct_w = 100
         wllt_pct = str(pct_w) + '%'
+        
         #if wllt_pct=='100.0%':
         #    wllt_pct = '0.0%'    
 
-    #print('Wallet Sync:', w_sync, 'Wallet Percent:',wllt_pct)
-    #print('PKTD Sync:', p_sync, 'PKTD Percent:',  pktd_pct)
+    print('Wallet Sync:', w_sync, 'Wallet Percent:',wllt_pct)
+    print('PKTD Sync:', p_sync, 'PKTD Percent:',  pktd_pct)
 
     window.label_105.setText(pktd_pct)
     window.label_106.setText(wllt_pct)
-    window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if (not w_sync or wllt_pct=='100.0%') else window.label_103.setPixmap(QPixmap(resource_path('img/ylw_btn.png')))   
-    window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if (not p_sync or pktd_pct=='100.0%') else window.label_100.setPixmap(QPixmap(resource_path('img/ylw_btn.png')))                                  
+    window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if (not w_sync and wllt_pct=='100.0%') else window.label_103.setPixmap(QPixmap(resource_path('img/ylw_btn.png')))   
+    window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if (not p_sync and pktd_pct=='100.0%') else window.label_100.setPixmap(QPixmap(resource_path('img/ylw_btn.png')))                                  
 
 def get_wallet_db():
     wallet_db = ''
