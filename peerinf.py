@@ -15,7 +15,7 @@ def get_inf(uname, pwd):
     try:
         cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" getpeerinfo"
         result, err = subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-        print('Result:', result)
+        #print('Result:', result)
         result = json.loads(result.decode('utf-8'))
         err = err.decode('utf-8')
         if err:

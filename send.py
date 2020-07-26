@@ -88,8 +88,6 @@ def execute2(u, p, a, pp, pd, win, state):
                                 window.textEdit_4.setText(deet.strip())
                                 window.stackedWidget.setCurrentIndex(window.stackedWidget.indexOf(window.sent_page))
 
-                            
-
                             else:
                                 print('Error:', err_3)
                                 window.textEdit_4.setText(_translate("MainWindow","Could not get transaction details."))

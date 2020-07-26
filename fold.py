@@ -63,6 +63,7 @@ def fold_it(progress_callback):
                         result_3, err_3 = subprocess.Popen(resource_path(cmd_3), shell=True, stdout=subprocess.PIPE).communicate()
                         
                         if not err_3:
+                            print("result", json.loads(result_3))
                             hex = json.loads(result_3)["hex"]
                             fee = str(format(round(float(json.loads(result_3)["fee"]), 8), '.8f'))
                             amount = str(format(round(float(json.loads(result_3)["amount"]), 8), '.8f'))

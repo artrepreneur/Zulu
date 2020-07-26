@@ -48,7 +48,7 @@ def create(uname, pwd, fee, raw_trans, window):
         ret = msg_box_21.exec()
 
         if ret == QtWidgets.QMessageBox.Yes:
-            send_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet sendrawtransaction " + str(raw_trans)
+            send_cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" sendrawtransaction " + str(raw_trans)
             #print('send cmd', send_cmd)
             send_result, err = (subprocess.Popen(resource_path(send_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
             send_result = send_result.decode('utf-8')

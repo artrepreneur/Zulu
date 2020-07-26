@@ -19,7 +19,6 @@ from pyzbar.pyzbar import decode
 from PIL import Image
 from shutil import copyfile
 from pathlib import Path
-#import os.path 
 from os import path
 
 WAIT_SECONDS = 10
@@ -740,7 +739,10 @@ def btn_released(self):
         #    seed_msg_box.exec()
 
     elif clicked_widget.objectName() == 'recalc_btn':
-        show_balance()
+        if pktwllt_synching(wlltinf.get_inf(uname, pwd)):
+            window.balance_amount.setText(_translate("MainWindow", "Wallet Syncing..."))
+        else:
+            show_balance()
 
     elif clicked_widget.objectName() == 'open_wllt_btn':
         start_wallet_thread()
@@ -1816,7 +1818,6 @@ def kill_it():
     global AUTO_RESTART_WALLET
     try:
         AUTO_RESTART_WALLET = False
-        print(os_sys)
         if os_sys == 'Linux' or os_sys == 'Darwin':
             subprocess.call(['pkill', 'SIGINT', 'wallet'], shell=False)
             subprocess.call(['pkill', 'SIGINT', 'pktd'], shell=False)
@@ -1877,7 +1878,7 @@ def start_wallet_thread():
     threadpool.start(worker)
 
 def pktwllt_dead():
-    print('Wallet died', SHUTDOWN_CYCLE)
+    print('Wallet died')
     window.label_103.setPixmap(QPixmap(resource_path('img/red_btn.png')))
     window.label_106.setText('0%')
     if not SHUTDOWN_CYCLE:
@@ -1926,7 +1927,7 @@ def inv_pktwllt():
     if path.exists("bin/wallet"):
         print('Invoking PKT Wallet...')
         global pktwallet_pid, pktwallet_cmd_result
-        pktwallet_cmd_result = subprocess.Popen([resource_path('bin/wallet'), '-u', uname, '-P', pwd, '--usespv'], shell=False, stdout=subprocess.PIPE)
+        pktwallet_cmd_result = subprocess.Popen([resource_path('bin/wallet'), '-u', uname, '-P', pwd, '--usespv', '--userpc'], shell=False, stdout=subprocess.PIPE)
         pktwallet_pid = pktwallet_cmd_result.pid + 1
         pktwllt_stdout = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
         status = ''
@@ -2035,10 +2036,11 @@ def status_light():
             strt_height = peerinfo['startingheight']
             curr_height_1 = peerinfo['currentheight']
             print('Current Height', curr_height_1, 'Start Height:', strt_height)
-            pktd_pct = str(round((strt_height / curr_height_1) * 100,1)) + '%'
+            pct_d = round((curr_height_1 / strt_height ) * 100,1)
+            pktd_pct = str(pct_d) + '%'
 
-            if pktd_pct=='100.0%':
-                pktd_pct = '0.0%'
+            #if pktd_pct=='100.0%':
+            #    pktd_pct = '0.0%'
 
         else: # no data for peerinfo
             pktd_pct = '0.0%'             
@@ -2050,9 +2052,12 @@ def status_light():
         bnd_height = int(info['BackendHeight'])
         print('Current Height', curr_height_2, 'Back End Height:', bnd_height)
         curr_height_2 = bnd_height if curr_height_2 > bnd_height else curr_height_2
-        wllt_pct = str(round((curr_height_2 / bnd_height ) * 100,1)) + '%'
-        if wllt_pct=='100.0%':
-            wllt_pct = '0.0%'    
+        pct_w = round((curr_height_2 / bnd_height ) * 100,1)
+        if pct_w > 100:
+            pct_w = 100
+        wllt_pct = str(pct_w) + '%'
+        #if wllt_pct=='100.0%':
+        #    wllt_pct = '0.0%'    
 
     #print('Wallet Sync:', w_sync, 'Wallet Percent:',wllt_pct)
     #print('PKTD Sync:', p_sync, 'PKTD Percent:',  pktd_pct)
