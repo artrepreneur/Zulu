@@ -32,6 +32,15 @@ COUNTER = 1
 FEE = ".00000001"
 STATUS_INTERVAL = 10
 passphrase = ''
+passphrase_ok = False
+
+# Password visiblity toggle
+password_shown = True
+ver_password_shown = True
+pwd_action = None
+ver_pwd_action = None
+pwd_vsbl_icon = None
+pwd_invsbl_icon = None
 
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
@@ -51,6 +60,111 @@ def pktwllt_synching(info):
         WALLET_SYNCING = False
         #print('WALLET_SYNCING',WALLET_SYNCING)
         return WALLET_SYNCING
+
+class CustomInputDialog(QtWidgets.QDialog):
+    def __init__(self, *args, **kwargs):
+        super(CustomInputDialog, self).__init__(*args, **kwargs)
+        
+        self.pass_shown = False 
+        self.passphrase = None
+        
+        self.label = QtWidgets.QLabel(self)
+        self.label.setText("Enter Wallet Passphrase:")
+        self.label.setStyleSheet("font: 14pt Bold 'Gill Sans'")
+        self.setWindowTitle("Wallet Passphrase")
+        
+        self.line = QtWidgets.QLineEdit(self)
+        self.line_action = self.line.addAction(pwd_vsbl_icon, QtWidgets.QLineEdit.TrailingPosition)
+        self.line.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.line.setFixedWidth(200)
+        
+        self.cncl_btn = QtWidgets.QPushButton(self)
+        self.cncl_btn.setObjectName("cncl_btn")
+        self.cncl_btn.setText("Cancel")
+        self.cncl_btn.setFixedWidth(80)
+        
+        self.ok_btn = QtWidgets.QPushButton(self)
+        self.ok_btn.setObjectName("ok_btn")
+        self.ok_btn.setText("Ok")
+        self.ok_btn.setFixedWidth(80)
+        
+        self.form_layout = QtWidgets.QGridLayout(self)
+        self.form_layout.addWidget(self.label, 0, 0, 1, 1)
+        self.form_layout.addWidget(self.line, 1, 0, 1, 1)
+        
+        self.frame = QtWidgets.QFrame(self)
+        self.sub_form_layout  = QtWidgets.QGridLayout(self.frame)
+        self.sub_form_layout.addWidget(self.cncl_btn, 0, 0, 1, 1)
+        self.sub_form_layout.addWidget(self.ok_btn, 0, 1, 1, 1)
+        self.form_layout.addWidget(self.frame, 2, 0, 1, 1)
+        
+        # Actions
+        self.cncl_btn.clicked.connect(self.cncl_clicked)
+        self.ok_btn.clicked.connect(self.ok_clicked)
+        self.line_action.triggered.connect(self.toggle_clicked)
+					
+    def cncl_clicked(self):
+        self.passphrase = None
+        self.close()
+        
+    def ok_clicked(self):
+        passphrase = self.line.text()
+        self.passphrase = passphrase
+        self.close()
+        
+    def toggle_clicked(self):
+        if not self.pass_shown:
+            self.line.setEchoMode(QtWidgets.QLineEdit.Normal)
+            self.pass_shown = True
+            self.line_action.setIcon(pwd_invsbl_icon)
+        else:
+            self.line.setEchoMode(QtWidgets.QLineEdit.Password)
+            self.pass_shown = False
+            self.line_action.setIcon(pwd_vsbl_icon)
+					
+def get_pass():
+        global passphrase, passphrase_ok
+
+        passphrase = ""
+        ok = passphrase_ok
+        dialog = CustomInputDialog()
+        dialog.exec()
+        passphrase = dialog.passphrase
+
+        if passphrase and not passphrase_ok:
+            try:
+                cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrase " + passphrase + ' 1000'
+                result, err = (subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
+                result = result.decode('utf-8')
+                err = err.decode('utf-8')
+                
+                if not err:
+                    ok = True
+                    passphrase_ok = ok
+                    try:
+                        lock = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletlock"
+                        result_lock, err_lock = subprocess.Popen(resource_path(lock), shell=True, stdout=subprocess.PIPE).communicate()
+                    except:
+                        print("Wallet lock failed.\n")
+                else:
+                    passphrase = ""
+                    bad_pass()  
+
+            except:
+                print("Passphrase failed.\n")
+                passphrase = ""
+                bad_pass()
+
+        print("get pass passphrase", passphrase)
+        return passphrase, ok
+
+def bad_pass():
+    pwd_msg = "The password you entered is incorrect."
+    pwd_msg_box = QtWidgets.QMessageBox()
+    pwd_msg_box.setText(pwd_msg)
+    pwd_msg_box.exec()  
+
+
 
 # Check if pktd sync in progress
 def pktd_synching(info):
@@ -283,11 +397,7 @@ def side_menu_clicked(btn):
         else:
             get_transactions()
             window.stackedWidget.setCurrentIndex(i)
-            #msg_box_27 = QtWidgets.QMessageBox()
-            #msg_box_27.setText("Loading...")
-            #msg_box_27.exec()
 
-    
 
 def get_transactions():
     global iteration
@@ -352,8 +462,16 @@ def change_pass(old_pass, new_pass):
 
 # Additional customizations
 def add_custom_styles():
+    global pwd_action, ver_pwd_action, pwd_vsbl_icon, pwd_invsbl_icon
 
     window.label_25.setPixmap(QPixmap(resource_path('img/app_icon.png')))
+
+    # Password visiblity toggle
+    pwd_vsbl_icon = QIcon(QPixmap(resource_path('img/glyphicons_051_eye_open.png')))
+    pwd_invsbl_icon = QIcon(QPixmap(resource_path('img/glyphicons_052_eye_close.png')))
+    pwd_action = window.lineEdit_2.addAction(pwd_vsbl_icon, QtWidgets.QLineEdit.TrailingPosition)
+    ver_pwd_action = window.lineEdit_11.addAction(pwd_vsbl_icon, QtWidgets.QLineEdit.TrailingPosition)
+    
 
     # Frame customizations
     window.send_exec_group.setStyleSheet("QGroupBox#send_exec_group {border-radius: 5px; background-color: rgb(228, 234, 235);}")
@@ -560,7 +678,33 @@ def menubar_listeners():
     window.actionWebsite.triggered.connect(menubar_released)
     window.actionManual_Resync.triggered.connect(menubar_released)
     app.aboutToQuit.connect(quit_app)
+    pwd_action.triggered.connect(on_toggle_password_action)
+    ver_pwd_action.triggered.connect(on_toggle_ver_password_action)
 
+def on_toggle_password_action(self):
+    global password_shown
+
+    if not password_shown:
+        window.lineEdit_2.setEchoMode(QtWidgets.QLineEdit.Normal)
+        password_shown = True
+        pwd_action.setIcon(pwd_invsbl_icon)
+    else:
+        window.lineEdit_2.setEchoMode(QtWidgets.QLineEdit.Password)
+        password_shown = False
+        pwd_action.setIcon(pwd_vsbl_icon)
+
+def on_toggle_ver_password_action(self):
+    global ver_password_shown
+    
+    if not ver_password_shown:
+        window.lineEdit_11.setEchoMode(QtWidgets.QLineEdit.Normal)
+        ver_password_shown = True
+        ver_pwd_action.setIcon(pwd_invsbl_icon)
+    else:
+        window.lineEdit_11.setEchoMode(QtWidgets.QLineEdit.Password)
+        ver_password_shown = False
+        ver_pwd_action.setIcon(pwd_vsbl_icon)
+        
 # Quit app
 def quit_app():
     global SHUTDOWN_CYCLE
@@ -610,7 +754,7 @@ def btn_released(self):
 
             #Get passphrase
             if passphrase == '':
-                passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+                passphrase, ok = get_pass()
             else:
                 ok = True
 
@@ -791,7 +935,7 @@ def btn_released(self):
             msg_box_26.exec()
             return
         if passphrase == '':
-            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+            passphrase, ok = get_pass()
         else:
             ok = True
 
@@ -1047,7 +1191,7 @@ def btn_released(self):
 
             #Get passphrase
             if passphrase == '':
-                passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+                passphrase, ok = get_pass()
             else:
                 ok = True
 
@@ -1120,7 +1264,7 @@ def btn_released(self):
         raw_trans = (str(window.trans_text.toPlainText())).strip()
         
         if passphrase == '':
-            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+            passphrase, ok = get_pass()
         else:
             ok = True
 
@@ -1231,7 +1375,7 @@ def btn_released(self):
            
             #Get passphrase
             if passphrase == '':
-                passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+                passphrase, ok = get_pass()
             else:
                 ok = True
 
@@ -1291,7 +1435,7 @@ def btn_released(self):
         keys = txt.replace('\n',' ').split()
 
         if passphrase == '':
-            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+            passphrase, ok = get_pass()
         else:
             ok = True
 
@@ -1305,10 +1449,9 @@ def btn_released(self):
 
     elif clicked_widget.objectName() == 'rtr_prvk_btn':
         address = str(window.comboBox_5.currentText())
-        #if passphrase =='':
-        #    passphrase = str(window.lineEdit_9.text().strip())
+       
         if passphrase == '':
-            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter wallet passphrase:',QtWidgets.QLineEdit.Password)
+            passphrase, ok = get_pass()
         else:
             ok = True
 
@@ -1577,7 +1720,7 @@ def menubar_released(self):
 
     elif clicked_item == 'actionSeed':
         if passphrase == '':
-            passphrase, ok = QtWidgets.QInputDialog.getText(window, 'Wallet Passphrase', 'Enter your wallet passphrase to access your seed:',QtWidgets.QLineEdit.Password)
+            passphrase, ok = get_pass()
         else:
             ok = True
 
@@ -1902,7 +2045,6 @@ def start_pktd_thread():
 def inv_pktd():
     global pktd_pid, pktd_cmd_result
     p = path.exists(get_correct_path("bin/pktd"))
-    print('PATH1', p)
     if p:
         print('Invoking PKTD...')
         pktd_cmd = "bin/pktd -u "+uname+" -P " +pwd+ " --txindex --addrindex"

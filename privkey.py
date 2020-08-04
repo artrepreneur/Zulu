@@ -16,7 +16,7 @@ def resource_path(relative_path):
     return os.path.join(os.path.abspath('.'), relative_path)
     
 def get_private_key(uname, pwd, progress_callback):
-    global err, err_2
+    global err, err_2, passphrase
 
     try:
         cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrase " + passphrase + ' 1000'
@@ -41,8 +41,7 @@ def get_private_key(uname, pwd, progress_callback):
         else:
             if "ErrWrongPassphrase" in err:
                 print('Incorrect password.',err)
-                window.lineEdit_9.clear()
-                #window.lineEdit_9.setText("Incorrect password entered.")
+                window.lineEdit_8.setText("Incorrect password entered.")
     except subprocess.CalledProcessError as e:
         print('Failed to unlock wallet.', e.output)
 
