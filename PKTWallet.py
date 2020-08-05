@@ -154,8 +154,10 @@ def get_pass():
                 print("Passphrase failed.\n")
                 passphrase = ""
                 bad_pass()
-
-        print("get pass passphrase", passphrase)
+        else:
+            passphrase = ""
+            ok = False
+            passphrase_ok = ok
         return passphrase, ok
 
 def bad_pass():
