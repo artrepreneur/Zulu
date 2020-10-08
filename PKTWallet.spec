@@ -32,8 +32,6 @@ a.datas += [('img/glyphicons_325_wallet_blk@2x.png', 'img/glyphicons_325_wallet_
          ('img/glyphicons_457_transfer_alt@2x.png', 'img/glyphicons_457_transfer_alt@2x.png', 'DATA'),
          ('img/glyphicons_051_eye_open.png', 'img/glyphicons_051_eye_open.png', 'DATA'),
          ('img/glyphicons_052_eye_close.png', 'img/glyphicons_052_eye_close.png', 'DATA'),
-         ('img/glyphicons_081_refresh@2x.png', 'img/glyphicons_081_refresh@2x.png', 'DATA'),
-         ('img/glyphicons_081_refresh_alt@2x.png', 'img/glyphicons_081_refresh_alt@2x.png', 'DATA'),
          ('img/app_icon.png', 'img/app_icon.png', 'DATA'),
          ('img/PKT.iconset/icon_1024x1024@2x.png','img/PKT.iconset/icon_1024x1024@2x.png', 'DATA'),
          ('img/grn_btn.png','img/grn_btn.png', 'DATA'),

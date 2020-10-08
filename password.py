@@ -58,13 +58,9 @@ def print_result(result):
         msg_box_13 = QtWidgets.QMessageBox()
         msg_box_13.setText(_translate("MainWindow",'Your password has been changed.'))
         msg_box_13.exec()
-    elif "Incorrect passphrase" in err:
+    else:
         msg_box_13 = QtWidgets.QMessageBox()
         msg_box_13.setText(_translate("MainWindow",'Your password has not been changed. Please make sure your old password was entered correctly.'))
         msg_box_13.exec()
-    else:
-        msg_box_13 = QtWidgets.QMessageBox()
-        msg_box_13.setText(_translate("MainWindow",'Your password has not been changed.'))
-        msg_box_13.exec()    
 
     worker_state_active['PASS_CHNG'] = False
