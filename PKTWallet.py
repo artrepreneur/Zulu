@@ -87,7 +87,7 @@ class CustomInputDialog(QtWidgets.QDialog):
         self.ok_btn.setObjectName("ok_btn")
         self.ok_btn.setText("Ok")
         self.ok_btn.setFixedWidth(80)
-        
+        self.ok_btn.setDefault(True)
         self.form_layout = QtWidgets.QGridLayout(self)
         self.form_layout.addWidget(self.label, 0, 0, 1, 1)
         self.form_layout.addWidget(self.line, 1, 0, 1, 1)
@@ -457,6 +457,9 @@ def get_pub_key(address):
     pubkey.get_key(uname, pwd, address, window, worker_state_active, threadpool)
 
 def change_pass(old_pass, new_pass):
+    global passphrase
+    passphrase = ""
+    
     # Attempt to change password.
     password.change(uname, pwd, old_pass, new_pass, window, worker_state_active, threadpool)
 
@@ -2108,7 +2111,7 @@ def start_daemon(uname, pwd):
     pktd_pid = 0
     pktwallet_pid = 0
 
-    if wallet_db != '':
+    if wallet_db != '' and path.exists(wallet_db):
         try:
             start_pktd_thread()
             start_wallet_thread()
