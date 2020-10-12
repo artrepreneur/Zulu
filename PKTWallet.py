@@ -460,7 +460,7 @@ def change_pass(old_pass, new_pass):
     global passphrase
     passphrase = ""
     
-    # Attempt to change password.
+    #  Attempt to change password.
     password.change(uname, pwd, old_pass, new_pass, window, worker_state_active, threadpool)
 
 # Additional customizations
