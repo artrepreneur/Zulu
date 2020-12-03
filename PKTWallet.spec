@@ -40,7 +40,6 @@ a.datas += [('img/glyphicons_325_wallet_blk@2x.png', 'img/glyphicons_325_wallet_
          ('img/red_btn.png','img/red_btn.png', 'DATA'),
          ('img/ylw_btn.png','img/ylw_btn.png', 'DATA'),
          ('MultisigData/mdata.json', 'MultisigData/mdata.json', 'DATA'),
-         ('bin/pktd', 'bin/pktd', 'DATA'),
          ('bin/pktctl', 'bin/pktctl', 'DATA'),
          ('bin/wallet', 'bin/wallet', 'DATA'),
          ('bin/getwalletdb', 'bin/getwalletdb', 'DATA'),
