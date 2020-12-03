@@ -42,6 +42,8 @@ ver_pwd_action = None
 pwd_vsbl_icon = None
 pwd_invsbl_icon = None
 
+pct_w = 0
+
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path)
@@ -50,16 +52,13 @@ def resource_path(relative_path):
 # Check if pkt wallet sync in progress
 def pktwllt_synching(info):
     global WALLET_SYNCING
-    if info != {}:
-            status = (info["WalletStats"]["Syncing"])
-            WALLET_SYNCING = bool(status)
-            #print('WALLET_SYNCING',WALLET_SYNCING)
-            return WALLET_SYNCING
+
+    if pct_w < 100:
+        WALLET_SYNCING = True
     else:
-        print('Unable to get wallet status.') 
         WALLET_SYNCING = False
-        #print('WALLET_SYNCING',WALLET_SYNCING)
-        return WALLET_SYNCING
+    
+    return WALLET_SYNCING
 
 class CustomInputDialog(QtWidgets.QDialog):
     def __init__(self, *args, **kwargs):
@@ -163,8 +162,6 @@ def bad_pass():
     pwd_msg_box = QtWidgets.QMessageBox()
     pwd_msg_box.setText(pwd_msg)
     pwd_msg_box.exec()  
-
-
 
 # Check if pktd sync in progress
 def pktd_synching(info):
@@ -392,11 +389,17 @@ def side_menu_clicked(btn):
         font.setFamily("Gill Sans")
         font.setPointSize(15)
         item_0.setFont(0, font)
+
+        '''
         if pktd_synching(wlltinf.get_inf(uname, pwd)):
             sync_msg("Transactions aren\'t available until wallet has completely sync\'d")
         else:
             get_transactions()
             window.stackedWidget.setCurrentIndex(i)
+        '''
+
+        get_transactions()
+        window.stackedWidget.setCurrentIndex(i)
 
 
 def get_transactions():
@@ -415,11 +418,10 @@ def get_transactions():
 
 def show_balance():
     info = wlltinf.get_inf(uname, pwd)
-    if pktd_synching(info): 
-        sync_msg("Wallet daemon is currently syncing. Some features may not work until sync is complete.")
-    elif pktwllt_synching(info):
+ 
+    if pktwllt_synching(info):
         sync_msg('Wallet is currently synching to chain. Some balances may be inaccurate until chain sync\'s fully.')
-
+    
     window.balance_amount.clear()
     worker_state_active['GET_BALANCE'] = False
     total_balance = balances.get_balance_thd(uname, pwd, window, worker_state_active, threadpool)
@@ -1968,7 +1970,7 @@ def kill_it():
         elif os_sys == 'Windows':
             os.system("taskkill /f /im  wallet.exe")
             os.system("taskkill /f /im  pktd.exe")
-        time.sleep(15)
+        time.sleep(5)
         return        
     except:
         print('Failed to clean up.')    
@@ -2003,8 +2005,8 @@ def restart(proc):
         try:
             if proc == "pktwallet":
                 start_wallet_thread()
-            else:
-                start_pktd_thread()
+            #else:
+            #    start_pktd_thread()
                 
         except:
             print("Process could not be restarted.")
@@ -2020,23 +2022,6 @@ def get_correct_path(relative_path):
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
-
-# Thread PKT wallet
-def start_wallet_thread():
-    pktwallet_cmd_result = inv_pktwllt()
-    worker = Worker(pktwllt_worker, pktwallet_cmd_result)
-    worker.signals.result.connect(pktwllt_dead)
-    threadpool.start(worker)
-
-def pktwllt_dead():
-    print('Wallet died')
-    window.label_103.setPixmap(QPixmap(resource_path('img/red_btn.png')))
-    window.label_106.setText('0%')
-    if not SHUTDOWN_CYCLE:
-        if not AUTO_RESTART_WALLET and wallet_db != '':
-            restart('pktwallet')
-        else:
-            start_wallet_thread()
     
 # Thread PKT Daemon
 def start_pktd_thread():
@@ -2073,13 +2058,34 @@ def pktd_dead():
     if not SHUTDOWN_CYCLE:
         restart('pktd')
 
+# Thread PKT wallet
+def start_wallet_thread():
+    pktwallet_cmd_result = inv_pktwllt()
+    worker = Worker(pktwllt_worker, pktwallet_cmd_result)
+    #worker.signals.progress.connect(progress_fn)
+    worker.signals.finished.connect(pktwllt_dead)
+    threadpool.start(worker)
+
+def pktwllt_dead():
+    print('Wallet died')
+    window.label_103.setPixmap(QPixmap(resource_path('img/red_btn.png')))
+    window.label_106.setText('0%')
+
+    if not SHUTDOWN_CYCLE:
+        if not AUTO_RESTART_WALLET and wallet_db != '':
+            restart('pktwallet')
+        else:
+            start_wallet_thread()
+        check_status()
+
 def inv_pktwllt():
+    global pktwallet_pid, pktwallet_cmd_result
     p = path.exists(get_correct_path("bin/wallet"))
-    print('PATH2', p)
+   
     if p:
         print('Invoking PKT Wallet...')
-        global pktwallet_pid, pktwallet_cmd_result
-        pktwallet_cmd_result = subprocess.Popen([resource_path('bin/wallet'), '-u', uname, '-P', pwd, '--usespv', '--userpc'], shell=False, stdout=subprocess.PIPE)
+        #with open("stdout.txt","wb") as out:
+        pktwallet_cmd_result = subprocess.Popen([resource_path('bin/wallet'), '-u', uname, '-P', pwd], shell=False, stdout=subprocess.PIPE)
         pktwallet_pid = pktwallet_cmd_result.pid + 1
         pktwllt_stdout = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
         status = ''
@@ -2103,7 +2109,8 @@ def pktwllt_worker(pktwallet_cmd_result, progress_callback):
         output = str((pktwallet_cmd_result.stdout.readline()).decode('utf-8'))
         print('Wallet Output:', output)
         if not pktwallet_cmd_result.poll() is None or output =='' or SHUTDOWN_CYCLE:
-            break    
+            break
+
     return
 
 def start_daemon(uname, pwd):
@@ -2113,8 +2120,9 @@ def start_daemon(uname, pwd):
 
     if wallet_db != '' and path.exists(wallet_db):
         try:
-            start_pktd_thread()
+            #start_pktd_thread()
             start_wallet_thread()
+            
         except:
             print('Failed to invoke daemon.')
             exit_handler()
@@ -2124,13 +2132,12 @@ def start_daemon(uname, pwd):
             global CREATE_NEW_WALLET
             print('Creating a new wallet...')
             CREATE_NEW_WALLET = True
-            start_pktd_thread()
+            #start_pktd_thread()
             window.menu_frame.hide()
             window.frame_4.hide()
             window.menubar.setEnabled(False)
             i = window.stackedWidget.indexOf(window.new_wallet_page)
             window.stackedWidget.setCurrentIndex(i)
-
         except:
             print('Failed to invoke pktd daemon.')
             exit_handler()
@@ -2146,74 +2153,64 @@ def make_executable():
 
 def check_status():
     worker = Worker(get_status)
-    worker.signals.result.connect(status_dead)
+    worker.signals.finished.connect(status_dead)
     threadpool.start(worker)
 
 def get_status(progress_callback):
     global COUNTER
     while True:
-        #print('COUNTER:', COUNTER)
         if COUNTER % STATUS_INTERVAL == 0:
             status_light()         
         else:
             COUNTER +=1
         if SHUTDOWN_CYCLE:
             break    
-        time.sleep(1)
     return        
 
 def status_dead():
     print("Status died")
 
 def status_light():
-    global COUNTER
+    global COUNTER, pct_w
     COUNTER = 1
     pktd_pct = '0.0%'
     wllt_pct = '0.0%'
-    #print('Checking status...')
-    
+
     info = wlltinf.get_inf(uname, pwd)
-    w_sync = pktwllt_synching(info)
-    p_sync = pktd_synching(info)
+    w_sync = True #pktwllt_synching(info)
+    p_sync = False #pktd_synching(info)
 
     if not p_sync: # synched
         pktd_pct='100.0%'
-        #print('pktd synced', pktd_pct)
     else:
+         
+        # To be deprecated
         peerinfo = (peerinf.get_inf(uname, pwd))
-        #print('peerinfo:', peerinfo)
-
         if len(peerinfo)>0:
             peerinfo = peerinfo[0]
             strt_height = peerinfo['startingheight']
             curr_height_1 = peerinfo['currentheight']
-            print('Current Height', curr_height_1, 'Start Height:', strt_height)
             pct_d = round((curr_height_1 / strt_height ) * 100,1)
             pktd_pct = str(pct_d) + '%'
 
-            #if pktd_pct=='100.0%':
-            #    pktd_pct = '0.0%'
-
+            if pktd_pct=='100.0%':
+                pktd_pct = '0.0%'
         else: # no data for peerinfo
             pktd_pct = '0.0%'             
 
     if not w_sync: # synched
         wllt_pct='100.0%'
+        
     else: 
         curr_height_2 = int(info['CurrentHeight'])
         bnd_height = int(info['BackendHeight'])
-        print('Current Height', curr_height_2, 'Back End Height:', bnd_height)
         curr_height_2 = bnd_height if curr_height_2 > bnd_height else curr_height_2
         pct_w = round((curr_height_2 / bnd_height ) * 100,1)
+        
         if pct_w > 100:
             pct_w = 100
-        wllt_pct = str(pct_w) + '%'
-        
-        #if wllt_pct=='100.0%':
-        #    wllt_pct = '0.0%'    
 
-    print('Wallet Sync:', w_sync, 'Wallet Percent:',wllt_pct)
-    print('PKTD Sync:', p_sync, 'PKTD Percent:',  pktd_pct)
+        wllt_pct = str(pct_w) + '%'
 
     window.label_105.setText(pktd_pct)
     window.label_106.setText(wllt_pct)
@@ -2354,8 +2351,25 @@ def deactivate():
     window.label_9.setText('Enter Your Payee Below')
     window.label_17.setText('Enter Your Payee Below')
     window.actionPay_to_Many.setVisible(False)
+    window.actionCreate_Transaction.setVisible(False)
+    window.actionSign_Verify_Message.setVisible(False)
     window.actionEncrypt_Decrypt_Message.setVisible(False)
     window.actionCombine_Multisig_Transactions.setVisible(False)
+    window.actionMultiSig_Address.setVisible(False)
+   
+    
+    # Phasing out status light since it's no longer useful
+    window.label_102.hide()
+    window.label_100.hide()
+    window.line_10.hide()
+    window.label_105.hide()
+    window.label_104.hide()
+    
+    '''
+    window.label_101.hide()
+    window.label_103.hide()
+    window.label_106.hide()
+    '''
 
     # Fee related buttons
     window.fee_est2_btn.hide()
@@ -2440,16 +2454,6 @@ if __name__ == "__main__":
     # Fire up daemon and wallet backend
     print('Starting Daemon ...')
     start_daemon(uname, pwd) 
-    
-    if not CREATE_NEW_WALLET:
-        # Add balances
-        print('Getting Balance ...')
-        show_balance()
-
-        # Add address balances and addresses
-        print('Getting Address Balances ...')
-        add_addresses(['balances'])
-        add_addresses(['addresses'])
 
     # Styling
     add_custom_styles()
@@ -2459,4 +2463,17 @@ if __name__ == "__main__":
     menubar_listeners()
     window.show()
     check_status()
+
+    if not CREATE_NEW_WALLET:
+        # Add balances
+        print('Getting Balance ...')
+        show_balance()
+
+        # Add address balances and addresses
+        print('Getting Address Balances ...')
+        add_addresses(['balances'])
+        add_addresses(['addresses'])
+    
     app.exec()
+
+    
