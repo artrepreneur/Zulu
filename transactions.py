@@ -53,7 +53,7 @@ def history(u, p, pg, win, state, pool):
         worker = rpcworker.Worker(get_history, uname, pwd)
         worker.signals.result.connect(print_result)
         worker.signals.finished.connect(thread_complete)
-        worker.signals.progress.connect(progress_fn)
+        #worker.signals.progress.connect(progress_fn)
         threadpool.start(worker)
 
 def row_count(iterator):

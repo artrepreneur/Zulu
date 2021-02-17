@@ -52,7 +52,7 @@ def get_balance_thd(u, p, win, state, pool):
         worker = rpcworker.Worker(get_balance, uname, pwd)
         worker.signals.result.connect(print_result)
         worker.signals.finished.connect(thread_complete)
-        worker.signals.progress.connect(progress_fn)
+        #worker.signals.progress.connect(progress_fn)
 
         # Execute
         threadpool.start(worker)        

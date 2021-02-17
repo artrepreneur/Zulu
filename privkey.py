@@ -66,7 +66,7 @@ def get_key(u, p, a, pp, win, state, pool):
             worker = rpcworker.Worker(get_private_key, uname, pwd) # Any other args, kwargs are passed to the run function
             worker.signals.result.connect(print_result)
             worker.signals.finished.connect(thread_complete)
-            worker.signals.progress.connect(progress_fn)
+            #worker.signals.progress.connect(progress_fn)
 
             # Execute
             threadpool.start(worker)

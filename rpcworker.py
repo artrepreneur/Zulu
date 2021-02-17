@@ -9,7 +9,7 @@ class WorkerSignals(QObject):
     finished = pyqtSignal()
     error = pyqtSignal(tuple)
     result = pyqtSignal(object)
-    progress = pyqtSignal(int)
+    progress = pyqtSignal(list)
 
 
 class Worker(QRunnable):
@@ -39,8 +39,8 @@ class Worker(QRunnable):
         finally:
             self.signals.finished.emit()  # Done
 
-def progress_fn(n):
-    print("%d%% done" % n)
+def progress_fn(self, d):
+    print("STILL WORKING...", d)
 
 def thread_complete():
     print("THREAD COMPLETE!")

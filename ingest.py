@@ -66,9 +66,7 @@ def all_keys(u, p, k, pp, win, state, pool):
         worker = rpcworker.Worker(ingest_keys, uname, pwd)
         worker.signals.result.connect(print_result)
         worker.signals.finished.connect(thread_complete)
-        worker.signals.progress.connect(progress_fn)
-
-        # Execute
+        #worker.signals.progress.connect(progress_fn)
         threadpool.start(worker)
 
 def print_result(result):
@@ -77,13 +75,17 @@ def print_result(result):
     lock = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletlock"
     result_lock, err_lock = subprocess.Popen(resource_path(lock), shell=True, stdout=subprocess.PIPE).communicate()
     window.import_text.clear()
-    if result:
+    
+    if err:
+        if 'ErrWrongPassphrase' in err:
+            window.import_text.setPlaceholderText(_translate("MainWindow","Wrong wallet password entered."))
+        elif 'malformed private key' in err:
+            window.import_text.setPlaceholderText(_translate("MainWindow","Wrong private key entered."))
+        else:
+            window.import_text.setPlaceholderText(_translate("MainWindow","Could not import, check key/s."))
+    else:
         window.import_text.setPlaceholderText(_translate("MainWindow","Keys successfully added."))
         i = window.stackedWidget.indexOf(window.added_keys_page)
         window.stackedWidget.setCurrentIndex(i)
-    elif err:
-        if 'ErrWrongPassphrase' in err:
-            window.import_text.setPlaceholderText(_translate("MainWindow","Wrong wallet password entered."))
-    else:
-        window.import_text.setPlaceholderText(_translate("MainWindow","Could not import, check key/s."))
+    
     worker_state_active['IMP_PRIV_KEY'] = False

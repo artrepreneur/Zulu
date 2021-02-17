@@ -41,24 +41,12 @@ pwd_action = None
 ver_pwd_action = None
 pwd_vsbl_icon = None
 pwd_invsbl_icon = None
-
 pct_w = 0
 
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath('.'), relative_path)
-
-# Check if pkt wallet sync in progress
-def pktwllt_synching(info):
-    global WALLET_SYNCING
-
-    if pct_w < 100:
-        WALLET_SYNCING = True
-    else:
-        WALLET_SYNCING = False
-    
-    return WALLET_SYNCING
 
 class CustomInputDialog(QtWidgets.QDialog):
     def __init__(self, *args, **kwargs):
@@ -176,6 +164,17 @@ def pktd_synching(info):
         PKTD_SYNCING = False
         #print('PKTD_SYNCING',PKTD_SYNCING)
         return PKTD_SYNCING
+
+# Check if pkt wallet sync in progress
+def pktwllt_synching(info):
+    global WALLET_SYNCING
+
+    if pct_w < 100:
+        WALLET_SYNCING = True
+    else:
+        WALLET_SYNCING = False
+    
+    return WALLET_SYNCING
 
 # Message box for wallet sync
 def sync_msg(msg):
@@ -894,7 +893,6 @@ def btn_released(self):
     elif clicked_widget.objectName() == 'open_wllt_btn':
         start_wallet_thread()
         window.menubar.setEnabled(True)
-        #window.resize(1030, 800)
         window.menu_frame.show()
         window.frame_4.show()
         window.balance_tree.clear()
@@ -903,6 +901,7 @@ def btn_released(self):
         show_balance()
         add_addresses(['balances'])
         add_addresses(['addresses'])
+        check_status()
 
     #elif clicked_widget.fold_again_btn.objectName() == 'fold_again_btn':
     #    i = window.stackedWidget.indexOf(window.fold_page_1)
@@ -2048,7 +2047,7 @@ def pktd_worker(pktd_cmd_result, progress_callback):
     print('Running PKTD Worker...')
     while (pktd_cmd_result.poll() is None or int(pktd_cmd_result.poll()) > 0) and not SHUTDOWN_CYCLE:
         output = str((pktd_cmd_result.stdout.readline()).decode('utf-8'))
-        print('PKTD Output:', output)
+        #print('PKTD Output:', output)
     return
 
 def pktd_dead():
@@ -2062,7 +2061,6 @@ def pktd_dead():
 def start_wallet_thread():
     pktwallet_cmd_result = inv_pktwllt()
     worker = Worker(pktwllt_worker, pktwallet_cmd_result)
-    #worker.signals.progress.connect(progress_fn)
     worker.signals.finished.connect(pktwllt_dead)
     threadpool.start(worker)
 
@@ -2076,7 +2074,7 @@ def pktwllt_dead():
             restart('pktwallet')
         else:
             start_wallet_thread()
-        check_status()
+        #check_status()
 
 def inv_pktwllt():
     global pktwallet_pid, pktwallet_cmd_result
@@ -2154,36 +2152,49 @@ def make_executable():
 def check_status():
     worker = Worker(get_status)
     worker.signals.finished.connect(status_dead)
+    worker.signals.progress.connect(prog_fn)
     threadpool.start(worker)
+
+def prog_fn(data):
+    pktd_pct = data[0]
+    wllt_pct = data[1]
+    w_sync = data[2]
+    p_sync = data[3]
+    window.label_105.setText(pktd_pct)
+    window.label_106.setText(wllt_pct)
+    window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if (wllt_pct=='100.0%') else window.label_103.setPixmap(QPixmap(resource_path('img/ylw_btn.png')))   
+    window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if (pktd_pct=='100.0%') else window.label_100.setPixmap(QPixmap(resource_path('img/ylw_btn.png')))                                  
+
 
 def get_status(progress_callback):
     global COUNTER
+
     while True:
         if COUNTER % STATUS_INTERVAL == 0:
-            status_light()         
+            status_light(progress_callback)         
         else:
             COUNTER +=1
         if SHUTDOWN_CYCLE:
-            break    
+            break
     return        
 
 def status_dead():
-    print("Status died")
+    print("STATUS DIED")
 
-def status_light():
+def status_light(progress_callback):
     global COUNTER, pct_w
     COUNTER = 1
     pktd_pct = '0.0%'
     wllt_pct = '0.0%'
 
     info = wlltinf.get_inf(uname, pwd)
-    w_sync = True #pktwllt_synching(info)
-    p_sync = False #pktd_synching(info)
+    w_sync = True 
+    p_sync = False 
 
     if not p_sync: # synched
         pktd_pct='100.0%'
+
     else:
-         
         # To be deprecated
         peerinfo = (peerinf.get_inf(uname, pwd))
         if len(peerinfo)>0:
@@ -2195,6 +2206,7 @@ def status_light():
 
             if pktd_pct=='100.0%':
                 pktd_pct = '0.0%'
+                
         else: # no data for peerinfo
             pktd_pct = '0.0%'             
 
@@ -2205,17 +2217,18 @@ def status_light():
         curr_height_2 = int(info['CurrentHeight'])
         bnd_height = int(info['BackendHeight'])
         curr_height_2 = bnd_height if curr_height_2 > bnd_height else curr_height_2
-        pct_w = round((curr_height_2 / bnd_height ) * 100,1)
+
+        if bnd_height > 0:
+            pct_w = round((curr_height_2 / bnd_height ) * 100,1)
+        else:
+            pct_w = 0
         
         if pct_w > 100:
             pct_w = 100
 
         wllt_pct = str(pct_w) + '%'
 
-    window.label_105.setText(pktd_pct)
-    window.label_106.setText(wllt_pct)
-    window.label_103.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if (not w_sync and wllt_pct=='100.0%') else window.label_103.setPixmap(QPixmap(resource_path('img/ylw_btn.png')))   
-    window.label_100.setPixmap(QPixmap(resource_path('img/grn_btn.png'))) if (not p_sync and pktd_pct=='100.0%') else window.label_100.setPixmap(QPixmap(resource_path('img/ylw_btn.png')))                                  
+    progress_callback.emit([pktd_pct, wllt_pct, w_sync, p_sync])
 
 def get_wallet_db():
     wallet_db = ''
@@ -2424,7 +2437,7 @@ if __name__ == "__main__":
     window = MainWindow()
     window.raise_() #added for pyinstaller only, else menubar fails
 
-    # check perms
+    # check perms - DEPRECATED
     #make_executable()
 
     # Shutdown any other instances
@@ -2462,7 +2475,6 @@ if __name__ == "__main__":
     button_listeners()
     menubar_listeners()
     window.show()
-    check_status()
 
     if not CREATE_NEW_WALLET:
         # Add balances
@@ -2473,6 +2485,7 @@ if __name__ == "__main__":
         print('Getting Address Balances ...')
         add_addresses(['balances'])
         add_addresses(['addresses'])
+        check_status()
     
     app.exec()
 

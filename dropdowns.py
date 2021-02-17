@@ -28,7 +28,8 @@ def refresh_all(window, list, type):
         window.pay_to_combo_box.addItems(list)
 
     elif type == 'balances':
-        list = [item for item in list if not (item[0]=='P' or (item[0:3] =='pkt' and len(item)>61))]
+        #list = [item for item in list if not (item[0]=='P' or (item[0:3] =='pkt' and len(item)>61))]
+        list = [item for item in list if not (item[0]=='P')]
         window.fld_frm_box.clear()
         window.fld_frm_box.addItems(list)
         window.pay_from_combo_box.clear()

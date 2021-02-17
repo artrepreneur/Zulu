@@ -63,8 +63,7 @@ def invoke_thread(uname, pwd, threadpool):
     worker = rpcworker.Worker(get_all_addresses, uname, pwd)
     worker.signals.result.connect(print_addresses)
     worker.signals.finished.connect(thread_complete)
-    worker.signals.progress.connect(progress_fn)
-    # Execute
+    #worker.signals.progress.connect(progress_fn)
     threadpool.start(worker)
 
 def get_addresses(u, p, win, t, state, pool):

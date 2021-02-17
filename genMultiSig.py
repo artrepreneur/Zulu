@@ -103,7 +103,7 @@ def create(u, p, win, ac, aa, pp, state, pool):
         worker = rpcworker.Worker(new_multisig, uname, pwd, required_sigs, pub_keys, passphrase)
         worker.signals.result.connect(print_result)
         worker.signals.finished.connect(thread_complete)
-        worker.signals.progress.connect(progress_fn)
+        #worker.signals.progress.connect(progress_fn)
 
         # Execute
         threadpool.start(worker)

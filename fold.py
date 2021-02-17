@@ -134,7 +134,7 @@ def execute(u, p, win, state, pool, pp, f, t):
         worker = rpcworker.Worker(fold_it)
         worker.signals.result.connect(fold_response_2)
         worker.signals.finished.connect(thread_complete)
-        worker.signals.progress.connect(progress_fn)
+        #worker.signals.progress.connect(progress_fn)
         threadpool.start(worker)
 
 
