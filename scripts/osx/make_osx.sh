@@ -72,6 +72,8 @@ codesign --force --options runtime --deep --verify --verbose --entitlements "./s
 info "Notarizing PKTWallet.app"
 ditto -c -k --rsrc --keepParent dist/PKTWallet.app dist/PKTWallet.app.zip
 UUID=$(xcrun altool --notarize-app -t osx -f dist/PKTWallet.app.zip --primary-bundle-id PKTWallet -u $APPLE_UNAME -p $APPLE_APP_PWD 2>&1 | awk '/RequestUUID/ { print $NF; }')
+info $UUID
+
 request_status="in progress"
 while [[ "$request_status" == "in progress" ]]; do
     echo -n "waiting... "
