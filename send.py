@@ -48,7 +48,7 @@ def execute2(u, p, a, pp, pd, win, state):
              
             try:     
                     cmd_2 = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet sendfrom" + cmd + " 1"
-                    print(cmd_2)
+                    print(cmd_2)                    
                     result_2, err_2 = subprocess.Popen(resource_path(cmd_2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
                     result_2 = result_2.decode('utf-8')
                     err_2 = err_2.decode('utf-8')
@@ -81,6 +81,7 @@ def execute2(u, p, a, pp, pd, win, state):
                                         amount = str(format(round(float(item["amount"]), 8), '.8f'))
                                         deet += 'You sent address: ' + addr + '\nthe amount: ' + amount + ' PKT\n\n'
                                 '''
+
                                 for i, item in enumerate(pay_dict):
                                     deet += 'You sent address: ' + str(item) + '\nthe amount: ' + str(pay_dict[item]) + ' PKT\n\n'         
                                  
@@ -99,6 +100,8 @@ def execute2(u, p, a, pp, pd, win, state):
                         print('Error:', err_2)
                         if "waddrmgr.scriptAddress" in err_2:
                             window.label_6.setText(_translate("MainWindow","You are using a multisig sending address. You must use \"create multisig\" option under menu."))
+                        elif "ErrRejectDust" in err_2:
+                            window.label_6.setText(_translate("MainWindow","Transaction too small error."))
                         elif "InsufficientFundsError" in err_2:
                             window.label_6.setText(_translate("MainWindow","You have insufficient balance. Wait for a past transaction to confirm or fold your address."))
                         elif "RejInsufficientFee" in err_2:

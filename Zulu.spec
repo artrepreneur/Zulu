@@ -3,7 +3,7 @@ import sys
 
 block_cipher = None
 
-a = Analysis(['PKTWallet.py'],
+a = Analysis(['Zulu.py'],
              binaries=[
                ('build/deps/libzbar.dylib', '.'),
                ('build/deps/jpeg/9d/lib/libjpeg.9.dylib','.')
@@ -55,7 +55,7 @@ if sys.platform == 'darwin':
                a.binaries,
                a.zipfiles,
                a.datas,
-               name='PKTWallet',
+               name='Zulu',
                debug=True,
                strip=False,
                upx=True,
@@ -66,7 +66,7 @@ if sys.platform == 'darwin':
 # Package the executable file into .app if on OS X
 if sys.platform == 'darwin':
       app = BUNDLE(exe,
-                   name='PKTWallet.app',
+                   name='Zulu.app',
                    info_plist={
                      'NSHighResolutionCapable': 'True',
                      'LSBackgroundOnly': '1',
@@ -81,4 +81,4 @@ coll = COLLECT(exe,
              strip=False,
              upx=True,
              upx_exclude=[],
-             name='PKTWallet')
+             name='Zulu')

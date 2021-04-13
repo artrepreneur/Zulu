@@ -118,7 +118,7 @@ def print_addresses(addr):
         window.balance_tree.setCurrentItem(item_1)
 
     else:
-        msg = '*No addresses to add yet.'
+        msg = '** No addresses to add yet.'
         item_1 = QtWidgets.QTreeWidgetItem(window.balance_tree)
         window.balance_tree.topLevelItem(0).setText(0, _translate("MainWindow", msg))
 
@@ -126,6 +126,7 @@ def print_addresses(addr):
     if not (type == 'balances'):
         refresh_all(window, list, 'addresses')
         refresh_all(window, multisig_arr, 'multisig')
+        refresh_all(window, list, 'all')
     else:
         refresh_all(window, list, 'balances')
 

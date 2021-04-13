@@ -62,16 +62,16 @@ if ! [ -f "$BUILDDIR/deps/jpeg/9d/lib/libjpeg.9.dylib" ]; then
 fi
 
 info "Building binary"
-APP_SIGN="$APP_SIGN" pyinstaller --noconfirm --ascii --clean --name "$VERSION" PKTWallet.spec || \
+APP_SIGN="$APP_SIGN" pyinstaller --noconfirm --ascii --clean --name "$VERSION" Zulu.spec || \
     fail "Could not build binary"
 
-info "Code signing PKTWallet.app"
-codesign --force --options runtime --deep --verify --verbose --entitlements "./scripts/deterministic-build/entitlements.plist" --sign "$APP_SIGN" "dist/PKTWallet.app"
+info "Code signing Zulu.app"
+codesign --force --options runtime --deep --verify --verbose --entitlements "./scripts/deterministic-build/entitlements.plist" --sign "$APP_SIGN" "dist/Zulu.app"
 
 # Notarize the app.
-info "Notarizing PKTWallet.app"
-ditto -c -k --rsrc --keepParent dist/PKTWallet.app dist/PKTWallet.app.zip
-UUID=$(xcrun altool --notarize-app -t osx -f dist/PKTWallet.app.zip --primary-bundle-id PKTWallet -u $APPLE_UNAME -p $APPLE_APP_PWD 2>&1 | awk '/RequestUUID/ { print $NF; }')
+info "Notarizing Zulu.app"
+ditto -c -k --rsrc --keepParent dist/Zulu.app dist/Zulu.app.zip
+UUID=$(xcrun altool --notarize-app -t osx -f dist/Zulu.app.zip --primary-bundle-id Zulu -u $APPLE_UNAME -p $APPLE_APP_PWD 2>&1 | awk '/RequestUUID/ { print $NF; }')
 info $UUID
 
 request_status="in progress"
@@ -82,12 +82,12 @@ while [[ "$request_status" == "in progress" ]]; do
     echo "$request_status"
 done
 if [[ $request_status != "success" ]]; then
-        echo "## could not notarize dist/PKTWallet.app"
+        echo "## could not notarize dist/Zulu.app"
         exit 1
 fi
-ditto -V -x -k --sequesterRsrc --rsrc dist/PKTWallet.app.zip dist
-xcrun stapler staple dist/PKTWallet.app
-spctl -a -v --type execute dist/PKTWallet.app
+ditto -V -x -k --sequesterRsrc --rsrc dist/Zulu.app.zip dist
+xcrun stapler staple dist/Zulu.app
+spctl -a -v --type execute dist/Zulu.app
 
 info "Installing NODE"
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash > /dev/null 2>&1
@@ -100,21 +100,21 @@ info "Installing appdmg"
 npm install -g appdmg --unsafe-perm || \
     fail "Could not install appdmg"
 
-info "Creating PKTWallet.json"
-echo -e '{\n\t"title": "pktwallet-'$VERSION'",\n\t"icon": "img/drive.icns",\n\t"contents": [\n\t\t{ "x": 448, "y": 344, "type": "link", "path": "/Applications" },\n\t\t{ "x": 192, "y": 344, "type": "file", "path": "./dist/PKTWallet.app" }\n\t]\n}' > PKTWallet.json || \
-    fail "Could not create PKTWallet.json"
+info "Creating Zulu.json"
+echo -e '{\n\t"title": "Zulu-'$VERSION'",\n\t"icon": "img/drive.icns",\n\t"contents": [\n\t\t{ "x": 448, "y": 344, "type": "link", "path": "/Applications" },\n\t\t{ "x": 192, "y": 344, "type": "file", "path": "./dist/Zulu.app" }\n\t]\n}' > Zulu.json || \
+    fail "Could not create Zulu.json"
 
 info "Creating .DMG"
-DMGFILE="pktwallet-"$VERSION".dmg"
-appdmg PKTWallet.json dist/$DMGFILE || \
+DMGFILE="Zulu-"$VERSION".dmg"
+appdmg Zulu.json dist/$DMGFILE || \
     fail "Could not create .DMG"
 
-#hdiutil create -fs HFS+ -volname PKTWallet -srcfolder dist/PKTWallet.app "dist/pktwallet-$VERSION.dmg" || \
+#hdiutil create -fs HFS+ -volname Zulu -srcfolder dist/Zulu.app "dist/Zulu-$VERSION.dmg" || \
 #    fail "Could not create .DMG"
 
-info "Code signing dist/pktwallet-${VERSION}.dmg"
-codesign --deep --force --verbose --sign $APP_SIGN "dist/pktwallet-${VERSION}.dmg"
-#codesign --force --options runtime --deep --verify --verbose --entitlements "./scripts/deterministic-build/entitlements.plist" --sign $APP_SIGN "dist/pktwallet-${VERSION}.dmg"
+info "Code signing dist/Zulu-${VERSION}.dmg"
+codesign --deep --force --verbose --sign $APP_SIGN "dist/Zulu-${VERSION}.dmg"
+#codesign --force --options runtime --deep --verify --verbose --entitlements "./scripts/deterministic-build/entitlements.plist" --sign $APP_SIGN "dist/Zulu-${VERSION}.dmg"
 
 if [ -z "$APP_SIGN" ]; then
     warn "App was built successfully but was not code signed. Users may get security warnings from macOS."

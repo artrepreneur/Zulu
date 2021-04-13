@@ -1988,7 +1988,7 @@ def restart(proc):
     COUNTER = 0
     print('Process:', proc)
     rst_msg_box = QtWidgets.QMessageBox()
-    if proc == "pktwallet":
+    if proc == "wallet":
         process = "PKT wallet"
     else:
         process = "PKT daemon"
@@ -2002,7 +2002,7 @@ def restart(proc):
 
     if ret == QtWidgets.QMessageBox.Yes:
         try:
-            if proc == "pktwallet":
+            if proc == "wallet":
                 start_wallet_thread()
             #else:
             #    start_pktd_thread()
@@ -2071,7 +2071,7 @@ def pktwllt_dead():
 
     if not SHUTDOWN_CYCLE:
         if not AUTO_RESTART_WALLET and wallet_db != '':
-            restart('pktwallet')
+            restart('wallet')
         else:
             start_wallet_thread()
         #check_status()
