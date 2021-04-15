@@ -111,6 +111,7 @@ class CustomInputDialog(QtWidgets.QDialog):
 					
 def get_pass():
         global passphrase, passphrase_ok
+        
 
         passphrase = ""
         ok = passphrase_ok
@@ -118,7 +119,7 @@ def get_pass():
         dialog.exec()
         passphrase = dialog.passphrase
 
-        if passphrase and not passphrase_ok:
+        passphrase passphrase and not passphrase_ok:
             try:
                 cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrase " + passphrase + ' 1000'
                 result, err = (subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
