@@ -1,6 +1,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://travis-ci.com/artrepreneur/PKT-Cash-Wallet.svg?branch=master)](https://travis-ci.com/artrepreneur/PKT-Cash-Wallet)
+[![Build Status](https://travis-ci.com/artrepreneur/Zulu.svg?branch=master)](https://travis-ci.com/artrepreneur/Zulu)
 # Zulu
 Zulu wallet is a QT wallet for the PKT Cash blockchain mainnet. This wallet adds a graphical user interface (GUI) to the command line daemon [pktwallet](https://github.com/pkt-cash/pktd/tree/master/pktwallet). Zulu Wallet runs as a standalone application for macOS currently, and eventually will have support for Unix. 
 
