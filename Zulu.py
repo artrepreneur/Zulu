@@ -8,7 +8,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from functools import partial
 import os, sys, subprocess, json, threading, time, random, signal, traceback, re
-#import psutil
+import psutil
 import platform, transactions, estimate, ingest, signMultiSigTrans, sendMultiSigTrans, sendCombMultiSigTrans, fold, createWallet, getSeed, resync, peerinf
 import balances, addresses, balanceAddresses, rpcworker, privkey, pubkey, password, wlltinf, send, time, datetime, genMultiSig, createMultiSigTrans, sendCombMultiSigTrans
 #import combineSigned
