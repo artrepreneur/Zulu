@@ -276,8 +276,8 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Futura")
         self.balance_tree.setFont(font)
-        self.balance_tree.setStyleSheet("border-radius: 4px;\n"
-"background-color: rgb(201, 207, 207);\n"
+        self.balance_tree.setStyleSheet("border-radius: 4px; color: black;\n"
+"background-color: rgb(201, 207, 207); \n"
 "")
         self.balance_tree.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.balance_tree.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
