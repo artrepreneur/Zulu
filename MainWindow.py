@@ -473,7 +473,7 @@ class Ui_MainWindow(object):
         self.label_8.setFont(font)
         self.label_8.setStyleSheet("\n"
 "padding-bottom: 4px;\n"
-"\n"
+"color: blue;\n"
 "")
         self.label_8.setObjectName("label_8")
         self.gridLayout_5.addWidget(self.label_8, 0, 0, 1, 1)
@@ -1193,7 +1193,7 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.label_43.setFont(font)
-        self.label_43.setStyleSheet("background-color: rgb(253, 253, 255, 0);\n"
+        self.label_43.setStyleSheet("background-color: rgb(253, 253, 255);\n"
 "")
         self.label_43.setObjectName("label_43")
         self.gridLayout_93.addWidget(self.label_43, 0, 0, 1, 1)
@@ -1265,7 +1265,7 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.label_91.setFont(font)
-        self.label_91.setStyleSheet("background-color: rgb(253, 253, 255, 0);\n"
+        self.label_91.setStyleSheet("background-color: rgb(253, 253, 255);\n"
 "")
         self.label_91.setObjectName("label_91")
         self.gridLayout_152.addWidget(self.label_91, 0, 0, 1, 1)
@@ -1325,7 +1325,7 @@ class Ui_MainWindow(object):
         font.setItalic(False)
         font.setWeight(75)
         self.address_create_label.setFont(font)
-        self.address_create_label.setStyleSheet("background-color: rgb(253, 253, 255,0);\n"
+        self.address_create_label.setStyleSheet("background-color: rgb(253, 253, 255);\n"
 "")
         self.address_create_label.setObjectName("address_create_label")
         self.verticalLayout_4.addWidget(self.address_create_label)
@@ -1461,7 +1461,7 @@ class Ui_MainWindow(object):
         font.setItalic(False)
         font.setWeight(75)
         self.label_12.setFont(font)
-        self.label_12.setStyleSheet("background-color: rgb(253, 253, 255,0);\n"
+        self.label_12.setStyleSheet("background-color: rgb(253, 253, 255);\n"
 "")
         self.label_12.setObjectName("label_12")
         self.verticalLayout_14.addWidget(self.label_12)
@@ -1589,7 +1589,7 @@ class Ui_MainWindow(object):
         self.frame_53.setMinimumSize(QtCore.QSize(0, 65))
         self.frame_53.setMaximumSize(QtCore.QSize(16777215, 65))
         self.frame_53.setStyleSheet("border-radius: 3px;\n"
-"background-color: rgb(218, 223, 224,0);")
+"background-color: rgb(218, 223, 224);")
         self.frame_53.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_53.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_53.setObjectName("frame_53")
@@ -1639,7 +1639,7 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.label_62.setFont(font)
-        self.label_62.setStyleSheet("background-color: rgb(253, 253, 255,0);\n"
+        self.label_62.setStyleSheet("background-color: rgb(253, 253, 255);\n"
 "")
         self.label_62.setObjectName("label_62")
         self.gridLayout_109.addWidget(self.label_62, 0, 0, 1, 1)
@@ -2099,7 +2099,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.label_18.setFont(font)
         self.label_18.setStyleSheet("\n"
-"background-color: rgb(253, 253, 255,0);")
+"background-color: rgb(253, 253, 255);")
         self.label_18.setObjectName("label_18")
         self.gridLayout_49.addWidget(self.label_18, 0, 0, 1, 1)
         self.verticalLayout_3.addWidget(self.frame_19)
@@ -2366,7 +2366,7 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.label_45.setFont(font)
-        self.label_45.setStyleSheet("background-color: rgb(253, 253, 255,0);")
+        self.label_45.setStyleSheet("background-color: rgb(253, 253, 255);")
         self.label_45.setObjectName("label_45")
         self.gridLayout_87.addWidget(self.label_45, 0, 0, 1, 1)
         self.gridLayout_86.addWidget(self.frame_63, 0, 0, 1, 1)
@@ -2535,7 +2535,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.label_28.setFont(font)
         self.label_28.setStyleSheet("\n"
-"background-color: rgb(253, 253, 255, 0);\n"
+"background-color: rgb(253, 253, 255);\n"
 "")
         self.label_28.setObjectName("label_28")
         self.gridLayout_53.addWidget(self.label_28, 0, 0, 1, 1)
@@ -4001,7 +4001,8 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.body_frame, 0, 3, 1, 1)
         self.frame_4 = QtWidgets.QFrame(self.centralwidget)
         self.frame_4.setMinimumSize(QtCore.QSize(0, 30))
-        self.frame_4.setStyleSheet("background-color: rgba(207, 222, 254, 195);")
+        #self.frame_4.setStyleSheet("background-color: rgba(207, 222, 254, 195);")
+        self.frame_4.setStyleSheet("background-color: rgb(207, 222, 254);")
         self.frame_4.setFrameShape(QtWidgets.QFrame.Panel)
         self.frame_4.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_4.setObjectName("frame_4")
@@ -4195,7 +4196,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "PKT Wallet"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Zulu Wallet"))
         self.frame_22.setToolTip(_translate("MainWindow", "View your addresses and balances here. "))
         self.balance_header_label.setText(_translate("MainWindow", "PKT Cash Balance"))
         self.balance_amount.setText(_translate("MainWindow", "000000000.0000000"))
@@ -4217,6 +4218,7 @@ class Ui_MainWindow(object):
         self.pay_from_combo_box.setCurrentText(_translate("MainWindow", "Loading ..."))
         self.pay_from_combo_box.setItemText(0, _translate("MainWindow", "Loading ..."))
         self.label_8.setText(_translate("MainWindow", "Pay From:"))
+
         self.label_9.setText(_translate("MainWindow", "Add One or More Payees Here"))
         self.snd_btn.setText(_translate("MainWindow", "Send"))
         self.clear_btn.setToolTip(_translate("MainWindow", "Click to clear all entries."))
