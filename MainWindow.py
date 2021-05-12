@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         MainWindow.setFont(font)
         MainWindow.setAcceptDrops(False)
-        MainWindow.setStyleSheet("")
+        MainWindow.setStyleSheet("color: black")
         MainWindow.setAnimated(True)
         MainWindow.setDocumentMode(True)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -473,7 +473,7 @@ class Ui_MainWindow(object):
         self.label_8.setFont(font)
         self.label_8.setStyleSheet("\n"
 "padding-bottom: 4px;\n"
-"color: blue;\n"
+"color: black;\n"
 "")
         self.label_8.setObjectName("label_8")
         self.gridLayout_5.addWidget(self.label_8, 0, 0, 1, 1)
