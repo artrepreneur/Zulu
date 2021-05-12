@@ -7,7 +7,8 @@ from MainWindow import Ui_MainWindow
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from functools import partial
-import os, sys, subprocess, json, threading, time, random, signal, traceback, re, psutil
+import os, sys, subprocess, json, threading, time, random, signal, traceback, re
+#import psutil
 import platform, transactions, estimate, ingest, signMultiSigTrans, sendMultiSigTrans, sendCombMultiSigTrans, fold, createWallet, getSeed, resync, peerinf
 import balances, addresses, balanceAddresses, rpcworker, privkey, pubkey, password, wlltinf, send, time, datetime, genMultiSig, createMultiSigTrans, sendCombMultiSigTrans
 #import combineSigned
@@ -857,12 +858,13 @@ def btn_released(self):
     elif clicked_widget.objectName() == 'seed_next_btn':
         pp = wllt_pass
         seed_entry = window.imprt_seed_txt.toPlainText().strip()
-        #print('seed entry:', seed_entry)
+        seed_arr = seed_entry.split(' ')
+        #print('seed entry:', seed_entry, len(seed_entry), len(seed_arr), seed_arr)
         old_pass_line = window.old_pass_line.text().strip()
 
-        if not old_pass_line:
+        if not old_pass_line and (len(seed_arr) > 1) :
             seed_msg_box = QtWidgets.QMessageBox()
-            seed_msg_box.setText('You failed to enter your old password.')
+            seed_msg_box.setText('You failed to enter your old password.\n\nIf you are using a single seed word, then enter any character for a password.')
             seed_msg_box.exec()
             return
         try:
@@ -1922,18 +1924,28 @@ def import_qr():
 def chk_live_proc():
     proc_array = []
     print('Checking live processes, if any...')
-    for proc in psutil.process_iter(['pid', 'name', 'username']):
-        #print('PROCS:', proc)
-        if proc.info['name']=='wallet':
-            proc_array.append('wallet')
-        if proc.info['name']=='pktd':
-            proc_array.append('pktd')
+    
+    #for proc in psutil.process_iter(['pid', 'name', 'username']):
+    #    if proc.info['name']=='wallet':
+    #        proc_array.append('wallet')
+    #    if proc.info['name']=='pktd':
+    #        proc_array.append('pktd')
+
+    isWalletAlive = subprocess.run(['pgrep', 'x', 'wallet'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    #isPktdAlive = subprocess.run(['pgrep', 'x', 'pktd'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    
+    if isWalletAlive.stdout:
+        proc_array.append('wallet')
+    #elif isPktdAlive.stdout:
+    #    proc_array.append('pktd')
+
     return proc_array
 
 def kill_procs(procs):
     global os_sys
     os_sys = platform.system()
     print('Trying to kill procs')
+
     if len(procs) > 0:
         if not SHUTDOWN_CYCLE: # At start up
             msg_box_X = QtWidgets.QMessageBox()
