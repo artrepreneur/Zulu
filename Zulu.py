@@ -1118,7 +1118,7 @@ def btn_released(self):
         new_pass = window.lineEdit_4.text().strip()
         new_pass_cfm = window.lineEdit_5.text().strip()
 
-        if old_pass.isalnum() and new_pass.isalnum() and new_pass_cfm.isalnum():
+        if old_pass and new_pass and new_pass_cfm:
 
             if new_pass_cfm != new_pass:
                 msg_box_12 = QtWidgets.QMessageBox()
@@ -1454,11 +1454,12 @@ def btn_released(self):
 
     elif clicked_widget.objectName() == 'rtr_prvk_btn':
         address = str(window.comboBox_5.currentText())
-       
+        
         if passphrase == '':
             passphrase, ok = get_pass()
         else:
             ok = True
+        print("Pass:", passphrase)
 
         if ok:
 
@@ -1468,7 +1469,7 @@ def btn_released(self):
                 msg_box_10.exec()
                 return
 
-            if address.isalnum() and passphrase.isalnum():
+            if address and passphrase:
                 get_priv_key(address, passphrase)
             else:
                 msg_box_10 = QtWidgets.QMessageBox()
@@ -1482,7 +1483,7 @@ def btn_released(self):
             msg_box_11.setText("Can't retrieve public key for multisig address.")
             msg_box_11.exec()
             return
-        if address.isalnum():
+        if address:
             get_pub_key(address)
         else:
             msg_box_11 = QtWidgets.QMessageBox()
@@ -1930,10 +1931,9 @@ def chk_live_proc():
     #    if proc.info['name']=='pktd':
     #        proc_array.append('pktd')
 
-    isWalletAlive = subprocess.run(['pgrep', 'x', 'wallet'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-    #isPktdAlive = subprocess.run(['pgrep', 'x', 'pktd'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    
-    if isWalletAlive.stdout:
+    isWalletAlive = subprocess.Popen(['pgrep -x wallet'], shell=True, stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
+    print('isWalletAlive', isWalletAlive)
+    if isWalletAlive:
         proc_array.append('wallet')
     #elif isPktdAlive.stdout:
     #    proc_array.append('pktd')
@@ -2380,7 +2380,6 @@ def deactivate():
     window.actionEncrypt_Decrypt_Message.setVisible(False)
     window.actionCombine_Multisig_Transactions.setVisible(False)
     window.actionMultiSig_Address.setVisible(False)
-   
     
     # Phasing out status light since it's no longer useful
     window.label_102.hide()

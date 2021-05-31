@@ -21,6 +21,7 @@ def new_multisig (uname, pwd, required_sigs, pub_keys, passphrase, progress_call
 
     base_cmd ='bin/pktctl -u ' + uname + ' -P ' + pwd + ' --wallet '
     multisig_cmd = base_cmd + 'createmultisig ' + required_sigs + pub_keys
+    print(multisig_cmd)
 
     try:
         multisig_result, err = (subprocess.Popen(resource_path(multisig_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate())
