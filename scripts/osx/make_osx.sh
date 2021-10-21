@@ -46,19 +46,35 @@ fail "Could not install pyinstaller"
 
 if ! [ -f "$BUILDDIR/deps/libzbar.dylib" ]; then
     info "Downloading zbar..."
-    curl -L https://homebrew.bintray.com/bottles/zbar-0.10_10.catalina.bottle.tar.gz | \
+    
+    #curl -L https://homebrew.bintray.com/bottles/zbar-0.10_10.catalina.bottle.tar.gz  | \
+    #    tar xz --directory "$BUILDDIR/deps"
+    #echo "765bd27d0701f71a0e1be28f14c0de1f5b3a9cdcad02a29d22173f21c9ad3df7 $BUILDDIR/deps/zbar/0.23.90_1/lib/libzbar.0.dylib" | \
+    #    shasum -a 256 -c || fail "zbar checksum mismatched"
+    #cp "$BUILDDIR/deps/zbar/0.10_10/lib/libzbar.0.dylib" "$BUILDDIR/deps/libzbar.dylib"
+
+
+    curl -L https://github.com/artrepreneur/BuildBottles/raw/main/zbar--0.23.90_1.catalina.bottle.tar.gz | \
         tar xz --directory "$BUILDDIR/deps"
-    echo "765bd27d0701f71a0e1be28f14c0de1f5b3a9cdcad02a29d22173f21c9ad3df7  $BUILDDIR/deps/zbar/0.10_10/lib/libzbar.0.dylib" | \
-        shasum -a 256 -c || fail "zbar checksum mismatched"
-    cp "$BUILDDIR/deps/zbar/0.10_10/lib/libzbar.0.dylib" "$BUILDDIR/deps/libzbar.dylib"
+    #echo "1e66eb04757aadfd915f856c5a2ac815a89b12a49f6b21ec3bd578dfb12fdb97 $BUILDDIR/deps/zbar/0.23.90_1/lib/libzbar.0.dylib" | \
+    #    shasum -a 256 -c || fail "zbar checksum mismatched"
+    cp "$BUILDDIR/deps/zbar/0.23.90_1/lib/libzbar.0.dylib" "$BUILDDIR/deps/libzbar.dylib"
+
+
 fi
 
 if ! [ -f "$BUILDDIR/deps/jpeg/9d/lib/libjpeg.9.dylib" ]; then
     info "Downloading libjpeg..."
-    curl -L https://homebrew.bintray.com/bottles/jpeg-9d.catalina.bottle.tar.gz | \
+    #curl -L https://homebrew.bintray.com/bottles/jpeg-9d.catalina.bottle.tar.gz | \
+    #    tar xz --directory "$BUILDDIR/deps"
+    #echo "f8024b4cbb63121943cba63879ef6075b2dafbb055808f885180686625cd49ef  $BUILDDIR/deps/jpeg/9d/lib/libjpeg.9.dylib" | \
+    #    shasum -a 256 -c || fail "libjpeg checksum mismatched"
+
+    curl -L https://github.com/artrepreneur/BuildBottles/raw/main/jpeg--9d.catalina.bottle.tar.gz | \
         tar xz --directory "$BUILDDIR/deps"
     echo "f8024b4cbb63121943cba63879ef6075b2dafbb055808f885180686625cd49ef  $BUILDDIR/deps/jpeg/9d/lib/libjpeg.9.dylib" | \
         shasum -a 256 -c || fail "libjpeg checksum mismatched"
+
 fi
 
 info "Building binary"

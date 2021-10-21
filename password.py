@@ -17,9 +17,9 @@ def resource_path(relative_path):
     
 def change_pass(uname, pwd, progress_callback):
     global err
-
+    print('old_pwd', old_pwd)
     try:
-        cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrasechange " + old_pwd + " " + new_pwd
+        cmd = "bin/pktctl -u "+  uname +" -P "+ pwd +" --wallet walletpassphrasechange '" + old_pwd + "' '" + new_pwd + "'"
         result, err = subprocess.Popen(resource_path(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         result = result.decode('utf-8')
         err = err.decode('utf-8')
